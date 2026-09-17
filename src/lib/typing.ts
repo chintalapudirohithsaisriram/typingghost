@@ -1,0 +1,98 @@
+export type TypingStats = {
+  elapsedMs: number;
+  correct: number;
+  incorrect: number;
+  typed: number;
+  grossWpm: number;
+  netWpm: number;
+  accuracy: number;
+  realAccuracy: number;
+  errorRate: number;
+  errors: number;
+  consistency: number;
+};
+
+const finite = (value: number) => (Number.isFinite(value) ? value : 0);
+export const clamp = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value));
+
+/** WPM uses the standard 5 keystrokes = 1 word convention. */
+export function calculateWpm(characters: number, elapsedMs: number): number {
+  const chars = Math.max(0, finite(characters));
+  const elapsed = Math.max(0, finite(elapsedMs));
+  if (!chars || !elapsed) return 0;
+  return chars / 5 / (elapsed / 60_000);
+}
+
+/** Gross speed minus a transparent penalty for historical incorrect keystrokes. */
+export function calculateNetWpm(grossWpm: number, errors: number, elapsedMs: number): number {
+  const gross = Math.max(0, finite(grossWpm));
+  const wrong = Math.max(0, finite(errors));
+  const elapsed = Math.max(0, finite(elapsedMs));
+  if (!gross || !elapsed) return 0;
+  return Math.max(0, gross - calculateWpm(wrong, elapsed));
+}
+
+export function calculateConsistency(samples: number[]): number {
+  const clean = samples.filter((value) => Number.isFinite(value) && value >= 0);
+  if (clean.length < 2) return clean.length ? 100 : 0;
+  const mean = clean.reduce((sum, value) => sum + value, 0) / clean.length;
+  if (!mean) return 0;
+  const variance = clean.reduce((sum, value) => sum + (value - mean) ** 2, 0) / clean.length;
+  return clamp(100 - (Math.sqrt(variance) / mean) * 100, 0, 100);
+}
+
+export function calculateStats(
+  correct: number,
+  incorrect: number,
+  elapsedMs: number,
+  samples: number[] = [],
+  errorCount = incorrect,
+): TypingStats {
+  const right = Math.max(0, finite(correct));
+  const wrong = Math.max(0, finite(incorrect));
+  const typed = right + wrong;
+  const elapsed = Math.max(0, finite(elapsedMs));
+  const errors = Math.max(0, finite(errorCount));
+  const grossWpm = calculateWpm(typed, elapsed);
+  const netWpm = calculateNetWpm(grossWpm, errors, elapsed);
+  const accuracy = typed ? clamp((right / typed) * 100, 0, 100) : 0;
+  const realAccuracy = typed ? clamp(((typed - errors) / typed) * 100, 0, 100) : 0;
+  const errorRate = typed ? clamp((errors / typed) * 100, 0, 100) : 0;
+  const consistency = typed ? calculateConsistency(samples.length ? samples : [grossWpm]) : 0;
+
+  return {
+    elapsedMs: elapsed,
+    correct: right,
+    incorrect: wrong,
+    typed,
+    grossWpm,
+    netWpm,
+    accuracy,
+    realAccuracy,
+    errorRate,
+    errors,
+    consistency,
+  };
+}
+
+export function compareTypedText(target: string, value: string) {
+  const targetChars = [...target];
+  const chars = [...value];
+  let correct = 0;
+  let incorrect = 0;
+  chars.forEach((char, index) => (char === targetChars[index] ? correct++ : incorrect++));
+  return { correct, incorrect };
+}
+
+export const formatSeconds = (ms: number) => {
+  const total = Math.max(0, Math.round(ms / 1000));
+  const minutes = Math.floor(total / 60);
+  const seconds = total % 60;
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+};
+
+export const round = (value: number, digits = 0) => {
+  const factor = 10 ** digits;
+  return Math.round(value * factor) / factor;
+};
