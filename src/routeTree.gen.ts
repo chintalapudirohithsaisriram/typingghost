@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DrillsRouteImport } from './routes/drills'
-import { Route as IndexRouteImport } from './routes/index_'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as TestRouteImport } from './routes/test'
 import { Route as LearnIndexRouteImport } from './routes/learn.index'
@@ -25,11 +24,6 @@ const IndexRoute = IndexRouteImport.update({
 const DrillsRoute = DrillsRouteImport.update({
   id: '/drills',
   path: '/drills',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/index_',
-  path: '/index',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProgressRoute = ProgressRouteImport.update({
@@ -56,7 +50,6 @@ const LearnLessonIdRoute = LearnLessonIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/drills': typeof DrillsRoute
-  '/index': typeof IndexRoute
   '/progress': typeof ProgressRoute
   '/test': typeof TestRoute
   '/learn/$lessonId': typeof LearnLessonIdRoute
@@ -65,7 +58,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/drills': typeof DrillsRoute
-  '/index': typeof IndexRoute
   '/progress': typeof ProgressRoute
   '/test': typeof TestRoute
   '/learn/$lessonId': typeof LearnLessonIdRoute
@@ -75,7 +67,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/drills': typeof DrillsRoute
-  '/index_': typeof IndexRoute
   '/progress': typeof ProgressRoute
   '/test': typeof TestRoute
   '/learn/$lessonId': typeof LearnLessonIdRoute
@@ -84,27 +75,13 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/drills'
-    | '/index'
-    | '/progress'
-    | '/test'
-    | '/learn/$lessonId'
-    | '/learn/'
+    '/' | '/drills' | '/progress' | '/test' | '/learn/$lessonId' | '/learn/'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/drills'
-    | '/index'
-    | '/progress'
-    | '/test'
-    | '/learn/$lessonId'
-    | '/learn'
+  to: '/' | '/drills' | '/progress' | '/test' | '/learn/$lessonId' | '/learn'
   id:
     | '__root__'
     | '/'
     | '/drills'
-    | '/index_'
     | '/progress'
     | '/test'
     | '/learn/$lessonId'
@@ -114,7 +91,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DrillsRoute: typeof DrillsRoute
-  IndexRoute: typeof IndexRoute
   ProgressRoute: typeof ProgressRoute
   TestRoute: typeof TestRoute
   LearnLessonIdRoute: typeof LearnLessonIdRoute
@@ -135,13 +111,6 @@ declare module '@tanstack/react-router' {
       path: '/drills'
       fullPath: '/drills'
       preLoaderRoute: typeof DrillsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/index_': {
-      id: '/index_'
-      path: '/index'
-      fullPath: '/index'
-      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/progress': {
@@ -178,7 +147,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DrillsRoute: DrillsRoute,
-  IndexRoute: IndexRoute,
   ProgressRoute: ProgressRoute,
   TestRoute: TestRoute,
   LearnLessonIdRoute: LearnLessonIdRoute,
