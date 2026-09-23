@@ -153,7 +153,7 @@ export function useTypingSession({
         if (["v", "c", "x", "a"].includes(event.key.toLowerCase())) event.preventDefault();
         return;
       }
-      if (["Tab", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "Delete"].includes(event.key)) {
+      if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "Delete"].includes(event.key)) {
         event.preventDefault();
         return;
       }

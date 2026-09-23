@@ -14,7 +14,7 @@ export default function VirtualKeyboard({ nextChar, highlightKeys = [], errorKey
   const finger = FINGER_BY_KEY[next];
 
   return (
-    <div className="panel p-4">
+    <div className="panel p-4" aria-hidden="true">
       <div className="flex flex-col gap-1.5">
         {KEYBOARD_ROWS.map((row, rowIndex) => (
           <div key={rowIndex} className={cn("flex justify-center gap-1.5", OFFSETS[rowIndex])}>
