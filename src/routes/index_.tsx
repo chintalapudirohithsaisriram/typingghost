@@ -1,6 +1,6 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/index")({
+export const Route = createFileRoute("/index_")({
   head: () => ({
     meta: [
       { title: "TypeNova — Learn Touch Typing Free" },
