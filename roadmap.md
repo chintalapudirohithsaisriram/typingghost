@@ -1,12 +1,12 @@
 # Roadmap
 
-- [ ] Stabilize routes/types (remove duplicate index route)
-- [ ] Engine: remove all countdowns; per-char results; raw/net WPM, error rate
-- [ ] Learn: 20 lessons, side curriculum, visual-only hand guide, tap keyboard buttons, number row/Shift
-- [ ] Practice (/practice, /drills redirect): weak/mistakes/accuracy/speed/adaptive
-- [ ] Test: passage/words/numbers/punctuation/custom, rotation, char-by-char result
-- [ ] Games, Challenges, Focus, Settings
-- [ ] Progress from real data; Home refresh
-- [ ] Warm light visual system, reduced motion, font scale
-- [ ] Persistence v3 migration via storage module
-- [ ] QA: typecheck, build, Playwright desktop+mobile, stale timed copy search
+- [x] Stabilize routes/types (remove duplicate index route)
+- [x] Engine: remove all countdowns; per-char results; raw/net WPM, error rate
+- [x] Learn: 20 lessons, side curriculum, visual-only hand guide, tap keyboard buttons, number row/Shift
+- [x] Practice (/practice, /drills redirect): weak/mistakes/accuracy/speed/adaptive
+- [x] Test: passage/words/numbers/punctuation/custom, rotation, char-by-char result
+- [x] Games, Challenges, Focus, Settings
+- [x] Progress from real data; Home refresh
+- [x] Warm light visual system, reduced motion, font scale
+- [x] Persistence v3 migration via storage module
+- [ ] Production build run (not yet run); QA done: typecheck, Playwright desktop+mobile, stale timed copy search
