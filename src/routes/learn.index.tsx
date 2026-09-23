@@ -1,108 +1,88 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { LESSONS, type Lesson } from "@/lib/typing-content";
+import { ArrowRight, Check } from "lucide-react";
+import CourseSidebar from "@/components/CourseSidebar";
+import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useProfile";
+import { nextLesson } from "@/lib/profile";
+import { pageHead } from "@/lib/seo";
+import { LESSONS, type Lesson } from "@/lib/typing-content";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/learn/")({
-  head: () => ({
-    meta: [
-      { title: "Typing Course — 18 Guided Lessons | TypeNova" },
-      {
-        name: "description",
-        content:
-          "A complete touch typing course: home row, reaches, capitals, numbers, symbols and endurance. Each lesson has a speed and accuracy target.",
-      },
-      { property: "og:title", content: "Typing Course — 18 Guided Lessons" },
-      {
-        property: "og:description",
-        content: "From the F and J anchors to numbers, symbols and endurance text.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () =>
+    pageHead(
+      `Typing Course — ${LESSONS.length} Guided Lessons | TypeNova`,
+      "A structured touch typing course from the home row to numbers, punctuation, symbols and endurance. Unlimited time, clear goals.",
+    ),
   component: LearnIndex,
 });
 
 const STAGES: Lesson["stage"][] = ["Foundations", "Reaches", "Fluency", "Mastery"];
-
 const STAGE_BLURB: Record<Lesson["stage"], string> = {
   Foundations: "Anchor your hands and learn the home row without looking.",
-  Reaches: "Move off the home row and return cleanly every time.",
-  Fluency: "Turn letters into words and words into rhythm.",
-  Mastery: "Numbers, symbols, precision and endurance.",
+  Reaches: "Leave the home row and return cleanly, one finger at a time.",
+  Fluency: "Whole words, common patterns and capital letters.",
+  Mastery: "Numbers, punctuation, symbols, accuracy and endurance.",
 };
 
 function LearnIndex() {
   const { profile, ready } = useProfile();
-  const done = new Set(profile.completedLessons);
-  const completed = ready ? done.size : 0;
+  const upcoming = nextLesson(profile);
+  const started = ready && profile.completedLessons.length > 0;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
-      <header className="max-w-2xl">
-        <h1 className="font-display text-3xl font-bold sm:text-4xl">The typing course</h1>
-        <p className="mt-3 text-muted-foreground">
-          Work through the lessons in order. A lesson is passed when you hit both its speed and its
-          accuracy target in one run — repeat it as often as you like, nothing is locked.
-        </p>
-      </header>
+    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+      <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
+        <CourseSidebar completed={profile.completedLessons} className="hidden self-start lg:sticky lg:top-24 lg:block" />
+        <div>
+          <p className="text-sm font-medium text-primary">Learn</p>
+          <h1 className="mt-2 font-display text-4xl font-bold tracking-tight sm:text-5xl">The touch typing course</h1>
+          <p className="mt-4 max-w-2xl text-muted-foreground">
+            {LESSONS.length} short lessons in four stages. Each one has a clear objective and a speed and accuracy goal. Take as long as
+            you need — there is never a time limit.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button asChild size="lg">
+              <Link to="/learn/$lessonId" params={{ lessonId: upcoming?.id ?? LESSONS[0]!.id }}>
+                {started ? `Continue: ${upcoming?.title}` : "Start lesson 1"} <ArrowRight aria-hidden="true" />
+              </Link>
+            </Button>
+          </div>
 
-      <div className="mt-6 flex items-center gap-4">
-        <div className="h-2 w-full max-w-sm overflow-hidden rounded-full bg-surface-2">
-          <div
-            className="h-full rounded-full bg-primary transition-all"
-            style={{ width: `${(completed / LESSONS.length) * 100}%` }}
-          />
+          <div className="mt-10 space-y-10">
+            {STAGES.map((stage) => (
+              <section key={stage} aria-labelledby={`stage-${stage}`}>
+                <h2 id={`stage-${stage}`} className="font-display text-xl font-semibold">{stage}</h2>
+                <p className="mt-1 text-sm text-muted-foreground">{STAGE_BLURB[stage]}</p>
+                <ol className="mt-4 grid gap-3 sm:grid-cols-2">
+                  {LESSONS.filter((l) => l.stage === stage).map((lesson) => {
+                    const done = profile.completedLessons.includes(lesson.id);
+                    return (
+                      <li key={lesson.id}>
+                        <Link
+                          to="/learn/$lessonId"
+                          params={{ lessonId: lesson.id }}
+                          className="panel flex h-full gap-4 p-4 transition-colors hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                        >
+                          <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-full border text-sm font-semibold", done ? "border-primary bg-primary text-primary-foreground" : "border-border")}>
+                            {done ? <Check className="size-4" aria-label="passed" /> : lesson.level}
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block font-medium">{lesson.title}</span>
+                            <span className="mt-0.5 block text-sm text-muted-foreground">{lesson.description}</span>
+                            <span className="mt-2 block text-xs text-muted-foreground">
+                              Goal {lesson.goalWpm} WPM · {lesson.goalAccuracy}% accuracy
+                            </span>
+                          </span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </section>
+            ))}
+          </div>
         </div>
-        <p className="text-sm text-muted-foreground">
-          {completed} of {LESSONS.length} passed
-        </p>
-      </div>
-
-      <div className="mt-10 space-y-10">
-        {STAGES.map((stage) => (
-          <section key={stage}>
-            <div className="mb-4">
-              <h2 className="font-display text-xl font-semibold">{stage}</h2>
-              <p className="text-sm text-muted-foreground">{STAGE_BLURB[stage]}</p>
-            </div>
-            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-              {LESSONS.filter((lesson) => lesson.stage === stage).map((lesson) => {
-                const passed = ready && done.has(lesson.id);
-                return (
-                  <Link
-                    key={lesson.id}
-                    to="/learn/$lessonId"
-                    params={{ lessonId: lesson.id }}
-                    className={cn(
-                      "panel group flex flex-col p-5 transition-all hover:-translate-y-0.5",
-                      passed && "border-primary/40",
-                    )}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs text-muted-foreground">
-                        Lesson {String(lesson.level).padStart(2, "0")}
-                      </span>
-                      {passed ? (
-                        <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-medium text-primary">
-                          Passed
-                        </span>
-                      ) : null}
-                    </div>
-                    <h3 className="mt-2 font-display text-lg font-semibold group-hover:text-primary">
-                      {lesson.title}
-                    </h3>
-                    <p className="mt-1 flex-1 text-sm text-muted-foreground">{lesson.description}</p>
-                    <p className="mt-4 font-mono text-xs text-muted-foreground">
-                      Target {lesson.goalWpm} wpm · {lesson.goalAccuracy}% accuracy
-                    </p>
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
-        ))}
       </div>
     </div>
   );

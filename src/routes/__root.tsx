@@ -8,6 +8,9 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { Maximize2, Settings as SettingsIcon } from "lucide-react";
+import { useRouterState } from "@tanstack/react-router";
+import { useApplySettings } from "../lib/settings";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -81,12 +84,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Free touch typing course, timed tests, weak-key drills and progress tracking. Build real speed with accurate technique.",
+          "A calm, free touch typing course with unlimited practice, typing tests, games and honest progress tracking.",
       },
       { property: "og:title", content: "TypeNova — Learn Touch Typing, Free" },
       {
         property: "og:description",
-        content: "Structured lessons, timed tests and progress tracking for faster, accurate typing.",
+        content: "Learn, practise, test and improve your typing — no time limits, no sign-up.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -98,7 +101,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap",
       },
     ],
   }),
@@ -110,7 +113,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
@@ -123,31 +126,39 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 const NAV = [
-  { to: "/", label: "Home" },
   { to: "/learn", label: "Learn" },
+  { to: "/practice", label: "Practice" },
   { to: "/test", label: "Test" },
-  { to: "/drills", label: "Drills" },
+  { to: "/games", label: "Games" },
+  { to: "/challenges", label: "Challenges" },
   { to: "/progress", label: "Progress" },
 ] as const;
 
 function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary font-display text-base font-bold text-primary-foreground">
-            T
+    <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3 sm:px-6">
+        <Link to="/" className="flex items-center gap-2 rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" aria-label="TypeNova home">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground font-display text-sm font-extrabold text-background">
+            Tn
           </span>
-          <span className="font-display text-lg font-semibold tracking-tight">TypeNova</span>
+          <span className="font-display text-lg font-bold tracking-tight">TypeNova</span>
         </Link>
-        <nav className="-mx-1 flex items-center gap-0.5 overflow-x-auto">
+        <div className="flex items-center gap-1 sm:order-3">
+          <Link to="/focus" aria-label="Focus mode" title="Focus mode" className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" activeProps={{ className: "bg-secondary text-foreground" }}>
+            <Maximize2 className="size-4" aria-hidden="true" />
+          </Link>
+          <Link to="/settings" aria-label="Settings" title="Settings" className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" activeProps={{ className: "bg-secondary text-foreground" }}>
+            <SettingsIcon className="size-4" aria-hidden="true" />
+          </Link>
+        </div>
+        <nav aria-label="Main" className="order-last -mx-1 flex w-full items-center gap-0.5 overflow-x-auto sm:order-2 sm:w-auto">
           {NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              activeOptions={{ exact: item.to === "/" }}
-              className="rounded-md px-2.5 py-1.5 text-sm whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground"
-              activeProps={{ className: "bg-secondary text-foreground" }}
+              className="rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              activeProps={{ className: "bg-secondary text-foreground", "aria-current": "page" }}
             >
               {item.label}
             </Link>
@@ -160,10 +171,10 @@ function SiteHeader() {
 
 function SiteFooter() {
   return (
-    <footer className="mt-16 border-t border-border py-8">
-      <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-        <p>TypeNova — free typing practice. Your progress stays on this device.</p>
-        <p>Practice a few minutes daily. Accuracy first, speed follows.</p>
+    <footer className="mt-20 border-t border-border py-8">
+      <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <p>TypeNova — learn, practise, test, improve. Progress stays on this device.</p>
+        <p>No time limits. Accuracy first, speed follows.</p>
       </div>
     </footer>
   );
@@ -171,16 +182,21 @@ function SiteFooter() {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useApplySettings();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const focus = pathname === "/focus";
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-screen flex-col">
-        <SiteHeader />
-        <main className="flex-1">
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground">
+        Skip to content
+      </a>
+      <div className="flex min-h-dvh flex-col">
+        {focus ? null : <SiteHeader />}
+        <main id="main" className="flex-1">
           <Outlet />
         </main>
-        <SiteFooter />
+        {focus ? null : <SiteFooter />}
       </div>
     </QueryClientProvider>
   );

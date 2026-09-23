@@ -5,8 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * TypeNova design system — a dark "typing lab" palette.
- * Ink-blue surfaces, electric lime primary, cyan accent.
+ * TypeNova design system — calm warm paper, charcoal ink, olive accent.
  * All colors are oklch and exposed as semantic tokens only.
  */
 
@@ -57,82 +56,102 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 0.875rem;
 
-  --background: oklch(0.17 0.022 264);
-  --foreground: oklch(0.96 0.005 250);
+  /* Warm paper, charcoal ink, olive accent */
+  --background: oklch(0.975 0.008 85);
+  --foreground: oklch(0.24 0.012 70);
+  --surface: oklch(0.992 0.005 85);
+  --surface-2: oklch(0.945 0.012 85);
+  --card: oklch(0.992 0.005 85);
+  --card-foreground: oklch(0.24 0.012 70);
+  --popover: oklch(0.992 0.005 85);
+  --popover-foreground: oklch(0.24 0.012 70);
+  --primary: oklch(0.55 0.11 125);
+  --primary-foreground: oklch(0.985 0.01 110);
+  --secondary: oklch(0.935 0.014 90);
+  --secondary-foreground: oklch(0.28 0.015 70);
+  --muted: oklch(0.94 0.012 85);
+  --muted-foreground: oklch(0.5 0.015 70);
+  --accent: oklch(0.88 0.1 120);
+  --accent-foreground: oklch(0.3 0.06 125);
+  --destructive: oklch(0.55 0.19 28);
+  --destructive-foreground: oklch(0.98 0.005 80);
+  --success: oklch(0.52 0.12 150);
+  --success-foreground: oklch(0.98 0.01 150);
+  --warning: oklch(0.62 0.13 70);
+  --warning-foreground: oklch(0.98 0.01 80);
+  --border: oklch(0.24 0.012 70 / 11%);
+  --input: oklch(0.24 0.012 70 / 16%);
+  --ring: oklch(0.55 0.11 125);
+  --chart-1: oklch(0.55 0.11 125);
+  --chart-2: oklch(0.45 0.03 70);
+  --chart-3: oklch(0.62 0.13 70);
+  --chart-4: oklch(0.55 0.19 28);
+  --chart-5: oklch(0.55 0.08 230);
+  --sidebar: oklch(0.96 0.01 85);
+  --sidebar-foreground: oklch(0.24 0.012 70);
+  --sidebar-primary: oklch(0.55 0.11 125);
+  --sidebar-primary-foreground: oklch(0.985 0.01 110);
+  --sidebar-accent: oklch(0.935 0.014 90);
+  --sidebar-accent-foreground: oklch(0.24 0.012 70);
+  --sidebar-border: oklch(0.24 0.012 70 / 11%);
+  --sidebar-ring: oklch(0.55 0.11 125);
+  --gradient-hero: radial-gradient(60% 70% at 85% 0%, color-mix(in oklab, var(--accent) 45%, transparent), transparent 70%);
+  --shadow-glow: 0 0 0 3px color-mix(in oklab, var(--primary) 22%, transparent);
+  --shadow-panel: 0 1px 2px oklch(0.24 0.012 70 / 5%), 0 12px 32px -20px oklch(0.24 0.012 70 / 22%);
+  color-scheme: light;
+}
 
-  --surface: oklch(0.22 0.024 264);
-  --surface-2: oklch(0.26 0.026 264);
-
-  --card: oklch(0.215 0.024 264);
-  --card-foreground: oklch(0.96 0.005 250);
-  --popover: oklch(0.22 0.024 264);
-  --popover-foreground: oklch(0.96 0.005 250);
-
-  --primary: oklch(0.85 0.19 128);
-  --primary-foreground: oklch(0.2 0.05 130);
-
-  --secondary: oklch(0.27 0.027 264);
-  --secondary-foreground: oklch(0.95 0.005 250);
-
-  --muted: oklch(0.26 0.024 264);
-  --muted-foreground: oklch(0.71 0.024 258);
-
-  --accent: oklch(0.78 0.13 205);
-  --accent-foreground: oklch(0.2 0.04 220);
-
-  --destructive: oklch(0.66 0.21 22);
-  --destructive-foreground: oklch(0.98 0.005 250);
-
-  --success: oklch(0.78 0.16 155);
-  --success-foreground: oklch(0.2 0.04 155);
-
-  --warning: oklch(0.82 0.15 78);
-  --warning-foreground: oklch(0.22 0.05 78);
-
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 14%);
-  --ring: oklch(0.85 0.19 128);
-
-  --chart-1: oklch(0.85 0.19 128);
-  --chart-2: oklch(0.78 0.13 205);
-  --chart-3: oklch(0.82 0.15 78);
-  --chart-4: oklch(0.66 0.21 22);
-  --chart-5: oklch(0.72 0.14 300);
-
-  --sidebar: oklch(0.2 0.023 264);
-  --sidebar-foreground: oklch(0.96 0.005 250);
-  --sidebar-primary: oklch(0.85 0.19 128);
-  --sidebar-primary-foreground: oklch(0.2 0.05 130);
-  --sidebar-accent: oklch(0.27 0.027 264);
-  --sidebar-accent-foreground: oklch(0.96 0.005 250);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.85 0.19 128);
-
-  --gradient-hero: radial-gradient(
-      70% 60% at 15% 0%,
-      color-mix(in oklab, var(--primary) 18%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      60% 55% at 90% 10%,
-      color-mix(in oklab, var(--accent) 16%, transparent),
-      transparent 70%
-    );
-  --shadow-glow: 0 0 0 1px color-mix(in oklab, var(--primary) 25%, transparent),
-    0 18px 50px -20px color-mix(in oklab, var(--primary) 45%, transparent);
-  --shadow-panel: 0 24px 60px -30px oklch(0 0 0 / 70%);
+.theme-sand {
+  --background: oklch(0.945 0.02 80);
+  --surface: oklch(0.97 0.015 82);
+  --surface-2: oklch(0.915 0.024 80);
+  --card: oklch(0.97 0.015 82);
+  --muted: oklch(0.915 0.02 80);
+  --secondary: oklch(0.905 0.024 82);
 }
 
 .dark {
   color-scheme: dark;
+  --background: oklch(0.2 0.008 80);
+  --foreground: oklch(0.93 0.01 85);
+  --surface: oklch(0.24 0.009 80);
+  --surface-2: oklch(0.29 0.01 80);
+  --card: oklch(0.24 0.009 80);
+  --card-foreground: oklch(0.93 0.01 85);
+  --popover: oklch(0.24 0.009 80);
+  --popover-foreground: oklch(0.93 0.01 85);
+  --primary: oklch(0.8 0.13 122);
+  --primary-foreground: oklch(0.22 0.04 125);
+  --secondary: oklch(0.29 0.01 80);
+  --secondary-foreground: oklch(0.93 0.01 85);
+  --muted: oklch(0.28 0.01 80);
+  --muted-foreground: oklch(0.7 0.012 80);
+  --accent: oklch(0.38 0.06 122);
+  --accent-foreground: oklch(0.92 0.05 120);
+  --destructive: oklch(0.68 0.17 28);
+  --success: oklch(0.72 0.13 150);
+  --warning: oklch(0.78 0.12 75);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.8 0.13 122);
+  --shadow-panel: 0 16px 40px -28px oklch(0 0 0 / 70%);
+}
+
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }
 
 @layer base {
@@ -140,9 +159,6 @@
     border-color: var(--color-border);
   }
 
-  html {
-    color-scheme: dark;
-  }
 
   body {
     background-color: var(--color-background);

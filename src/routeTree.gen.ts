@@ -10,8 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ChallengesRouteImport } from './routes/challenges'
 import { Route as DrillsRouteImport } from './routes/drills'
+import { Route as FocusRouteImport } from './routes/focus'
+import { Route as GamesRouteImport } from './routes/games'
+import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as ProgressRouteImport } from './routes/progress'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TestRouteImport } from './routes/test'
 import { Route as IndexIndexRouteImport } from './routes/index/index'
 import { Route as LearnIndexRouteImport } from './routes/learn.index'
@@ -22,14 +27,39 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChallengesRoute = ChallengesRouteImport.update({
+  id: '/challenges',
+  path: '/challenges',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DrillsRoute = DrillsRouteImport.update({
   id: '/drills',
   path: '/drills',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FocusRoute = FocusRouteImport.update({
+  id: '/focus',
+  path: '/focus',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesRoute = GamesRouteImport.update({
+  id: '/games',
+  path: '/games',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PracticeRoute = PracticeRouteImport.update({
+  id: '/practice',
+  path: '/practice',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProgressRoute = ProgressRouteImport.update({
   id: '/progress',
   path: '/progress',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TestRoute = TestRouteImport.update({
@@ -55,8 +85,13 @@ const LearnLessonIdRoute = LearnLessonIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/challenges': typeof ChallengesRoute
   '/drills': typeof DrillsRoute
+  '/focus': typeof FocusRoute
+  '/games': typeof GamesRoute
+  '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
+  '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
   '/learn/$lessonId': typeof LearnLessonIdRoute
   '/index/': typeof IndexIndexRoute
@@ -64,8 +99,13 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/challenges': typeof ChallengesRoute
   '/drills': typeof DrillsRoute
+  '/focus': typeof FocusRoute
+  '/games': typeof GamesRoute
+  '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
+  '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
   '/learn/$lessonId': typeof LearnLessonIdRoute
   '/index': typeof IndexIndexRoute
@@ -74,8 +114,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/challenges': typeof ChallengesRoute
   '/drills': typeof DrillsRoute
+  '/focus': typeof FocusRoute
+  '/games': typeof GamesRoute
+  '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
+  '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
   '/learn/$lessonId': typeof LearnLessonIdRoute
   '/index/': typeof IndexIndexRoute
@@ -85,8 +130,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/challenges'
     | '/drills'
+    | '/focus'
+    | '/games'
+    | '/practice'
     | '/progress'
+    | '/settings'
     | '/test'
     | '/learn/$lessonId'
     | '/index/'
@@ -94,8 +144,13 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/challenges'
     | '/drills'
+    | '/focus'
+    | '/games'
+    | '/practice'
     | '/progress'
+    | '/settings'
     | '/test'
     | '/learn/$lessonId'
     | '/index'
@@ -103,8 +158,13 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/challenges'
     | '/drills'
+    | '/focus'
+    | '/games'
+    | '/practice'
     | '/progress'
+    | '/settings'
     | '/test'
     | '/learn/$lessonId'
     | '/index/'
@@ -113,8 +173,13 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ChallengesRoute: typeof ChallengesRoute
   DrillsRoute: typeof DrillsRoute
+  FocusRoute: typeof FocusRoute
+  GamesRoute: typeof GamesRoute
+  PracticeRoute: typeof PracticeRoute
   ProgressRoute: typeof ProgressRoute
+  SettingsRoute: typeof SettingsRoute
   TestRoute: typeof TestRoute
   LearnLessonIdRoute: typeof LearnLessonIdRoute
   IndexIndexRoute: typeof IndexIndexRoute
@@ -130,6 +195,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/challenges': {
+      id: '/challenges'
+      path: '/challenges'
+      fullPath: '/challenges'
+      preLoaderRoute: typeof ChallengesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/drills': {
       id: '/drills'
       path: '/drills'
@@ -137,11 +209,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DrillsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/focus': {
+      id: '/focus'
+      path: '/focus'
+      fullPath: '/focus'
+      preLoaderRoute: typeof FocusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games': {
+      id: '/games'
+      path: '/games'
+      fullPath: '/games'
+      preLoaderRoute: typeof GamesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/practice': {
+      id: '/practice'
+      path: '/practice'
+      fullPath: '/practice'
+      preLoaderRoute: typeof PracticeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/progress': {
       id: '/progress'
       path: '/progress'
       fullPath: '/progress'
       preLoaderRoute: typeof ProgressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/test': {
@@ -177,8 +277,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ChallengesRoute: ChallengesRoute,
   DrillsRoute: DrillsRoute,
+  FocusRoute: FocusRoute,
+  GamesRoute: GamesRoute,
+  PracticeRoute: PracticeRoute,
   ProgressRoute: ProgressRoute,
+  SettingsRoute: SettingsRoute,
   TestRoute: TestRoute,
   LearnLessonIdRoute: LearnLessonIdRoute,
   IndexIndexRoute: IndexIndexRoute,

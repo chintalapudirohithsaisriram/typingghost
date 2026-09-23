@@ -12,7 +12,7 @@ export type Lesson = {
   goalAccuracy: number;
 };
 
-export const LESSONS: Lesson[] = [
+const RAW_LESSONS: Lesson[] = [
   {
     id: "first-keystrokes",
     level: 1,
@@ -105,6 +105,19 @@ export const LESSONS: Lesson[] = [
     goalAccuracy: 95,
   },
   {
+    id: "top-row-words",
+    level: 0,
+    stage: "Reaches",
+    title: "Top Row Words",
+    description: "Whole words that live on the top row, reached and returned cleanly.",
+    tip: "Reach up with one finger only — the rest stay anchored on the home row.",
+    targetKeys: ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+    finger: "All fingers reach up",
+    exercise: "type write power tower quiet route pretty equip tipper trout rope wiper pour yeti",
+    goalWpm: 22,
+    goalAccuracy: 95,
+  },
+  {
     id: "lower-row",
     level: 8,
     stage: "Reaches",
@@ -187,6 +200,19 @@ export const LESSONS: Lesson[] = [
     goalAccuracy: 95,
   },
   {
+    id: "numbers-in-context",
+    level: 0,
+    stage: "Mastery",
+    title: "Numbers in Context",
+    description: "Dates, prices and quantities mixed into real sentences.",
+    tip: "Glance at the whole number first, then type it as one confident chunk.",
+    targetKeys: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+    finger: "Mapped by finger zone",
+    exercise: "Room 204 opens at 9 on May 17. Order 36 pens and 48 pads. Call 555 0192 by 2030.",
+    goalWpm: 26,
+    goalAccuracy: 95,
+  },
+  {
     id: "punctuation",
     level: 14,
     stage: "Mastery",
@@ -223,7 +249,7 @@ export const LESSONS: Lesson[] = [
     targetKeys: ["g", "h", "r", "t"],
     finger: "Mixed",
     exercise:
-      "right tight sight great three through right tight sight great three through gather higher",
+      "fr fr ju ju fr ju tr tr hg hg right right tight tight great great three three through through gather gather higher higher",
     goalWpm: 32,
     goalAccuracy: 98,
   },
@@ -257,6 +283,8 @@ export const LESSONS: Lesson[] = [
   },
 ];
 
+export const LESSONS: Lesson[] = RAW_LESSONS.map((lesson, index) => ({ ...lesson, level: index + 1 }));
+
 export const lessonById = (id: string) => LESSONS.find((lesson) => lesson.id === id);
 
 export type Difficulty = "easy" | "medium" | "hard";
@@ -281,9 +309,6 @@ export const TEST_PASSAGES: Record<Difficulty, string[]> = {
     "Deliberate practice means choosing the uncomfortable drill: the punctuation run, the number row, the same-hand sequence (qwe, zxc, plo) that you quietly avoid because it exposes exactly what you have not yet learned.",
   ],
 };
-
-export const TEST_DURATIONS = [15, 30, 60, 120] as const;
-export type TestDuration = (typeof TEST_DURATIONS)[number];
 
 export const COMMON_WORDS =
   "the of and to in is you that it he was for on are as with his they at be this have from or one had by word but not what all were we when your can said there use an each which she do how their if will up other about out many then them these so some her would make like him into time has look two more write go see number no way could people my than first water been call who oil its now find long down day did get come made may part".split(
@@ -333,26 +358,115 @@ export const FINGER_BY_KEY: Record<string, string> = {
   ";": "right pinky",
   "/": "right pinky",
   "'": "right pinky",
+  "-": "right pinky",
+  "=": "right pinky",
   " ": "thumbs",
 };
 
 export const KEYBOARD_ROWS = [
-  ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+  ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="],
   ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
-  ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";"],
+  ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'"],
   ["z", "x", "c", "v", "b", "n", "m", ",", ".", "/"],
 ];
 
+/** Shifted characters mapped to the physical key that produces them. */
+export const SHIFT_MAP: Record<string, string> = {
+  "!": "1", "@": "2", "#": "3", "$": "4", "%": "5", "^": "6", "&": "7", "*": "8", "(": "9", ")": "0",
+  "_": "-", "+": "=", ":": ";", '"': "'", "<": ",", ">": ".", "?": "/", "~": "`",
+};
+
+/** Physical key + whether Shift is needed for a target character. */
+export function keyFor(char: string): { key: string; shift: boolean } {
+  if (!char) return { key: "", shift: false };
+  if (char === "\n") return { key: "enter", shift: false };
+  if (SHIFT_MAP[char]) return { key: SHIFT_MAP[char], shift: true };
+  if (/[A-Z]/.test(char)) return { key: char.toLowerCase(), shift: true };
+  return { key: char, shift: false };
+}
+
+/** Shift is pressed with the pinky of the opposite hand. */
+export function shiftSideFor(key: string): "left" | "right" | null {
+  const finger = FINGER_BY_KEY[key];
+  if (!finger) return null;
+  return finger.startsWith("left") ? "right" : "left";
+}
+
+export type TestMode = "passage" | "words" | "numbers" | "punctuation" | "custom";
+
+export const NUMBER_LINES = [
+  "Flight 482 departs at 7 45 from gate 12 and lands at 10 30 after 1 280 kilometres.",
+  "The survey had 1 024 replies: 612 said yes, 305 said no and 107 skipped the question.",
+  "Invoice 2026 0419 lists 3 chairs at 149, 2 desks at 389 and 1 lamp at 45.",
+  "Call extension 5530 before 9 or after 17, or text 0 7700 900 312 for help.",
+  "Between 1990 and 2020 the town grew from 18 500 to 41 200 people in 30 years.",
+  "Pack 6 boxes of 24, then 4 boxes of 36, for a total of 288 items on pallet 9.",
+];
+
+export const PUNCTUATION_LINES = [
+  "Wait, did you save the file? Yes; I saved it twice: once locally, once online.",
+  "\"Slow is smooth,\" she said, \"and smooth is fast.\" He nodded; it made sense.",
+  "Bring three things: a notebook, a pen, and patience. Don't forget the charger!",
+  "It's not rush-hour yet, so the trip (usually 40 minutes) should be quicker.",
+  "Is it ready? Almost. Check the list: tickets, passport, keys; then we're off!",
+  "Her note read: \"Back at noon.\" It was 3 p.m., and the door was still locked.",
+];
+
+/** All passages, easy → hard, used for rotation. */
+export const ALL_PASSAGES = [...TEST_PASSAGES.easy, ...TEST_PASSAGES.medium, ...TEST_PASSAGES.hard];
+
+/** Pick the next item from a pool, avoiding anything in `recent` until the pool is exhausted. */
+export function pickRotating<T>(pool: T[], recent: T[], random: () => number = Math.random): T {
+  const fresh = pool.filter((item) => !recent.includes(item));
+  const source = fresh.length ? fresh : pool.filter((item) => item !== recent[recent.length - 1]);
+  const list = source.length ? source : pool;
+  return list[Math.floor(random() * list.length)] as T;
+}
+
+export function generateWords(count = 30, random: () => number = Math.random): string {
+  const words: string[] = [];
+  for (let i = 0; i < count; i += 1) {
+    let word = COMMON_WORDS[Math.floor(random() * COMMON_WORDS.length)] as string;
+    if (word === words[words.length - 1]) word = COMMON_WORDS[(COMMON_WORDS.indexOf(word) + 1) % COMMON_WORDS.length] as string;
+    words.push(word);
+  }
+  return words.join(" ");
+}
+
+/** Letters-only practice text: pseudo-words built strictly from the chosen letters. */
+export function generateCustomLetters(letters: string[], count = 24, random: () => number = Math.random): string {
+  const pool = Array.from(new Set(letters.map((l) => l.toLowerCase()).filter((l) => /^[a-z]$/.test(l))));
+  if (!pool.length) return "";
+  const realWords = COMMON_WORDS.filter((word) => Array.from(word).every((c) => pool.includes(c)));
+  const out: string[] = [];
+  for (let i = 0; i < count; i += 1) {
+    if (realWords.length >= 4 && random() < 0.5) {
+      out.push(realWords[Math.floor(random() * realWords.length)] as string);
+      continue;
+    }
+    const len = 2 + Math.floor(random() * 4);
+    let word = "";
+    for (let j = 0; j < len; j += 1) word += pool[Math.floor(random() * pool.length)];
+    out.push(word);
+  }
+  return out.join(" ");
+}
+
 /** Build a drill line that hammers the given weak keys inside readable chunks. */
-export function buildDrill(keys: string[], length = 60): string {
-  const pool = keys.filter((key) => /^[a-z0-9;,./']$/.test(key));
-  if (!pool.length) return COMMON_WORDS.slice(0, 24).join(" ");
+export function buildDrill(keys: string[], length = 90): string {
+  const pool = Array.from(new Set(keys.map((k) => k.toLowerCase()).filter((key) => key.length === 1 && key !== " ")));
+  if (!pool.length) return generateWords(18);
+  const letterPool = pool.filter((key) => /[a-z]/.test(key));
+  const words = COMMON_WORDS.filter((word) => letterPool.some((key) => word.includes(key)));
   const chunks: string[] = [];
   let index = 0;
   while (chunks.join(" ").length < length) {
-    const a = pool[index % pool.length];
-    const b = pool[(index + 1) % pool.length];
-    chunks.push(`${a}${b}${a}`, `${b}${a}${b}`, `${a}${a}${b}${b}`);
+    const a = pool[index % pool.length] as string;
+    const b = pool[(index + 1) % pool.length] as string;
+    chunks.push(`${a}${b}${a}`);
+    if (words.length) chunks.push(words[(index * 7) % words.length] as string);
+    chunks.push(`${b}${a}${b}`);
+    if (words.length) chunks.push(words[(index * 11 + 3) % words.length] as string);
     index += 1;
   }
   return chunks.join(" ");
