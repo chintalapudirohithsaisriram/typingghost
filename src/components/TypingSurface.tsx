@@ -29,7 +29,7 @@ export default function TypingSurface({ target, session, size = "md" }: Props) {
 
   return (
     <div
-      className="panel relative cursor-text p-5 sm:p-7"
+      className="panel relative cursor-text p-5 transition-shadow focus-within:ring-2 focus-within:ring-ring sm:p-7"
       onMouseDown={(event) => {
         event.preventDefault();
         inputRef.current?.focus();
@@ -49,6 +49,10 @@ export default function TypingSurface({ target, session, size = "md" }: Props) {
         onChange={() => undefined}
         onKeyDown={session.handleKeyDown}
       />
+
+      <span className="sr-only" aria-live="polite">
+        {session.done ? `Typing complete. ${Math.round(session.stats.netWpm)} words per minute at ${Math.round(session.stats.realAccuracy)} percent accuracy.` : ""}
+      </span>
 
       <p
         className={cn(

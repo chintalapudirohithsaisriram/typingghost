@@ -131,18 +131,20 @@ function DrillsPage() {
             <p className="text-xs tracking-[0.18em] text-muted-foreground uppercase">Manual keys</p>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {MANUAL_KEYS.map((key) => (
-                <button
+                <Button
                   key={key}
                   type="button"
+                  variant="outline"
+                  size="icon"
                   onClick={() => toggleKey(key)}
                   className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-md border border-border bg-surface-2 font-mono text-xs uppercase transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+                    "h-8 w-8 bg-surface-2 font-mono text-xs uppercase hover:border-primary hover:text-primary",
                     manualKeys.includes(key) && "border-primary bg-primary text-primary-foreground hover:text-primary-foreground",
                   )}
                   aria-pressed={manualKeys.includes(key)}
                 >
                   {key}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
