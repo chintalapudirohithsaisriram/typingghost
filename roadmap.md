@@ -1,10 +1,12 @@
 # Roadmap
 
-
-- [ ] Fix current 404 errors from missing routes
-- [ ] Finish lesson detail and completion flow
-- [ ] Build timed typing test with configuration and results
-- [ ] Build adaptive weak-key drills
-- [ ] Build progress dashboard and reset controls
-- [ ] Refine shared navigation and responsive visual design
-- [ ] Verify all routes, interactions, metadata, and mobile layout
+- [x] Stabilize routes/types (remove duplicate index route)
+- [x] Engine: remove all countdowns; per-char results; raw/net WPM, error rate
+- [x] Learn: 20 lessons, side curriculum, visual-only hand guide, tap keyboard buttons, number row/Shift
+- [x] Practice (/practice, /drills redirect): weak/mistakes/accuracy/speed/adaptive
+- [x] Test: passage/words/numbers/punctuation/custom, rotation, char-by-char result
+- [x] Games, Challenges, Focus, Settings
+- [x] Progress from real data; Home refresh
+- [x] Warm light visual system, reduced motion, font scale
+- [x] Persistence v3 migration via storage module
+- [ ] Production build run (not yet run); QA done: typecheck, Playwright desktop+mobile, stale timed copy search

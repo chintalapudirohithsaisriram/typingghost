@@ -1,92 +1,124 @@
 import { useEffect, useMemo, useRef } from "react";
 import type { TypingSession } from "@/hooks/useTypingSession";
+import { playKeySound } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 
 type Props = {
   target: string;
   session: TypingSession;
-  size?: "md" | "lg";
+  size?: "md" | "lg" | "xl";
+  hint?: string | undefined;
+  autoFocus?: boolean;
+  className?: string;
 };
 
 /**
- * Renders the target text character by character with live correctness
- * colouring, and captures keystrokes through an invisible input so the
- * caret behaves identically on desktop and mobile keyboards.
+ * The only place (besides real keyboard buttons) that produces characters.
+ * Captures physical keys via keydown and soft keyboards via beforeinput.
  */
-export default function TypingSurface({ target, session, size = "md" }: Props) {
-  const inputRef = useRef<HTMLInputElement>(null);
+export default function TypingSurface({ target, session, size = "md", hint, autoFocus = true, className }: Props) {
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const activeRef = useRef<HTMLSpanElement>(null);
   const chars = useMemo(() => Array.from(target), [target]);
   const typed = useMemo(() => Array.from(session.value), [session.value]);
+  const prevLength = useRef(0);
 
   useEffect(() => {
-    if (!session.done) inputRef.current?.focus();
-  }, [session.done, target]);
+    if (!session.done && autoFocus) inputRef.current?.focus({ preventScroll: true });
+  }, [session.done, target, autoFocus]);
 
   useEffect(() => {
-    activeRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }, [typed.length]);
+    if (typed.length > prevLength.current) playKeySound(session.lastWrong);
+    prevLength.current = typed.length;
+    activeRef.current?.scrollIntoView({ block: "nearest" });
+  }, [typed.length, session.lastWrong]);
+
+  const { handleBeforeInput, appendText } = session;
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    const onBefore = (event: Event) => handleBeforeInput(event as InputEvent);
+    const onCompositionEnd = (event: CompositionEvent) => {
+      if (event.data) appendText(event.data);
+      el.value = "";
+    };
+    el.addEventListener("beforeinput", onBefore);
+    el.addEventListener("compositionend", onCompositionEnd);
+    return () => {
+      el.removeEventListener("beforeinput", onBefore);
+      el.removeEventListener("compositionend", onCompositionEnd);
+    };
+  }, [handleBeforeInput, appendText]);
 
   return (
     <div
-      className="panel relative cursor-text p-5 transition-shadow focus-within:ring-2 focus-within:ring-ring sm:p-7"
+      className={cn(
+        "panel relative cursor-text p-5 transition-shadow focus-within:ring-2 focus-within:ring-ring sm:p-7",
+        className,
+      )}
       onMouseDown={(event) => {
+        if (event.target === inputRef.current) return;
         event.preventDefault();
-        inputRef.current?.focus();
+        inputRef.current?.focus({ preventScroll: true });
       }}
+      data-testid="typing-surface"
     >
-      <input
+      <textarea
         ref={inputRef}
-        aria-label="Typing input"
-        className="absolute h-px w-px opacity-0"
-        value=""
-        inputMode="text"
+        aria-label="Typing area. Type the text shown."
+        className="absolute inset-0 h-full w-full resize-none opacity-0"
+        defaultValue=""
+        rows={1}
         autoCapitalize="off"
         autoCorrect="off"
         autoComplete="off"
         spellCheck={false}
         readOnly={session.done}
-        onChange={() => undefined}
         onKeyDown={session.handleKeyDown}
+        onInput={(event) => {
+          // Anything not handled above must never accumulate in the hidden field.
+          (event.target as HTMLTextAreaElement).value = "";
+        }}
       />
 
       <span className="sr-only" aria-live="polite">
-        {session.done ? `Typing complete. ${Math.round(session.stats.netWpm)} words per minute at ${Math.round(session.stats.realAccuracy)} percent accuracy.` : ""}
+        {session.done
+          ? `Finished. ${Math.round(session.stats.netWpm)} words per minute at ${Math.round(session.stats.realAccuracy)} percent accuracy.`
+          : ""}
       </span>
 
       <p
+        aria-hidden="true"
         className={cn(
-          "font-mono leading-relaxed tracking-wide break-words whitespace-pre-wrap",
-          size === "lg" ? "text-xl sm:text-2xl" : "text-lg sm:text-xl",
+          "pointer-events-none relative font-mono leading-relaxed break-words whitespace-pre-wrap select-none",
+          size === "xl" ? "text-2xl sm:text-3xl" : size === "lg" ? "text-xl sm:text-2xl" : "text-lg sm:text-xl",
         )}
       >
         {chars.map((char, index) => {
           const input = typed[index];
           const isActive = index === typed.length;
-          const state =
-            input === undefined ? "pending" : input === char ? "correct" : "wrong";
+          const state = input === undefined ? "pending" : input === char ? "correct" : "wrong";
           return (
             <span
-              key={`${char}-${index}`}
+              key={index}
               ref={isActive ? activeRef : undefined}
               className={cn(
-                "relative rounded-[3px]",
-                state === "pending" && "text-muted-foreground",
+                "rounded-[3px]",
+                state === "pending" && "text-muted-foreground/80",
                 state === "correct" && "text-foreground",
-                state === "wrong" &&
-                  "bg-destructive/25 text-destructive underline decoration-destructive/70 decoration-2",
-                isActive && !session.done && "caret-blink bg-primary/25 text-foreground",
+                state === "wrong" && "bg-destructive/15 text-destructive underline decoration-destructive decoration-2 underline-offset-4",
+                isActive && !session.done && "caret-blink bg-primary/20 text-foreground shadow-[inset_0_-2px_0_var(--primary)]",
               )}
             >
-              {char === " " && state === "wrong" ? "␣" : char}
+              {char === " " && state === "wrong" ? "␣" : char === "\n" ? "↵\n" : char}
             </span>
           );
         })}
       </p>
 
       {session.done ? null : (
-        <p className="mt-5 text-xs text-muted-foreground">
-          Click here and start typing · Backspace fixes the last character
+        <p className="pointer-events-none relative mt-5 text-xs text-muted-foreground">
+          {hint ?? "Click here and type · Backspace fixes the last character · No time limit"}
         </p>
       )}
     </div>

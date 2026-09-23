@@ -1,172 +1,199 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { RotateCcw, Shuffle } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { RefreshCw, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import ResultsPanel from "@/components/ResultsPanel";
-import StatTile from "@/components/StatTile";
 import TypingSurface from "@/components/TypingSurface";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useProfile } from "@/hooks/useProfile";
+import { seededRandom, useSeed } from "@/hooks/useSeed";
 import { useTypingSession } from "@/hooks/useTypingSession";
 import { recordSession } from "@/lib/profile";
-import { TEST_DURATIONS, TEST_PASSAGES, type Difficulty, type TestDuration } from "@/lib/typing-content";
-import { formatSeconds } from "@/lib/typing";
+import { pageHead } from "@/lib/seo";
+import { formatSeconds, round } from "@/lib/typing";
+import {
+  NUMBER_LINES,
+  PUNCTUATION_LINES,
+  TEST_PASSAGES,
+  generateCustomLetters,
+  generateWords,
+  pickRotating,
+  type Difficulty,
+  type TestMode,
+} from "@/lib/typing-content";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/test")({
-  head: () => ({
-    meta: [
-      { title: "Typing Speed Test — Net WPM and Accuracy | TypeNova" },
-      {
-        name: "description",
-        content: "Run 15, 30, 60, or 120 second typing tests with net WPM, real accuracy, consistency, and mistake analysis.",
-      },
-      { property: "og:title", content: "Typing Speed Test — TypeNova" },
-      {
-        property: "og:description",
-        content: "Measure honest net WPM, accuracy, consistency, and the keys slowing you down.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () =>
+    pageHead(
+      "Typing Test — Passages, Words, Numbers & Punctuation | TypeNova",
+      "An untimed typing test with rotating passages, words, numbers, punctuation and custom letters. See net WPM, accuracy, consistency and a character-by-character review.",
+    ),
   component: TestPage,
 });
 
+const MODES: { id: TestMode; label: string }[] = [
+  { id: "passage", label: "Passage" },
+  { id: "words", label: "Words" },
+  { id: "numbers", label: "Numbers" },
+  { id: "punctuation", label: "Punctuation" },
+  { id: "custom", label: "Custom letters" },
+];
 const DIFFICULTIES: Difficulty[] = ["easy", "medium", "hard"];
-
-function makeTarget(difficulty: Difficulty, seed: number) {
-  const passages = TEST_PASSAGES[difficulty];
-  const passage = passages[seed % passages.length] ?? passages[0] ?? "Practice steady typing with accuracy first.";
-  return Array(8).fill(passage).join(" ");
-}
 
 function TestPage() {
   const { update } = useProfile();
+  const [mode, setMode] = useState<TestMode>("passage");
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
-  const [duration, setDuration] = useState<TestDuration>(60);
+  const [letters, setLetters] = useState("asdfjkl");
   const [seed, setSeed] = useState(0);
-  const [savedKey, setSavedKey] = useState("");
-  const target = useMemo(() => makeTarget(difficulty, seed), [difficulty, seed]);
+  const [recent, setRecent] = useState<string[]>([]);
+
+  const cleanLetters = useMemo(() => Array.from(new Set(letters.toLowerCase().replace(/[^a-z]/g, ""))), [letters]);
+
+  const baseSeed = useSeed();
+  const target = useMemo(() => {
+    const rng = seededRandom(baseSeed + seed * 7919);
+    switch (mode) {
+      case "words":
+        return generateWords(difficulty === "easy" ? 20 : difficulty === "medium" ? 35 : 50, rng);
+      case "numbers":
+        return pickRotating(NUMBER_LINES, recent, rng);
+      case "punctuation":
+        return pickRotating(PUNCTUATION_LINES, recent, rng);
+      case "custom":
+        return generateCustomLetters(cleanLetters, 24, rng);
+      default:
+        return pickRotating(TEST_PASSAGES[difficulty], recent, rng);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, difficulty, cleanLetters.join(""), seed, baseSeed]);
+
+  const label = `Test · ${MODES.find((m) => m.id === mode)!.label}${mode === "passage" || mode === "words" ? ` (${difficulty})` : ""}`;
 
   const session = useTypingSession({
     target,
-    completeOnTarget: false,
-    limitMs: duration * 1000,
-    onComplete: ({ stats, errors, hits }) => {
-      const resultKey = `${difficulty}-${duration}-${seed}-${stats.elapsedMs}-${stats.typed}`;
-      setSavedKey((current) => {
-        if (current === resultKey) return current;
-        update((profile) =>
-          recordSession(profile, {
-            mode: "test",
-            label: `${duration}s ${difficulty} test`,
-            stats,
-            errors,
-            hits,
-          }),
-        );
-        return resultKey;
-      });
-    },
+    onComplete: (run) =>
+      update((current) => recordSession(current, { mode: "test", label, stats: run.stats, errors: run.errors, hits: run.hits })),
   });
 
-  const resetWith = (nextDifficulty = difficulty, nextDuration = duration, nextSeed = seed) => {
-    setSavedKey("");
-    setDifficulty(nextDifficulty);
-    setDuration(nextDuration);
-    setSeed(nextSeed);
-    session.reset();
+  const newText = () => {
+    setRecent((r) => [...r, target].slice(-10));
+    setSeed((s) => s + 1);
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
-      <header className="grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-end">
-        <div>
-          <p className="font-mono text-sm text-primary">SPEED.TEST</p>
-          <h1 className="mt-2 font-display text-3xl font-bold sm:text-5xl">Timed typing test</h1>
-          <p className="mt-4 max-w-2xl text-muted-foreground">
-            Measure usable speed, not inflated speed. Net WPM subtracts your mistakes, and the result feeds your weak-key drills.
-          </p>
-        </div>
-        <div className="grid grid-cols-3 gap-3">
-          <StatTile label="Time left" value={formatSeconds(session.remainingMs ?? duration * 1000)} tone="primary" />
-          <StatTile label="Net WPM" value={Math.round(session.stats.netWpm)} tone="accent" />
-          <StatTile label="Accuracy" value={Math.round(session.stats.realAccuracy)} unit="%" />
-        </div>
+    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+      <header>
+        <p className="text-sm font-medium text-primary">Test</p>
+        <h1 className="mt-2 font-display text-4xl font-bold tracking-tight">Typing test</h1>
+        <p className="mt-3 max-w-2xl text-muted-foreground">
+          Type the full text at your own pace. There's no countdown — the clock only measures your active typing time for the result.
+        </p>
       </header>
 
-      <section className="mt-8 panel p-4 sm:p-5">
-        <div className="grid gap-4 lg:grid-cols-[1fr_1fr_auto] lg:items-end">
-          <fieldset>
-            <legend className="text-xs tracking-[0.18em] text-muted-foreground uppercase">Difficulty</legend>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {DIFFICULTIES.map((item) => (
-                <Button
-                  key={item}
-                  type="button"
-                  variant={difficulty === item ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => resetWith(item)}
-                  className="capitalize"
-                >
-                  {item}
-                </Button>
-              ))}
-            </div>
-          </fieldset>
-          <fieldset>
-            <legend className="text-xs tracking-[0.18em] text-muted-foreground uppercase">Duration</legend>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {TEST_DURATIONS.map((item) => (
-                <Button
-                  key={item}
-                  type="button"
-                  variant={duration === item ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => resetWith(difficulty, item)}
-                >
-                  {item}s
-                </Button>
-              ))}
-            </div>
-          </fieldset>
-          <div className="flex gap-2">
-            <Button type="button" variant="outline" onClick={() => resetWith(difficulty, duration, seed + 1)}>
-              <Shuffle aria-hidden="true" /> New text
-            </Button>
-            <Button type="button" variant="outline" onClick={() => resetWith()}>
-              <RotateCcw aria-hidden="true" /> Reset
-            </Button>
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <div role="radiogroup" aria-label="Test type" className="flex flex-wrap gap-1 rounded-xl border border-border bg-surface p-1">
+          {MODES.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              role="radio"
+              aria-checked={mode === m.id}
+              onClick={() => setMode(m.id)}
+              className={cn(
+                "rounded-lg px-3 py-1.5 text-sm font-medium focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                mode === m.id ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+        {mode === "passage" || mode === "words" ? (
+          <div role="radiogroup" aria-label="Difficulty" className="flex gap-1 rounded-xl border border-border bg-surface p-1">
+            {DIFFICULTIES.map((d) => (
+              <button
+                key={d}
+                type="button"
+                role="radio"
+                aria-checked={difficulty === d}
+                onClick={() => setDifficulty(d)}
+                className={cn(
+                  "rounded-lg px-3 py-1.5 text-sm capitalize focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                  difficulty === d ? "bg-secondary font-medium text-foreground" : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {d}
+              </button>
+            ))}
           </div>
-        </div>
-        <div className="mt-5 h-2 overflow-hidden rounded-full bg-surface-2" aria-label="Test time progress">
-          <div
-            className={cn("h-full rounded-full bg-primary transition-all", session.done && "bg-accent")}
-            style={{ width: `${Math.min(100, (session.elapsedMs / (duration * 1000)) * 100)}%` }}
-          />
-        </div>
-      </section>
+        ) : null}
+        {mode === "custom" ? (
+          <label className="flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground">Letters</span>
+            <Input
+              value={letters}
+              onChange={(e) => setLetters(e.target.value.replace(/[^a-zA-Z]/g, "").slice(0, 26))}
+              className="h-9 w-40 font-mono"
+              aria-describedby="letters-help"
+            />
+            <span id="letters-help" className="text-xs text-muted-foreground">letters only</span>
+          </label>
+        ) : null}
+      </div>
 
-      <section className="mt-6">
-        <TypingSurface target={target} session={session} size="lg" />
-      </section>
-
-      {session.done ? (
-        <section className="mt-8">
+      <section className="mt-6 space-y-4">
+        {mode === "custom" && !cleanLetters.length ? (
+          <p className="panel p-6 text-sm text-muted-foreground">Enter at least one letter to build a custom test.</p>
+        ) : session.done ? (
           <ResultsPanel
             title="Test result"
             stats={session.stats}
             samples={session.samples}
             errors={session.errors}
+            target={target}
+            typed={session.value}
             actions={
-              <Button type="button" onClick={() => resetWith(difficulty, duration, seed + 1)} size="sm">
-                <Shuffle aria-hidden="true" /> Run another
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={session.reset}>
+                  <RotateCcw aria-hidden="true" /> Retry same
+                </Button>
+                <Button onClick={newText}>
+                  <RefreshCw aria-hidden="true" /> New test
+                </Button>
+              </div>
             }
           />
-        </section>
-      ) : null}
+        ) : (
+          <>
+            <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
+              <span className="tabular-nums" data-testid="live-stats">
+                {round(session.stats.netWpm)} WPM · {session.value ? round(session.stats.realAccuracy) : 100}% · active {formatSeconds(session.elapsedMs)}
+              </span>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={session.reset}>
+                  <RotateCcw aria-hidden="true" /> Restart
+                </Button>
+                <Button variant="outline" size="sm" onClick={newText}>
+                  <RefreshCw aria-hidden="true" /> New text
+                </Button>
+                {session.value ? (
+                  <Button variant="ghost" size="sm" onClick={session.finishNow}>
+                    Finish here
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+            <TypingSurface target={target} session={session} size="lg" />
+          </>
+        )}
+      </section>
+
+      <p className="mt-8 text-sm text-muted-foreground">
+        Results are saved to your <Link to="/progress" className="font-medium text-foreground underline underline-offset-4">Progress</Link>.
+      </p>
     </div>
   );
 }

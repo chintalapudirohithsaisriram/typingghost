@@ -1,208 +1,222 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Download, RotateCcw } from "lucide-react";
+import { Award, Download, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import Sparkline from "@/components/Sparkline";
 import StatTile from "@/components/StatTile";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useProfile";
-import { averageOf, coachMessage, levelFromXp, streakDays, strongestKeys, weakestKeys } from "@/lib/profile";
-import { LESSONS } from "@/lib/typing-content";
+import {
+  averageOf,
+  badgesFor,
+  coachMessage,
+  levelFromXp,
+  streakDays,
+  strongestKeys,
+  totalActiveMs,
+  weakestKeys,
+} from "@/lib/profile";
+import { pageHead } from "@/lib/seo";
 import { formatSeconds } from "@/lib/typing";
+import { FINGER_BY_KEY, LESSONS } from "@/lib/typing-content";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/progress")({
-  head: () => ({
-    meta: [
-      { title: "Typing Progress Dashboard | TypeNova" },
-      {
-        name: "description",
-        content: "Review typing speed trends, lesson completion, key accuracy, session history, streaks, XP, and coaching insights.",
-      },
-      { property: "og:title", content: "Typing Progress Dashboard — TypeNova" },
-      {
-        property: "og:description",
-        content: "Track WPM, accuracy, streaks, lesson completion, and weak keys in one local dashboard.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () =>
+    pageHead(
+      "Your Typing Progress | TypeNova",
+      "Speed, accuracy and consistency trends, weak and strong keys, error patterns, practice time, streaks and milestones — from your own sessions.",
+    ),
   component: ProgressPage,
 });
+
+const MODE_LABEL = { lesson: "Lesson", test: "Test", practice: "Practice", game: "Game", focus: "Focus" } as const;
 
 function ProgressPage() {
   const { profile, ready, clear } = useProfile();
   const [confirmReset, setConfirmReset] = useState(false);
-  const recent = profile.sessions.slice(-20);
+  const sessions = profile.sessions;
+  const recent = sessions.slice(-30);
   const level = levelFromXp(profile.xp);
   const weak = weakestKeys(profile, 8);
   const strong = strongestKeys(profile, 8);
-  const completed = new Set(profile.completedLessons);
-  const completion = LESSONS.length ? (completed.size / LESSONS.length) * 100 : 0;
+  const badges = badgesFor(profile);
+  const streak = streakDays(profile);
+  const activeMs = totalActiveMs(sessions);
+
   const averages = useMemo(
     () => ({
-      netWpm: Math.round(averageOf(recent.map((session) => session.netWpm))),
-      accuracy: Math.round(averageOf(recent.map((session) => session.accuracy))),
-      consistency: Math.round(averageOf(recent.map((session) => session.consistency))),
+      netWpm: Math.round(averageOf(recent.slice(-10).map((s) => s.netWpm))),
+      accuracy: Math.round(averageOf(recent.slice(-10).map((s) => s.accuracy)) * 10) / 10,
+      consistency: Math.round(averageOf(recent.slice(-10).map((s) => s.consistency))),
     }),
     [recent],
   );
 
+  const fingerErrors = useMemo(() => {
+    const totals: Record<string, number> = {};
+    for (const [key, v] of Object.entries(profile.keyStats)) {
+      const finger = FINGER_BY_KEY[key];
+      if (finger && v.misses) totals[finger] = (totals[finger] ?? 0) + v.misses;
+    }
+    return Object.entries(totals).sort((a, b) => b[1] - a[1]).slice(0, 4);
+  }, [profile.keyStats]);
+
   const exportProgress = () => {
-    if (typeof window === "undefined") return;
     const blob = new Blob([JSON.stringify(profile, null, 2)], { type: "application/json" });
-    const url = window.URL.createObjectURL(blob);
-    const anchor = window.document.createElement("a");
-    anchor.href = url;
-    anchor.download = "typenova-progress.json";
-    anchor.click();
-    window.URL.revokeObjectURL(url);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "typenova-progress.json";
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
-  return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
-      <header className="grid gap-6 lg:grid-cols-[1.3fr_1fr] lg:items-end">
-        <div>
-          <p className="font-mono text-sm text-primary">PROGRESS.LOG</p>
-          <h1 className="mt-2 font-display text-3xl font-bold sm:text-5xl">Your typing dashboard</h1>
-          <p className="mt-4 max-w-2xl text-muted-foreground">
-            Every lesson, test, and drill updates this view. Your data stays in this browser, and you can reset or export it anytime.
-          </p>
+  if (ready && !sessions.length) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6">
+        <p className="text-sm font-medium text-primary">Progress</p>
+        <h1 className="mt-2 font-display text-4xl font-bold tracking-tight">Nothing recorded yet</h1>
+        <p className="mt-3 text-muted-foreground">Finish a lesson, practice run or test and your real results will appear here.</p>
+        <div className="mt-6 flex justify-center gap-3">
+          <Button asChild><Link to="/learn">Start learning</Link></Button>
+          <Button asChild variant="outline"><Link to="/test">Take a test</Link></Button>
         </div>
-        <div className="flex flex-wrap gap-2 lg:justify-end">
-          <Button type="button" variant="outline" onClick={exportProgress} disabled={!ready || profile.sessions.length === 0}>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium text-primary">Progress</p>
+          <h1 className="mt-2 font-display text-4xl font-bold tracking-tight">Your progress</h1>
+          <p className="mt-3 max-w-2xl text-muted-foreground">Built only from sessions you've finished on this device.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={exportProgress} disabled={!sessions.length}>
             <Download aria-hidden="true" /> Export
           </Button>
-          <Button type="button" variant={confirmReset ? "destructive" : "outline"} onClick={() => (confirmReset ? (clear(), setConfirmReset(false)) : setConfirmReset(true))}>
-            <RotateCcw aria-hidden="true" /> {confirmReset ? "Confirm reset" : "Reset"}
-          </Button>
+          {confirmReset ? (
+            <>
+              <Button variant="destructive" onClick={() => { clear(); setConfirmReset(false); }}>Yes, erase everything</Button>
+              <Button variant="ghost" onClick={() => setConfirmReset(false)}>Cancel</Button>
+            </>
+          ) : (
+            <Button variant="outline" onClick={() => setConfirmReset(true)}>
+              <RotateCcw aria-hidden="true" /> Reset progress
+            </Button>
+          )}
         </div>
       </header>
 
-      <section className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Level" value={level.level} tone="primary" hint={`${Math.round(level.progress)}% to next`} />
-        <StatTile label="Best net WPM" value={ready ? profile.bestWpm : 0} tone="accent" />
-        <StatTile label="Best accuracy" value={ready ? Math.round(profile.bestAccuracy) : 0} unit="%" />
-        <StatTile label="Day streak" value={ready ? streakDays(profile) : 0} tone="warning" />
-      </section>
+      <p className="mt-6 rounded-xl border border-border bg-secondary/60 px-4 py-3 text-sm">
+        <span className="font-medium">Coach: </span>{coachMessage(profile)}
+      </p>
 
-      <section className="mt-8 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-        <div className="panel p-6">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h2 className="font-display text-2xl font-semibold">Performance trend</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{coachMessage(profile)}</p>
-            </div>
-            <div className="grid grid-cols-3 gap-3 text-center">
-              <div>
-                <p className="font-display text-xl font-semibold text-primary">{averages.netWpm}</p>
-                <p className="text-xs text-muted-foreground">avg WPM</p>
-              </div>
-              <div>
-                <p className="font-display text-xl font-semibold text-accent">{averages.accuracy}%</p>
-                <p className="text-xs text-muted-foreground">avg acc.</p>
-              </div>
-              <div>
-                <p className="font-display text-xl font-semibold">{averages.consistency}%</p>
-                <p className="text-xs text-muted-foreground">steady</p>
-              </div>
-            </div>
-          </div>
-          <div className="mt-6">
-            <Sparkline values={recent.map((session) => session.netWpm)} label="Recent net WPM" height={150} />
+      <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+        <StatTile label="Avg net WPM" value={averages.netWpm} tone="primary" hint={`Best ${profile.bestWpm}`} />
+        <StatTile label="Avg accuracy" value={averages.accuracy} unit="%" hint="Last 10 sessions" />
+        <StatTile label="Consistency" value={averages.consistency} unit="%" hint="Last 10 sessions" />
+        <StatTile label="Practice time" value={formatSeconds(activeMs)} hint={`${sessions.length} sessions`} />
+      </div>
+
+      <div className="mt-6 grid gap-4 lg:grid-cols-3">
+        <div className="panel p-5 lg:col-span-2">
+          <h2 className="font-semibold">Trends</h2>
+          <div className="mt-4 grid gap-5 sm:grid-cols-3">
+            <div><p className="mb-2 text-xs text-muted-foreground">Net WPM</p><Sparkline values={recent.map((s) => s.netWpm)} height={90} label="Net WPM trend" /></div>
+            <div><p className="mb-2 text-xs text-muted-foreground">Accuracy</p><Sparkline values={recent.map((s) => s.accuracy)} height={90} label="Accuracy trend" /></div>
+            <div><p className="mb-2 text-xs text-muted-foreground">Consistency</p><Sparkline values={recent.map((s) => s.consistency)} height={90} label="Consistency trend" /></div>
           </div>
         </div>
-
-        <div className="panel p-6">
-          <h2 className="font-display text-2xl font-semibold">Course completion</h2>
-          <div className="mt-5 h-3 overflow-hidden rounded-full bg-surface-2">
-            <div className="h-full rounded-full bg-primary" style={{ width: `${completion}%` }} />
+        <div className="panel p-5">
+          <h2 className="font-semibold">Level {level.level}</h2>
+          <p className="text-sm text-muted-foreground">{profile.xp} XP · {Math.max(0, level.next - profile.xp)} to next level</p>
+          <div className="mt-3 h-2 overflow-hidden rounded-full bg-secondary" role="progressbar" aria-label="Level progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(level.progress)}>
+            <div className="h-full rounded-full bg-primary" style={{ width: `${level.progress}%` }} />
           </div>
-          <p className="mt-3 text-sm text-muted-foreground">{completed.size} of {LESSONS.length} lessons passed</p>
-          <div className="mt-5 grid max-h-72 gap-2 overflow-y-auto pr-1">
-            {LESSONS.map((lesson) => (
-              <Link
-                key={lesson.id}
-                to="/learn/$lessonId"
-                params={{ lessonId: lesson.id }}
-                className="flex items-center justify-between rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm transition-colors hover:border-primary/50"
-              >
-                <span>{lesson.level}. {lesson.title}</span>
-                <span className={completed.has(lesson.id) ? "text-primary" : "text-muted-foreground"}>
-                  {completed.has(lesson.id) ? "Passed" : "Open"}
-                </span>
-              </Link>
+          <p className="mt-4 text-sm"><span className="font-display text-2xl font-bold">{streak}</span> day streak</p>
+          <p className="mt-1 text-sm text-muted-foreground">{profile.completedLessons.length} of {LESSONS.length} lessons passed</p>
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-4 md:grid-cols-3">
+        <KeyList title="Weakest keys" items={weak.map((k) => ({ key: k.key, value: `${Math.round(k.accuracy)}%`, sub: `${k.misses} misses` }))} empty="Needs a few more sessions with some misses." to />
+        <KeyList title="Strongest keys" items={strong.map((k) => ({ key: k.key, value: `${Math.round(k.accuracy)}%`, sub: `${k.attempts} presses` }))} empty="Needs a few more sessions." />
+        <div className="panel p-5">
+          <h2 className="font-semibold">Error patterns</h2>
+          {fingerErrors.length ? (
+            <ul className="mt-3 space-y-2 text-sm">
+              {fingerErrors.map(([finger, n]) => (
+                <li key={finger} className="flex justify-between"><span className="capitalize">{finger}</span><span className="text-muted-foreground">{n} misses</span></li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-sm text-muted-foreground">No mistakes recorded yet.</p>
+          )}
+        </div>
+      </div>
+
+      <section className="mt-4 panel p-5" aria-labelledby="badges">
+        <h2 id="badges" className="font-semibold">Milestones</h2>
+        <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {badges.map((b) => (
+            <li key={b.id} className={cn("flex gap-3 rounded-xl border p-3", b.earned ? "border-primary/50 bg-accent/30" : "border-border opacity-70")}>
+              <Award className={cn("size-5 shrink-0", b.earned ? "text-primary" : "text-muted-foreground")} aria-hidden="true" />
+              <span>
+                <span className="block text-sm font-medium">{b.title}<span className="sr-only">{b.earned ? " (earned)" : " (not yet earned)"}</span></span>
+                <span className="block text-xs text-muted-foreground">{b.description}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mt-4 panel overflow-x-auto p-5" aria-labelledby="history">
+        <h2 id="history" className="font-semibold">History</h2>
+        <table className="mt-3 w-full min-w-[560px] text-sm">
+          <thead className="text-left text-xs text-muted-foreground">
+            <tr><th className="py-2 font-medium">When</th><th className="font-medium">Session</th><th className="font-medium">Type</th><th className="text-right font-medium">Net WPM</th><th className="text-right font-medium">Accuracy</th><th className="text-right font-medium">Active time</th></tr>
+          </thead>
+          <tbody>
+            {sessions.slice(-25).reverse().map((s) => (
+              <tr key={s.id} className="border-t border-border">
+                <td className="py-2 text-muted-foreground">{new Date(s.at).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</td>
+                <td>{s.label}{s.passed ? <span className="ml-2 text-xs text-success">passed</span> : null}</td>
+                <td className="text-muted-foreground">{MODE_LABEL[s.mode] ?? s.mode}</td>
+                <td className="text-right tabular-nums">{s.netWpm}</td>
+                <td className="text-right tabular-nums">{s.accuracy}%</td>
+                <td className="text-right tabular-nums">{formatSeconds(s.durationMs)}</td>
+              </tr>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="mt-8 grid gap-6 lg:grid-cols-2">
-        <KeyPanel title="Keys to repair" items={weak} empty="Mistake data appears after a few completed runs." />
-        <KeyPanel title="Most reliable keys" items={strong} empty="Clean key data appears after more practice." />
-      </section>
-
-      <section className="mt-8 panel p-6">
-        <h2 className="font-display text-2xl font-semibold">Session history</h2>
-        {profile.sessions.length ? (
-          <div className="mt-5 overflow-x-auto">
-            <table className="w-full min-w-[720px] text-left text-sm">
-              <thead className="text-xs tracking-[0.16em] text-muted-foreground uppercase">
-                <tr>
-                  <th className="py-2 font-medium">Run</th>
-                  <th className="py-2 font-medium">Mode</th>
-                  <th className="py-2 font-medium">Net WPM</th>
-                  <th className="py-2 font-medium">Accuracy</th>
-                  <th className="py-2 font-medium">Consistency</th>
-                  <th className="py-2 font-medium">Time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {profile.sessions.slice(-18).reverse().map((session) => (
-                  <tr key={session.id} className="border-t border-border">
-                    <td className="py-3 pr-4">{session.label}</td>
-                    <td className="py-3 pr-4 capitalize text-muted-foreground">{session.mode}</td>
-                    <td className="py-3 pr-4 font-mono text-primary">{session.netWpm}</td>
-                    <td className="py-3 pr-4">{session.accuracy}%</td>
-                    <td className="py-3 pr-4">{session.consistency}%</td>
-                    <td className="py-3 pr-4 text-muted-foreground">{formatSeconds(session.durationMs)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="mt-5 rounded-lg border border-dashed border-border p-8 text-center text-muted-foreground">
-            Finish a lesson, test, or drill to start your history.
-          </div>
-        )}
+          </tbody>
+        </table>
       </section>
     </div>
   );
 }
 
-type KeyItem = { key: string; attempts: number; accuracy: number; misses?: number };
-
-function KeyPanel({ title, items, empty }: { title: string; items: KeyItem[]; empty: string }) {
+function KeyList({ title, items, empty, to }: { title: string; items: { key: string; value: string; sub: string }[]; empty: string; to?: boolean }) {
   return (
-    <div className="panel p-6">
-      <h2 className="font-display text-2xl font-semibold">{title}</h2>
+    <div className="panel p-5">
+      <div className="flex items-center justify-between">
+        <h2 className="font-semibold">{title}</h2>
+        {to && items.length ? <Link to="/practice" className="text-sm font-medium text-primary underline-offset-4 hover:underline">Practise these</Link> : null}
+      </div>
       {items.length ? (
-        <div className="mt-5 space-y-3">
-          {items.map((item) => (
-            <div key={item.key}>
-              <div className="mb-1 flex items-center justify-between text-sm">
-                <span className="rounded border border-border bg-surface-2 px-2 py-0.5 font-mono uppercase">{item.key === " " ? "space" : item.key}</span>
-                <span className="text-muted-foreground">{Math.round(item.accuracy)}% · {item.attempts} tries</span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-surface-2">
-                <div className="h-full rounded-full bg-primary" style={{ width: `${Math.max(4, Math.min(100, item.accuracy))}%` }} />
-              </div>
-            </div>
+        <ul className="mt-3 space-y-2 text-sm">
+          {items.map((i) => (
+            <li key={i.key} className="flex items-center justify-between gap-2">
+              <kbd className="rounded border border-border bg-surface-2 px-2 py-0.5 font-mono uppercase">{i.key === " " ? "space" : i.key}</kbd>
+              <span className="text-muted-foreground">{i.sub}</span>
+              <span className="w-12 text-right tabular-nums">{i.value}</span>
+            </li>
           ))}
-        </div>
+        </ul>
       ) : (
-        <p className="mt-5 text-sm text-muted-foreground">{empty}</p>
+        <p className="mt-3 text-sm text-muted-foreground">{empty}</p>
       )}
     </div>
   );

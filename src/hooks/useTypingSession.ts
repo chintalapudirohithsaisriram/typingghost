@@ -1,26 +1,37 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { calculateStats, calculateWpm, compareTypedText, type TypingStats } from "@/lib/typing";
 
-export type TypingSessionOptions = {
+/** Gaps longer than this between keystrokes don't count toward active time. */
+const IDLE_CAP_MS = 3000;
+
+export type TypingResult = {
+  stats: TypingStats;
+  errors: Record<string, number>;
+  hits: Record<string, number>;
   target: string;
-  /** Finish automatically once the target text is fully typed. */
-  completeOnTarget?: boolean;
-  /** Optional countdown in milliseconds (timed tests). */
-  limitMs?: number;
-  onComplete?: (result: {
-    stats: TypingStats;
-    errors: Record<string, number>;
-    hits: Record<string, number>;
-    target: string;
-    typed: string;
-  }) => void;
+  typed: string;
 };
 
+export type TypingSessionOptions = {
+  target: string;
+  /** Finish automatically once the target text is fully typed. Never time-limited. */
+  completeOnTarget?: boolean;
+  onComplete?: (result: TypingResult) => void;
+  onKeystroke?: (correct: boolean) => void;
+  /** Some games disable corrections; lessons, practice and tests always allow them. */
+  allowBackspace?: boolean;
+};
+
+/**
+ * Unlimited typing session. There is no countdown anywhere: time is only
+ * measured (active time, idle gaps capped) and reported as a result.
+ */
 export function useTypingSession({
   target,
   completeOnTarget = true,
-  limitMs,
   onComplete,
+  onKeystroke,
+  allowBackspace = true,
 }: TypingSessionOptions) {
   const [value, setValue] = useState("");
   const [elapsedMs, setElapsedMs] = useState(0);
@@ -29,8 +40,10 @@ export function useTypingSession({
   const [mistakes, setMistakes] = useState(0);
   const [samples, setSamples] = useState<number[]>([]);
   const [errors, setErrors] = useState<Record<string, number>>({});
+  const [lastWrong, setLastWrong] = useState(false);
 
-  const startedAtRef = useRef<number | null>(null);
+  const activeRef = useRef(0);
+  const lastKeyAtRef = useRef<number | null>(null);
   const valueRef = useRef("");
   const mistakesRef = useRef(0);
   const completedRef = useRef(false);
@@ -40,15 +53,31 @@ export function useTypingSession({
   const hitsRef = useRef<Record<string, number>>({});
   const targetRef = useRef(target);
   const onCompleteRef = useRef(onComplete);
+  const onKeystrokeRef = useRef(onKeystroke);
   targetRef.current = target;
   onCompleteRef.current = onComplete;
+  onKeystrokeRef.current = onKeystroke;
 
-  const finish = useCallback((finalElapsed: number) => {
+  const liveElapsed = () => {
+    if (lastKeyAtRef.current === null) return activeRef.current;
+    return activeRef.current + Math.min(IDLE_CAP_MS, Date.now() - lastKeyAtRef.current);
+  };
+
+  const markKey = () => {
+    const now = Date.now();
+    if (lastKeyAtRef.current !== null) {
+      activeRef.current += Math.min(IDLE_CAP_MS, now - lastKeyAtRef.current);
+    }
+    lastKeyAtRef.current = now;
+  };
+
+  const finish = useCallback(() => {
     if (completedRef.current) return;
     completedRef.current = true;
+    const finalElapsed = Math.max(1, activeRef.current);
     const typed = valueRef.current;
     const comparison = compareTypedText(targetRef.current, typed);
-    const finalSample = finalElapsed > 0 ? calculateWpm(Array.from(typed).length, finalElapsed) : 0;
+    const finalSample = calculateWpm(Array.from(typed).length, finalElapsed);
     const finalSamples = finalSample > 0 ? [...samplesRef.current, finalSample] : samplesRef.current;
     const finalStats = calculateStats(
       comparison.correct,
@@ -57,6 +86,7 @@ export function useTypingSession({
       finalSamples,
       mistakesRef.current,
     );
+    lastKeyAtRef.current = null;
     setElapsedMs(finalElapsed);
     setRunning(false);
     setDone(true);
@@ -70,59 +100,47 @@ export function useTypingSession({
   }, []);
 
   useEffect(() => {
-    if (!running || startedAtRef.current === null) return;
+    if (!running) return;
     const tick = () => {
-      const elapsed = Math.max(0, Date.now() - (startedAtRef.current ?? Date.now()));
+      const elapsed = liveElapsed();
       setElapsedMs(elapsed);
       if (elapsed - sampleAtRef.current >= 1000) {
         sampleAtRef.current = elapsed;
         const comparison = compareTypedText(targetRef.current, valueRef.current);
-        const sample = calculateStats(
-          comparison.correct,
-          comparison.incorrect,
-          Math.max(1, elapsed),
-        ).grossWpm;
+        const sample = calculateStats(comparison.correct, comparison.incorrect, Math.max(1, elapsed)).grossWpm;
         samplesRef.current = [...samplesRef.current, sample];
         setSamples(samplesRef.current);
       }
-      if (limitMs && elapsed >= limitMs) finish(limitMs);
     };
-    tick();
-    const timer = window.setInterval(tick, 100);
+    const timer = window.setInterval(tick, 250);
     return () => window.clearInterval(timer);
-  }, [running, limitMs, finish]);
-
-  const startIfNeeded = useCallback(() => {
-    if (startedAtRef.current !== null || done) return;
-    startedAtRef.current = Date.now();
-    completedRef.current = false;
-    setRunning(true);
-    setElapsedMs(0);
-  }, [done]);
+  }, [running]);
 
   const appendCharacters = useCallback(
     (characters: string) => {
-      if (done || !characters) return;
-      startIfNeeded();
+      if (completedRef.current || !characters) return;
+      markKey();
+      if (!running) setRunning(true);
       let nextValue = valueRef.current;
       let nextMistakes = mistakesRef.current;
       const nextErrors = { ...errorsRef.current };
       const nextHits = { ...hitsRef.current };
       const targetChars = Array.from(targetRef.current);
-      const length = () => Array.from(nextValue).length;
+      let wrong = false;
 
       for (const char of Array.from(characters)) {
-        const expected = targetChars[length()];
+        const position = Array.from(nextValue).length;
+        const expected = targetChars[position];
         if (expected === undefined) break;
         const key = expected.toLowerCase();
         if (char !== expected) {
           nextMistakes += 1;
           nextErrors[key] = (nextErrors[key] ?? 0) + 1;
+          wrong = true;
         } else {
           nextHits[key] = (nextHits[key] ?? 0) + 1;
         }
         nextValue += char;
-        if (completeOnTarget && length() >= targetChars.length) break;
       }
 
       valueRef.current = nextValue;
@@ -132,31 +150,31 @@ export function useTypingSession({
       setValue(nextValue);
       setMistakes(nextMistakes);
       setErrors(nextErrors);
+      setLastWrong(wrong);
+      onKeystrokeRef.current?.(!wrong);
 
-      if (completeOnTarget && length() >= targetChars.length) {
-        finish(Math.max(1, Date.now() - (startedAtRef.current ?? Date.now())));
-      }
+      if (completeOnTarget && Array.from(nextValue).length >= targetChars.length) finish();
     },
-    [completeOnTarget, done, finish, startIfNeeded],
+    [completeOnTarget, finish, running],
   );
 
   const removeCharacter = useCallback(() => {
-    if (done || !valueRef.current) return;
+    if (completedRef.current || !valueRef.current || !allowBackspace) return;
+    markKey();
     valueRef.current = Array.from(valueRef.current).slice(0, -1).join("");
     setValue(valueRef.current);
-  }, [done]);
+    setLastWrong(false);
+  }, [allowBackspace]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLElement>) => {
-      if (done) return;
+      if (completedRef.current) return;
+      if (event.key === "Tab" || event.key === "Escape") return; // keep keyboard navigation
       if (event.ctrlKey || event.metaKey || event.altKey) {
-        if (["v", "c", "x", "a"].includes(event.key.toLowerCase())) event.preventDefault();
+        if (["v", "x"].includes(event.key.toLowerCase())) event.preventDefault();
         return;
       }
-      if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "Delete"].includes(event.key)) {
-        event.preventDefault();
-        return;
-      }
+      if (event.nativeEvent.isComposing || event.key === "Unidentified" || event.key === "Process") return;
       if (event.key === "Backspace") {
         event.preventDefault();
         removeCharacter();
@@ -164,18 +182,38 @@ export function useTypingSession({
       }
       if (event.key === "Enter") {
         event.preventDefault();
-        appendCharacters("\n");
+        if (targetRef.current.includes("\n")) appendCharacters("\n");
         return;
       }
       if (event.key.length !== 1) return;
       event.preventDefault();
       appendCharacters(event.key);
     },
-    [appendCharacters, done, removeCharacter],
+    [appendCharacters, removeCharacter],
+  );
+
+  /** Mobile/IME fallback: soft keyboards often report "Unidentified" keydowns. */
+  const handleBeforeInput = useCallback(
+    (event: InputEvent) => {
+      if (completedRef.current) return;
+      if (event.inputType === "deleteContentBackward") {
+        event.preventDefault();
+        removeCharacter();
+      } else if (event.inputType === "insertText" || event.inputType === "insertReplacementText") {
+        event.preventDefault();
+        if (event.data) appendCharacters(event.data);
+      } else if (event.inputType === "insertCompositionText") {
+        // let composition finish; committed text arrives via compositionend
+      } else {
+        event.preventDefault();
+      }
+    },
+    [appendCharacters, removeCharacter],
   );
 
   const reset = useCallback(() => {
-    startedAtRef.current = null;
+    activeRef.current = 0;
+    lastKeyAtRef.current = null;
     valueRef.current = "";
     mistakesRef.current = 0;
     completedRef.current = false;
@@ -190,9 +228,9 @@ export function useTypingSession({
     setMistakes(0);
     setSamples([]);
     setErrors({});
+    setLastWrong(false);
   }, []);
 
-  // A new target always means a fresh run.
   useEffect(() => {
     reset();
   }, [target, reset]);
@@ -208,20 +246,21 @@ export function useTypingSession({
   return {
     value,
     elapsedMs,
-    remainingMs: limitMs ? Math.max(0, limitMs - elapsedMs) : undefined,
     running,
     done,
     mistakes,
     stats,
     errors,
     samples,
+    lastWrong,
     currentChar: targetChars[typedLength] ?? "",
     progress: targetChars.length ? Math.min(100, (typedLength / targetChars.length) * 100) : 0,
-    finishNow: () => finish(Math.max(1, elapsedMs)),
+    finishNow: finish,
     reset,
     handleKeyDown,
-    handleVirtualKey: (key: string) =>
-      key === "Backspace" ? removeCharacter() : appendCharacters(key),
+    handleBeforeInput,
+    appendText: appendCharacters,
+    handleVirtualKey: (key: string) => (key === "Backspace" ? removeCharacter() : appendCharacters(key)),
   };
 }
 
