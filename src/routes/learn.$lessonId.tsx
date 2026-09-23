@@ -192,7 +192,7 @@ function LessonPage() {
             stats={session.stats}
             samples={session.samples}
             errors={session.errors}
-            verdict={verdict}
+            {...(verdict ? { verdict } : {})}
             actions={
               <div className="flex flex-wrap gap-2">
                 <Button onClick={restart} variant="outline" size="sm">

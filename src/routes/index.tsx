@@ -80,13 +80,22 @@ function HomePage() {
             then measured speed. Guided lessons, timed tests, drills built from your own mistakes.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              to="/learn/$lessonId"
-              params={{ lessonId: upcoming.id }}
-              className="glow-ring rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5"
-            >
-              {hasHistory ? `Continue: ${upcoming.title}` : "Start the course"}
-            </Link>
+            {upcoming ? (
+              <Link
+                to="/learn/$lessonId"
+                params={{ lessonId: upcoming.id }}
+                className="glow-ring rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5"
+              >
+                {hasHistory ? `Continue: ${upcoming.title}` : "Start the course"}
+              </Link>
+            ) : (
+              <Link
+                to="/learn"
+                className="glow-ring rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5"
+              >
+                Open the course
+              </Link>
+            )}
             <Link
               to="/test"
               className="rounded-lg border border-border bg-surface px-5 py-3 text-sm font-semibold transition-colors hover:bg-surface-2"
