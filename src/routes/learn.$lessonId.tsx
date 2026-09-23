@@ -13,7 +13,7 @@ import { recordSession } from "@/lib/profile";
 import { LESSONS, lessonById } from "@/lib/typing-content";
 import type { TypingStats } from "@/lib/typing";
 
-export const Route = createFileRoute("/learn/")({
+export const Route = createFileRoute("/learn/$lessonId")({
   loader: ({ params }) => {
     const lesson = lessonById(params.lessonId);
     if (!lesson) throw notFound();
