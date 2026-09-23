@@ -17,6 +17,8 @@ export const Route = createFileRoute("/learn/")({
         property: "og:description",
         content: "From the F and J anchors to numbers, symbols and endurance text.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: LearnIndex,
