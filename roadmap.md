@@ -9,4 +9,4 @@
 - [x] Progress from real data; Home refresh
 - [x] Warm light visual system, reduced motion, font scale
 - [x] Persistence v3 migration via storage module
-- [ ] Production build run (not yet run); QA done: typecheck, Playwright desktop+mobile, stale timed copy search
+- [x] Production build, typecheck, Playwright desktop/tablet/mobile, stale timed copy search
