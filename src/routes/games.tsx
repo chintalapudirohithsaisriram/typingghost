@@ -26,13 +26,31 @@ export const Route = createFileRoute("/games")({
 
 type Game = "ladder" | "streak" | "hunt";
 const GAMES: { id: Game; title: string; skill: string; rules: string }[] = [
-  { id: "ladder", title: "Word Ladder", skill: "Rhythm on growing words", rules: "Words get longer as you climb. Each word typed cleanly adds a rung." },
-  { id: "streak", title: "Clean Streak", skill: "Accuracy under commitment", rules: "No backspace. Your score is the longest run of perfectly typed words." },
-  { id: "hunt", title: "Key Hunt", skill: "Finding keys without looking", rules: "One key at a time. Find it by feel — first-try hits score." },
+  {
+    id: "ladder",
+    title: "Word Ladder",
+    skill: "Rhythm on growing words",
+    rules: "Words get longer as you climb. Each word typed cleanly adds a rung.",
+  },
+  {
+    id: "streak",
+    title: "Clean Streak",
+    skill: "Accuracy under commitment",
+    rules: "No backspace. Your score is the longest run of perfectly typed words.",
+  },
+  {
+    id: "hunt",
+    title: "Key Hunt",
+    skill: "Finding keys without looking",
+    rules: "One key at a time. Find it by feel — first-try hits score.",
+  },
 ];
 
 const shuffle = <T,>(list: T[], rng: () => number) =>
-  list.map((v) => [rng(), v] as const).sort((a, b) => a[0] - b[0]).map(([, v]) => v);
+  list
+    .map((v) => [rng(), v] as const)
+    .sort((a, b) => a[0] - b[0])
+    .map(([, v]) => v);
 
 function GamesPage() {
   const [game, setGame] = useState<Game>("ladder");
@@ -43,7 +61,9 @@ function GamesPage() {
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
       <p className="text-sm font-medium text-primary">Games</p>
       <h1 className="mt-2 font-display text-4xl font-bold tracking-tight">Typing games</h1>
-      <p className="mt-3 max-w-2xl text-muted-foreground">Short rounds, each training one skill. No clocks, no pressure.</p>
+      <p className="mt-3 max-w-2xl text-muted-foreground">
+        Short rounds, each training one skill. No clocks, no pressure.
+      </p>
 
       <div role="radiogroup" aria-label="Choose a game" className="mt-6 grid gap-3 sm:grid-cols-3">
         {GAMES.map((g) => (
@@ -58,7 +78,9 @@ function GamesPage() {
             }}
             className={cn(
               "rounded-2xl border p-4 text-left transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-              game === g.id ? "border-primary bg-accent/40" : "border-border bg-surface hover:bg-secondary",
+              game === g.id
+                ? "border-primary bg-accent/40"
+                : "border-border bg-surface hover:bg-secondary",
             )}
           >
             <span className="block font-display text-lg font-semibold">{g.title}</span>
@@ -70,14 +92,20 @@ function GamesPage() {
       <section className="mt-8 space-y-4" aria-labelledby="game-title">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 id="game-title" className="font-display text-2xl font-semibold">{current.title}</h2>
+            <h2 id="game-title" className="font-display text-2xl font-semibold">
+              {current.title}
+            </h2>
             <p className="text-sm text-muted-foreground">{current.rules}</p>
           </div>
           <Button variant="outline" onClick={() => setRound((r) => r + 1)}>
             <RefreshCw aria-hidden="true" /> New round
           </Button>
         </div>
-        {game === "hunt" ? <KeyHunt key={round_} /> : <WordGame key={`${game}-${round_}`} game={game} />}
+        {game === "hunt" ? (
+          <KeyHunt key={round_} />
+        ) : (
+          <WordGame key={`${game}-${round_}`} game={game} />
+        )}
       </section>
     </div>
   );
@@ -89,7 +117,11 @@ function WordGame({ game }: { game: "ladder" | "streak" }) {
   const words = useMemo(() => {
     const rng = seededRandom(seed);
     if (game === "ladder") {
-      const byLen = (n: number) => shuffle(COMMON_WORDS.filter((w) => w.length === n), rng).slice(0, 2);
+      const byLen = (n: number) =>
+        shuffle(
+          COMMON_WORDS.filter((w) => w.length === n),
+          rng,
+        ).slice(0, 2);
       return [2, 3, 4, 5, 6].flatMap(byLen).filter(Boolean);
     }
     return shuffle(COMMON_WORDS, rng).slice(0, 25);
@@ -102,7 +134,15 @@ function WordGame({ game }: { game: "ladder" | "streak" }) {
     allowBackspace: game === "ladder",
     onComplete: (run) => {
       setDone(run);
-      update((c) => recordSession(c, { mode: "game", label: game === "ladder" ? "Game · Word Ladder" : "Game · Clean Streak", stats: run.stats, errors: run.errors, hits: run.hits }));
+      update((c) =>
+        recordSession(c, {
+          mode: "game",
+          label: game === "ladder" ? "Game · Word Ladder" : "Game · Clean Streak",
+          stats: run.stats,
+          errors: run.errors,
+          hits: run.hits,
+        }),
+      );
     },
   });
 
@@ -148,22 +188,41 @@ function WordGame({ game }: { game: "ladder" | "streak" }) {
         </ol>
       ) : null}
       <div className="grid grid-cols-3 gap-3">
-        <StatTile label={game === "ladder" ? "Rungs climbed" : "Best streak"} value={game === "ladder" ? `${clean}/${words.length}` : best} tone="primary" />
+        <StatTile
+          label={game === "ladder" ? "Rungs climbed" : "Best streak"}
+          value={game === "ladder" ? `${clean}/${words.length}` : best}
+          tone="primary"
+        />
         <StatTile label="Speed" value={round(session.stats.netWpm)} unit="WPM" />
-        <StatTile label="Accuracy" value={session.value ? round(session.stats.realAccuracy) : 100} unit="%" />
+        <StatTile
+          label="Accuracy"
+          value={session.value ? round(session.stats.realAccuracy) : 100}
+          unit="%"
+        />
       </div>
       {done ? (
         <p role="status" className="panel p-5 text-sm">
-          Round complete. {game === "ladder" ? `You climbed ${clean} of ${words.length} rungs cleanly.` : `Your longest clean streak was ${best} words.`} Start a new round to play again.
+          Round complete.{" "}
+          {game === "ladder"
+            ? `You climbed ${clean} of ${words.length} rungs cleanly.`
+            : `Your longest clean streak was ${best} words.`}{" "}
+          Start a new round to play again.
         </p>
       ) : (
-        <TypingSurface target={target} session={session} size="lg" hint={game === "streak" ? "Backspace is off in this game · No time limit" : undefined} />
+        <TypingSurface
+          target={target}
+          session={session}
+          size="lg"
+          hint={game === "streak" ? "Backspace is off in this game · No time limit" : undefined}
+        />
       )}
     </div>
   );
 }
 
-const HUNT_KEYS = KEYBOARD_ROWS.slice(1).flat().filter((k) => /[a-z]/.test(k));
+const HUNT_KEYS = KEYBOARD_ROWS.slice(1)
+  .flat()
+  .filter((k) => /[a-z]/.test(k));
 const HUNT_LENGTH = 25;
 
 function KeyHunt() {
@@ -171,7 +230,10 @@ function KeyHunt() {
   const seed = useSeed();
   const sequence = useMemo(() => {
     const rng = seededRandom(seed);
-    return Array.from({ length: HUNT_LENGTH }, () => HUNT_KEYS[Math.floor(rng() * HUNT_KEYS.length)]!);
+    return Array.from(
+      { length: HUNT_LENGTH },
+      () => HUNT_KEYS[Math.floor(rng() * HUNT_KEYS.length)]!,
+    );
   }, [seed]);
   const [index, setIndex] = useState(0);
   const [firstTry, setFirstTry] = useState(0);
@@ -199,7 +261,15 @@ function KeyHunt() {
         if (next >= HUNT_LENGTH) {
           const elapsed = Math.max(1, Date.now() - started.current);
           const stats = calculateStats(HUNT_LENGTH, 0, elapsed, [], misses);
-          update((c) => recordSession(c, { mode: "game", label: "Game · Key Hunt", stats, errors: { ...errors.current }, hits: { ...hits.current } }));
+          update((c) =>
+            recordSession(c, {
+              mode: "game",
+              label: "Game · Key Hunt",
+              stats,
+              errors: { ...errors.current },
+              hits: { ...hits.current },
+            }),
+          );
         }
       } else {
         errors.current[target] = (errors.current[target] ?? 0) + 1;
@@ -228,7 +298,9 @@ function KeyHunt() {
       >
         {finished ? (
           <p role="status" className="text-center">
-            <span className="block font-display text-3xl font-bold">{firstTry} / {HUNT_LENGTH}</span>
+            <span className="block font-display text-3xl font-bold">
+              {firstTry} / {HUNT_LENGTH}
+            </span>
             <span className="text-sm text-muted-foreground">first-try hits · {misses} misses</span>
           </p>
         ) : (
@@ -252,8 +324,13 @@ function KeyHunt() {
         <StatTile label="Misses" value={misses} tone={misses ? "destructive" : "default"} />
       </div>
       <details className="text-sm">
-        <summary className="cursor-pointer text-muted-foreground">Use a tap keyboard (touch screens)</summary>
-        <VirtualKeyboard onKey={(k) => k !== "Backspace" && k !== " " && press(k)} className="mt-3" />
+        <summary className="cursor-pointer text-muted-foreground">
+          Use a tap keyboard (touch screens)
+        </summary>
+        <VirtualKeyboard
+          onKey={(k) => k !== "Backspace" && k !== " " && press(k)}
+          className="mt-3"
+        />
       </details>
     </div>
   );

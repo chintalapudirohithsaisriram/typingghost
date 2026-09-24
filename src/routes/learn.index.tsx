@@ -33,18 +33,24 @@ function LearnIndex() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
-        <CourseSidebar completed={profile.completedLessons} className="hidden self-start lg:sticky lg:top-24 lg:block" />
+        <CourseSidebar
+          completed={profile.completedLessons}
+          className="hidden self-start lg:sticky lg:top-24 lg:block"
+        />
         <div>
           <p className="text-sm font-medium text-primary">Learn</p>
-          <h1 className="mt-2 font-display text-4xl font-bold tracking-tight sm:text-5xl">The touch typing course</h1>
+          <h1 className="mt-2 font-display text-4xl font-bold tracking-tight sm:text-5xl">
+            The touch typing course
+          </h1>
           <p className="mt-4 max-w-2xl text-muted-foreground">
-            {LESSONS.length} short lessons in four stages. Each one has a clear objective and a speed and accuracy goal. Take as long as
-            you need — there is never a time limit.
+            {LESSONS.length} short lessons in four stages. Each one has a clear objective and a
+            speed and accuracy goal. Take as long as you need — there is never a time limit.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Button asChild size="lg">
               <Link to="/learn/$lessonId" params={{ lessonId: upcoming?.id ?? LESSONS[0]!.id }}>
-                {started ? `Continue: ${upcoming?.title}` : "Start lesson 1"} <ArrowRight aria-hidden="true" />
+                {started ? `Continue: ${upcoming?.title}` : "Start lesson 1"}{" "}
+                <ArrowRight aria-hidden="true" />
               </Link>
             </Button>
           </div>
@@ -52,7 +58,9 @@ function LearnIndex() {
           <div className="mt-10 space-y-10">
             {STAGES.map((stage) => (
               <section key={stage} aria-labelledby={`stage-${stage}`}>
-                <h2 id={`stage-${stage}`} className="font-display text-xl font-semibold">{stage}</h2>
+                <h2 id={`stage-${stage}`} className="font-display text-xl font-semibold">
+                  {stage}
+                </h2>
                 <p className="mt-1 text-sm text-muted-foreground">{STAGE_BLURB[stage]}</p>
                 <ol className="mt-4 grid gap-3 sm:grid-cols-2">
                   {LESSONS.filter((l) => l.stage === stage).map((lesson) => {
@@ -64,12 +72,21 @@ function LearnIndex() {
                           params={{ lessonId: lesson.id }}
                           className="panel flex h-full gap-4 p-4 transition-colors hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                         >
-                          <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-full border text-sm font-semibold", done ? "border-primary bg-primary text-primary-foreground" : "border-border")}>
+                          <span
+                            className={cn(
+                              "flex size-9 shrink-0 items-center justify-center rounded-full border text-sm font-semibold",
+                              done
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border",
+                            )}
+                          >
                             {done ? <Check className="size-4" aria-label="passed" /> : lesson.level}
                           </span>
                           <span className="min-w-0">
                             <span className="block font-medium">{lesson.title}</span>
-                            <span className="mt-0.5 block text-sm text-muted-foreground">{lesson.description}</span>
+                            <span className="mt-0.5 block text-sm text-muted-foreground">
+                              {lesson.description}
+                            </span>
                             <span className="mt-2 block text-xs text-muted-foreground">
                               Goal {lesson.goalWpm} WPM · {lesson.goalAccuracy}% accuracy
                             </span>
