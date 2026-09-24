@@ -114,14 +114,11 @@ export default function TypingSurface({
               key={index}
               ref={isActive ? activeRef : undefined}
               className={cn(
-                "rounded-[3px]",
                 state === "pending" && "text-muted-foreground/80",
                 state === "correct" && "text-foreground",
                 state === "wrong" &&
-                  "bg-destructive/15 text-destructive underline decoration-destructive decoration-2 underline-offset-4",
-                isActive &&
-                  !session.done &&
-                  "caret-blink bg-primary/20 text-foreground shadow-[inset_0_-2px_0_var(--primary)]",
+                  "text-destructive underline decoration-destructive/70 decoration-2 underline-offset-4",
+                isActive && !session.done && "text-foreground shadow-[inset_0_-3px_0_var(--primary)]",
               )}
             >
               {char === " " && state === "wrong" ? "␣" : char === "\n" ? "↵\n" : char}
