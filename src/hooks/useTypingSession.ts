@@ -78,7 +78,8 @@ export function useTypingSession({
     const typed = valueRef.current;
     const comparison = compareTypedText(targetRef.current, typed);
     const finalSample = calculateWpm(Array.from(typed).length, finalElapsed);
-    const finalSamples = finalSample > 0 ? [...samplesRef.current, finalSample] : samplesRef.current;
+    const finalSamples =
+      finalSample > 0 ? [...samplesRef.current, finalSample] : samplesRef.current;
     const finalStats = calculateStats(
       comparison.correct,
       comparison.incorrect,
@@ -107,7 +108,11 @@ export function useTypingSession({
       if (elapsed - sampleAtRef.current >= 1000) {
         sampleAtRef.current = elapsed;
         const comparison = compareTypedText(targetRef.current, valueRef.current);
-        const sample = calculateStats(comparison.correct, comparison.incorrect, Math.max(1, elapsed)).grossWpm;
+        const sample = calculateStats(
+          comparison.correct,
+          comparison.incorrect,
+          Math.max(1, elapsed),
+        ).grossWpm;
         samplesRef.current = [...samplesRef.current, sample];
         setSamples(samplesRef.current);
       }
@@ -174,7 +179,8 @@ export function useTypingSession({
         if (["v", "x"].includes(event.key.toLowerCase())) event.preventDefault();
         return;
       }
-      if (event.nativeEvent.isComposing || event.key === "Unidentified" || event.key === "Process") return;
+      if (event.nativeEvent.isComposing || event.key === "Unidentified" || event.key === "Process")
+        return;
       if (event.key === "Backspace") {
         event.preventDefault();
         removeCharacter();
@@ -260,7 +266,8 @@ export function useTypingSession({
     handleKeyDown,
     handleBeforeInput,
     appendText: appendCharacters,
-    handleVirtualKey: (key: string) => (key === "Backspace" ? removeCharacter() : appendCharacters(key)),
+    handleVirtualKey: (key: string) =>
+      key === "Backspace" ? removeCharacter() : appendCharacters(key),
   };
 }
 

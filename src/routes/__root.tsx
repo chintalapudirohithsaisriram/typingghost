@@ -138,21 +138,40 @@ function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3 sm:px-6">
-        <Link to="/" className="flex items-center gap-2 rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" aria-label="TypeNova home">
+        <Link
+          to="/"
+          className="flex items-center gap-2 rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          aria-label="TypeNova home"
+        >
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground font-display text-sm font-extrabold text-background">
             Tn
           </span>
           <span className="font-display text-lg font-bold tracking-tight">TypeNova</span>
         </Link>
         <div className="flex items-center gap-1 sm:order-3">
-          <Link to="/focus" aria-label="Focus mode" title="Focus mode" className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" activeProps={{ className: "bg-secondary text-foreground" }}>
+          <Link
+            to="/focus"
+            aria-label="Focus mode"
+            title="Focus mode"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            activeProps={{ className: "bg-secondary text-foreground" }}
+          >
             <Maximize2 className="size-4" aria-hidden="true" />
           </Link>
-          <Link to="/settings" aria-label="Settings" title="Settings" className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" activeProps={{ className: "bg-secondary text-foreground" }}>
+          <Link
+            to="/settings"
+            aria-label="Settings"
+            title="Settings"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            activeProps={{ className: "bg-secondary text-foreground" }}
+          >
             <SettingsIcon className="size-4" aria-hidden="true" />
           </Link>
         </div>
-        <nav aria-label="Main" className="order-last -mx-1 flex w-full items-center gap-0.5 overflow-x-auto sm:order-2 sm:w-auto">
+        <nav
+          aria-label="Main"
+          className="order-last -mx-1 flex w-full items-center gap-0.5 overflow-x-auto sm:order-2 sm:w-auto"
+        >
           {NAV.map((item) => (
             <Link
               key={item.to}
@@ -188,7 +207,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground"
+      >
         Skip to content
       </a>
       <div className="flex min-h-dvh flex-col">

@@ -24,7 +24,11 @@ export const Route = createFileRoute("/learn/$lessonId")({
   },
   head: ({ loaderData }) => {
     const lesson = loaderData ? lessonById(loaderData.lessonId) : undefined;
-    if (!lesson) return pageHead("Lesson not found | TypeNova", "This lesson is not part of the TypeNova course.");
+    if (!lesson)
+      return pageHead(
+        "Lesson not found | TypeNova",
+        "This lesson is not part of the TypeNova course.",
+      );
     return pageHead(
       `Lesson ${lesson.level}: ${lesson.title} | TypeNova`,
       `${lesson.description} Goal: ${lesson.goalWpm} WPM at ${lesson.goalAccuracy}% accuracy, with no time limit.`,
@@ -67,7 +71,8 @@ function LessonPage() {
   const session = useTypingSession({
     target: lesson.exercise,
     onComplete: (run) => {
-      const passed = run.stats.netWpm >= lesson.goalWpm && run.stats.realAccuracy >= lesson.goalAccuracy;
+      const passed =
+        run.stats.netWpm >= lesson.goalWpm && run.stats.realAccuracy >= lesson.goalAccuracy;
       setResult({ ...run, passed });
       update((current) =>
         recordSession(current, {
@@ -83,7 +88,10 @@ function LessonPage() {
     },
   });
 
-  const targetKeys = useMemo(() => lesson.targetKeys.filter((k) => k !== "all" && k !== "shift"), [lesson.targetKeys]);
+  const targetKeys = useMemo(
+    () => lesson.targetKeys.filter((k) => k !== "all" && k !== "shift"),
+    [lesson.targetKeys],
+  );
   const restart = () => {
     setResult(null);
     session.reset();
@@ -150,7 +158,9 @@ function LessonPage() {
                   Lesson {lesson.level} of {LESSONS.length} · {lesson.stage}
                   {passedBefore ? " · Passed" : ""}
                 </p>
-                <h1 className="mt-1 font-display text-3xl font-bold tracking-tight sm:text-4xl">{lesson.title}</h1>
+                <h1 className="mt-1 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+                  {lesson.title}
+                </h1>
                 <p className="mt-2 max-w-2xl text-muted-foreground">
                   <span className="font-medium text-foreground">Objective: </span>
                   {lesson.description}
@@ -158,11 +168,17 @@ function LessonPage() {
               </div>
               <dl className="grid grid-cols-2 gap-2 text-center">
                 <div className="rounded-xl bg-secondary px-4 py-2">
-                  <dt className="text-[11px] tracking-wide text-muted-foreground uppercase">Goal speed</dt>
-                  <dd className="font-display text-xl font-bold">{lesson.goalWpm} <span className="text-xs font-normal">WPM</span></dd>
+                  <dt className="text-[11px] tracking-wide text-muted-foreground uppercase">
+                    Goal speed
+                  </dt>
+                  <dd className="font-display text-xl font-bold">
+                    {lesson.goalWpm} <span className="text-xs font-normal">WPM</span>
+                  </dd>
                 </div>
                 <div className="rounded-xl bg-secondary px-4 py-2">
-                  <dt className="text-[11px] tracking-wide text-muted-foreground uppercase">Goal accuracy</dt>
+                  <dt className="text-[11px] tracking-wide text-muted-foreground uppercase">
+                    Goal accuracy
+                  </dt>
                   <dd className="font-display text-xl font-bold">{lesson.goalAccuracy}%</dd>
                 </div>
               </dl>
@@ -170,7 +186,10 @@ function LessonPage() {
             <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
               <span className="text-muted-foreground">Keys:</span>
               {lesson.targetKeys.map((key) => (
-                <kbd key={key} className="rounded-md border border-border bg-surface-2 px-2 py-0.5 font-mono text-xs">
+                <kbd
+                  key={key}
+                  className="rounded-md border border-border bg-surface-2 px-2 py-0.5 font-mono text-xs"
+                >
                   {key === "all" ? "all keys" : key}
                 </kbd>
               ))}
@@ -189,10 +208,14 @@ function LessonPage() {
                   aria-valuemax={100}
                   aria-valuenow={Math.round(session.progress)}
                 >
-                  <div className="h-full rounded-full bg-primary transition-[width]" style={{ width: `${session.progress}%` }} />
+                  <div
+                    className="h-full rounded-full bg-primary transition-[width]"
+                    style={{ width: `${session.progress}%` }}
+                  />
                 </div>
                 <span className="tabular-nums text-muted-foreground" aria-live="off">
-                  {round(session.stats.netWpm)} WPM · {session.value ? round(session.stats.realAccuracy) : 100}% accuracy
+                  {round(session.stats.netWpm)} WPM ·{" "}
+                  {session.value ? round(session.stats.realAccuracy) : 100}% accuracy
                 </span>
                 <Button onClick={restart} variant="outline" size="sm">
                   <RotateCcw aria-hidden="true" /> Restart
@@ -203,7 +226,11 @@ function LessonPage() {
 
               <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
                 {settings.showKeyboard ? (
-                  <VirtualKeyboard nextChar={session.currentChar} highlightKeys={targetKeys} errorKeys={session.errors} />
+                  <VirtualKeyboard
+                    nextChar={session.currentChar}
+                    highlightKeys={targetKeys}
+                    errorKeys={session.errors}
+                  />
                 ) : null}
                 {settings.showHands ? (
                   <div className="panel flex flex-col justify-center p-4">
@@ -213,17 +240,32 @@ function LessonPage() {
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <Button variant="outline" size="sm" aria-pressed={tapKeys} onClick={() => setTapKeys((v) => !v)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  aria-pressed={tapKeys}
+                  onClick={() => setTapKeys((v) => !v)}
+                >
                   <Keyboard aria-hidden="true" /> {tapKeys ? "Hide" : "Show"} tap keyboard
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => updateSettings({ showKeyboard: !settings.showKeyboard })}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => updateSettings({ showKeyboard: !settings.showKeyboard })}
+                >
                   {settings.showKeyboard ? "Hide" : "Show"} key guide
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => updateSettings({ showHands: !settings.showHands })}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => updateSettings({ showHands: !settings.showHands })}
+                >
                   {settings.showHands ? "Hide" : "Show"} hand guide
                 </Button>
               </div>
-              {tapKeys ? <VirtualKeyboard nextChar={session.currentChar} onKey={session.handleVirtualKey} /> : null}
+              {tapKeys ? (
+                <VirtualKeyboard nextChar={session.currentChar} onKey={session.handleVirtualKey} />
+              ) : null}
             </>
           ) : (
             <ResultsPanel

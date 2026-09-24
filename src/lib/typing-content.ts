@@ -139,8 +139,7 @@ const RAW_LESSONS: Lesson[] = [
     tip: "If you glance at the keys, slow down instead — looking down resets progress.",
     targetKeys: ["all"],
     finger: "All fingers",
-    exercise:
-      "the quick brown fox jumps over the lazy dog pack my box with five dozen liquor jugs",
+    exercise: "the quick brown fox jumps over the lazy dog pack my box with five dozen liquor jugs",
     goalWpm: 25,
     goalAccuracy: 95,
   },
@@ -222,7 +221,7 @@ const RAW_LESSONS: Lesson[] = [
     targetKeys: [",", ".", ";", "'", ":", "!"],
     finger: "Mapped by finger zone",
     exercise:
-      "Ready, set, type. Keep pace; stay precise! Yes: breathe, focus, repeat. \"Steady,\" she said.",
+      'Ready, set, type. Keep pace; stay precise! Yes: breathe, focus, repeat. "Steady," she said.',
     goalWpm: 30,
     goalAccuracy: 96,
   },
@@ -283,7 +282,10 @@ const RAW_LESSONS: Lesson[] = [
   },
 ];
 
-export const LESSONS: Lesson[] = RAW_LESSONS.map((lesson, index) => ({ ...lesson, level: index + 1 }));
+export const LESSONS: Lesson[] = RAW_LESSONS.map((lesson, index) => ({
+  ...lesson,
+  level: index + 1,
+}));
 
 export const lessonById = (id: string) => LESSONS.find((lesson) => lesson.id === id);
 
@@ -304,7 +306,7 @@ export const TEST_PASSAGES: Record<Difficulty, string[]> = {
   ],
   hard: [
     "Rhythm, not raw velocity, separates a 60 wpm typist from a 110 wpm typist: the faster hand simply wastes fewer motions, hesitates less between awkward bigrams, and recovers from a mistyped key in roughly 40 milliseconds.",
-    "\"Accuracy is the quiet engine of speed,\" the instructor said, \"because every correction costs you three keystrokes: the wrong one, the backspace, and the right one.\" Budget 98% accuracy and the pace arrives free.",
+    '"Accuracy is the quiet engine of speed," the instructor said, "because every correction costs you three keystrokes: the wrong one, the backspace, and the right one." Budget 98% accuracy and the pace arrives free.',
     "Between 2019 and 2026, remote work pushed average daily keystrokes from roughly 8,500 to 13,200 per person — a 55% jump that made posture, wrist angle, and break intervals matter far more than they once did.",
     "Deliberate practice means choosing the uncomfortable drill: the punctuation run, the number row, the same-hand sequence (qwe, zxc, plo) that you quietly avoid because it exposes exactly what you have not yet learned.",
   ],
@@ -372,8 +374,24 @@ export const KEYBOARD_ROWS = [
 
 /** Shifted characters mapped to the physical key that produces them. */
 export const SHIFT_MAP: Record<string, string> = {
-  "!": "1", "@": "2", "#": "3", "$": "4", "%": "5", "^": "6", "&": "7", "*": "8", "(": "9", ")": "0",
-  "_": "-", "+": "=", ":": ";", '"': "'", "<": ",", ">": ".", "?": "/", "~": "`",
+  "!": "1",
+  "@": "2",
+  "#": "3",
+  $: "4",
+  "%": "5",
+  "^": "6",
+  "&": "7",
+  "*": "8",
+  "(": "9",
+  ")": "0",
+  _: "-",
+  "+": "=",
+  ":": ";",
+  '"': "'",
+  "<": ",",
+  ">": ".",
+  "?": "/",
+  "~": "`",
 };
 
 /** Physical key + whether Shift is needed for a target character. */
@@ -405,11 +423,11 @@ export const NUMBER_LINES = [
 
 export const PUNCTUATION_LINES = [
   "Wait, did you save the file? Yes; I saved it twice: once locally, once online.",
-  "\"Slow is smooth,\" she said, \"and smooth is fast.\" He nodded; it made sense.",
+  '"Slow is smooth," she said, "and smooth is fast." He nodded; it made sense.',
   "Bring three things: a notebook, a pen, and patience. Don't forget the charger!",
   "It's not rush-hour yet, so the trip (usually 40 minutes) should be quicker.",
   "Is it ready? Almost. Check the list: tickets, passport, keys; then we're off!",
-  "Her note read: \"Back at noon.\" It was 3 p.m., and the door was still locked.",
+  'Her note read: "Back at noon." It was 3 p.m., and the door was still locked.',
 ];
 
 /** All passages, easy → hard, used for rotation. */
@@ -427,15 +445,22 @@ export function generateWords(count = 30, random: () => number = Math.random): s
   const words: string[] = [];
   for (let i = 0; i < count; i += 1) {
     let word = COMMON_WORDS[Math.floor(random() * COMMON_WORDS.length)] as string;
-    if (word === words[words.length - 1]) word = COMMON_WORDS[(COMMON_WORDS.indexOf(word) + 1) % COMMON_WORDS.length] as string;
+    if (word === words[words.length - 1])
+      word = COMMON_WORDS[(COMMON_WORDS.indexOf(word) + 1) % COMMON_WORDS.length] as string;
     words.push(word);
   }
   return words.join(" ");
 }
 
 /** Letters-only practice text: pseudo-words built strictly from the chosen letters. */
-export function generateCustomLetters(letters: string[], count = 24, random: () => number = Math.random): string {
-  const pool = Array.from(new Set(letters.map((l) => l.toLowerCase()).filter((l) => /^[a-z]$/.test(l))));
+export function generateCustomLetters(
+  letters: string[],
+  count = 24,
+  random: () => number = Math.random,
+): string {
+  const pool = Array.from(
+    new Set(letters.map((l) => l.toLowerCase()).filter((l) => /^[a-z]$/.test(l))),
+  );
   if (!pool.length) return "";
   const realWords = COMMON_WORDS.filter((word) => Array.from(word).every((c) => pool.includes(c)));
   const out: string[] = [];
@@ -454,7 +479,9 @@ export function generateCustomLetters(letters: string[], count = 24, random: () 
 
 /** Build a drill line that hammers the given weak keys inside readable chunks. */
 export function buildDrill(keys: string[], length = 90): string {
-  const pool = Array.from(new Set(keys.map((k) => k.toLowerCase()).filter((key) => key.length === 1 && key !== " ")));
+  const pool = Array.from(
+    new Set(keys.map((k) => k.toLowerCase()).filter((key) => key.length === 1 && key !== " ")),
+  );
   if (!pool.length) return generateWords(18);
   const letterPool = pool.filter((key) => /[a-z]/.test(key));
   const words = COMMON_WORDS.filter((word) => letterPool.some((key) => word.includes(key)));

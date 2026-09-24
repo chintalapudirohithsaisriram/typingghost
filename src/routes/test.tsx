@@ -50,7 +50,10 @@ function TestPage() {
   const [seed, setSeed] = useState(0);
   const [recent, setRecent] = useState<string[]>([]);
 
-  const cleanLetters = useMemo(() => Array.from(new Set(letters.toLowerCase().replace(/[^a-z]/g, ""))), [letters]);
+  const cleanLetters = useMemo(
+    () => Array.from(new Set(letters.toLowerCase().replace(/[^a-z]/g, ""))),
+    [letters],
+  );
 
   const baseSeed = useSeed();
   const target = useMemo(() => {
@@ -75,7 +78,15 @@ function TestPage() {
   const session = useTypingSession({
     target,
     onComplete: (run) =>
-      update((current) => recordSession(current, { mode: "test", label, stats: run.stats, errors: run.errors, hits: run.hits })),
+      update((current) =>
+        recordSession(current, {
+          mode: "test",
+          label,
+          stats: run.stats,
+          errors: run.errors,
+          hits: run.hits,
+        }),
+      ),
   });
 
   const newText = () => {
@@ -89,12 +100,17 @@ function TestPage() {
         <p className="text-sm font-medium text-primary">Test</p>
         <h1 className="mt-2 font-display text-4xl font-bold tracking-tight">Typing test</h1>
         <p className="mt-3 max-w-2xl text-muted-foreground">
-          Type the full text at your own pace. There's no countdown — the clock only measures your active typing time for the result.
+          Type the full text at your own pace. There's no countdown — the clock only measures your
+          active typing time for the result.
         </p>
       </header>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
-        <div role="radiogroup" aria-label="Test type" className="flex flex-wrap gap-1 rounded-xl border border-border bg-surface p-1">
+        <div
+          role="radiogroup"
+          aria-label="Test type"
+          className="flex flex-wrap gap-1 rounded-xl border border-border bg-surface p-1"
+        >
           {MODES.map((m) => (
             <button
               key={m.id}
@@ -104,7 +120,9 @@ function TestPage() {
               onClick={() => setMode(m.id)}
               className={cn(
                 "rounded-lg px-3 py-1.5 text-sm font-medium focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                mode === m.id ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground",
+                mode === m.id
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {m.label}
@@ -112,7 +130,11 @@ function TestPage() {
           ))}
         </div>
         {mode === "passage" || mode === "words" ? (
-          <div role="radiogroup" aria-label="Difficulty" className="flex gap-1 rounded-xl border border-border bg-surface p-1">
+          <div
+            role="radiogroup"
+            aria-label="Difficulty"
+            className="flex gap-1 rounded-xl border border-border bg-surface p-1"
+          >
             {DIFFICULTIES.map((d) => (
               <button
                 key={d}
@@ -122,7 +144,9 @@ function TestPage() {
                 onClick={() => setDifficulty(d)}
                 className={cn(
                   "rounded-lg px-3 py-1.5 text-sm capitalize focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                  difficulty === d ? "bg-secondary font-medium text-foreground" : "text-muted-foreground hover:text-foreground",
+                  difficulty === d
+                    ? "bg-secondary font-medium text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {d}
@@ -139,14 +163,18 @@ function TestPage() {
               className="h-9 w-40 font-mono"
               aria-describedby="letters-help"
             />
-            <span id="letters-help" className="text-xs text-muted-foreground">letters only</span>
+            <span id="letters-help" className="text-xs text-muted-foreground">
+              letters only
+            </span>
           </label>
         ) : null}
       </div>
 
       <section className="mt-6 space-y-4">
         {mode === "custom" && !cleanLetters.length ? (
-          <p className="panel p-6 text-sm text-muted-foreground">Enter at least one letter to build a custom test.</p>
+          <p className="panel p-6 text-sm text-muted-foreground">
+            Enter at least one letter to build a custom test.
+          </p>
         ) : session.done ? (
           <ResultsPanel
             title="Test result"
@@ -170,7 +198,9 @@ function TestPage() {
           <>
             <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
               <span className="tabular-nums" data-testid="live-stats">
-                {round(session.stats.netWpm)} WPM · {session.value ? round(session.stats.realAccuracy) : 100}% · active {formatSeconds(session.elapsedMs)}
+                {round(session.stats.netWpm)} WPM ·{" "}
+                {session.value ? round(session.stats.realAccuracy) : 100}% · active{" "}
+                {formatSeconds(session.elapsedMs)}
               </span>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={session.reset}>
@@ -192,7 +222,11 @@ function TestPage() {
       </section>
 
       <p className="mt-8 text-sm text-muted-foreground">
-        Results are saved to your <Link to="/progress" className="font-medium text-foreground underline underline-offset-4">Progress</Link>.
+        Results are saved to your{" "}
+        <Link to="/progress" className="font-medium text-foreground underline underline-offset-4">
+          Progress
+        </Link>
+        .
       </p>
     </div>
   );

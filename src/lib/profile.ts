@@ -50,7 +50,10 @@ function normalise(parsed: Partial<ProfileState> | null): ProfileState {
     ...parsed,
     version: 3,
     // Older builds called practice "drill"; keep the record, rename the mode.
-    sessions: sessions.map((s) => ({ ...s, mode: (s.mode as string) === "drill" ? "practice" : s.mode })),
+    sessions: sessions.map((s) => ({
+      ...s,
+      mode: (s.mode as string) === "drill" ? "practice" : s.mode,
+    })),
     completedLessons: Array.isArray(parsed.completedLessons)
       ? parsed.completedLessons.filter((id) => LESSONS.some((lesson) => lesson.id === id))
       : [],
@@ -175,7 +178,8 @@ export const strongestKeys = (profile: ProfileState, count = 6) =>
     .slice(0, count);
 
 export const nextLesson = (profile: ProfileState) =>
-  LESSONS.find((lesson) => !profile.completedLessons.includes(lesson.id)) ?? LESSONS[LESSONS.length - 1];
+  LESSONS.find((lesson) => !profile.completedLessons.includes(lesson.id)) ??
+  LESSONS[LESSONS.length - 1];
 
 export const dayKey = (timestamp: number) => new Date(timestamp).toISOString().slice(0, 10);
 
@@ -198,17 +202,22 @@ export const averageOf = (values: number[]) =>
 
 export function coachMessage(profile: ProfileState): string {
   const recent = profile.sessions.slice(-5);
-  if (!recent.length) return "No sessions yet. Start with Lesson 1 — a few focused minutes builds the right habits.";
+  if (!recent.length)
+    return "No sessions yet. Start with Lesson 1 — a few focused minutes builds the right habits.";
   const accuracy = averageOf(recent.map((session) => session.accuracy));
   const speed = averageOf(recent.map((session) => session.netWpm));
   const weak = weakestKeys(profile, 2).map((item) => item.key.toUpperCase());
-  if (accuracy < 93) return `Accuracy is ${Math.round(accuracy)}%. Slow down about 15% until you hold 95%+.`;
-  if (weak.length) return `Solid accuracy. Your weakest keys right now are ${weak.join(" and ")} — run a weak-key practice.`;
-  if (speed < 40) return "Technique looks clean. Push your pace until you feel one or two errors creep in.";
+  if (accuracy < 93)
+    return `Accuracy is ${Math.round(accuracy)}%. Slow down about 15% until you hold 95%+.`;
+  if (weak.length)
+    return `Solid accuracy. Your weakest keys right now are ${weak.join(" and ")} — run a weak-key practice.`;
+  if (speed < 40)
+    return "Technique looks clean. Push your pace until you feel one or two errors creep in.";
   return "You are in good shape — try a hard passage test to stretch your endurance.";
 }
 
-export const totalActiveMs = (sessions: SessionRecord[]) => sessions.reduce((sum, s) => sum + (s.durationMs || 0), 0);
+export const totalActiveMs = (sessions: SessionRecord[]) =>
+  sessions.reduce((sum, s) => sum + (s.durationMs || 0), 0);
 
 const startOf = (unit: "day" | "week" | "month", now = new Date()) => {
   const d = new Date(now);
@@ -230,13 +239,50 @@ export function badgesFor(profile: ProfileState): Badge[] {
   const s = profile.sessions;
   const lessons = profile.completedLessons.length;
   return [
-    { id: "first", title: "First session", description: "Finish any typing session.", earned: s.length >= 1 },
-    { id: "home", title: "Home row", description: "Pass the first three lessons.", earned: ["first-keystrokes", "home-row", "home-row-words"].every((id) => profile.completedLessons.includes(id)) },
+    {
+      id: "first",
+      title: "First session",
+      description: "Finish any typing session.",
+      earned: s.length >= 1,
+    },
+    {
+      id: "home",
+      title: "Home row",
+      description: "Pass the first three lessons.",
+      earned: ["first-keystrokes", "home-row", "home-row-words"].every((id) =>
+        profile.completedLessons.includes(id),
+      ),
+    },
     { id: "half", title: "Halfway", description: "Pass 10 lessons.", earned: lessons >= 10 },
-    { id: "grad", title: "Graduate", description: `Pass all ${LESSONS.length} lessons.`, earned: lessons >= LESSONS.length },
-    { id: "precise", title: "Precise", description: "Finish a session at 98%+ accuracy (100+ chars).", earned: s.some((x) => x.accuracy >= 98 && x.characters >= 100) },
-    { id: "wpm40", title: "40 WPM", description: "Reach 40 net WPM.", earned: profile.bestWpm >= 40 },
-    { id: "wpm60", title: "60 WPM", description: "Reach 60 net WPM.", earned: profile.bestWpm >= 60 },
-    { id: "streak7", title: "7-day streak", description: "Practise seven days in a row.", earned: streakDays(profile) >= 7 },
+    {
+      id: "grad",
+      title: "Graduate",
+      description: `Pass all ${LESSONS.length} lessons.`,
+      earned: lessons >= LESSONS.length,
+    },
+    {
+      id: "precise",
+      title: "Precise",
+      description: "Finish a session at 98%+ accuracy (100+ chars).",
+      earned: s.some((x) => x.accuracy >= 98 && x.characters >= 100),
+    },
+    {
+      id: "wpm40",
+      title: "40 WPM",
+      description: "Reach 40 net WPM.",
+      earned: profile.bestWpm >= 40,
+    },
+    {
+      id: "wpm60",
+      title: "60 WPM",
+      description: "Reach 60 net WPM.",
+      earned: profile.bestWpm >= 60,
+    },
+    {
+      id: "streak7",
+      title: "7-day streak",
+      description: "Practise seven days in a row.",
+      earned: streakDays(profile) >= 7,
+    },
   ];
 }

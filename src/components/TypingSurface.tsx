@@ -16,7 +16,14 @@ type Props = {
  * The only place (besides real keyboard buttons) that produces characters.
  * Captures physical keys via keydown and soft keyboards via beforeinput.
  */
-export default function TypingSurface({ target, session, size = "md", hint, autoFocus = true, className }: Props) {
+export default function TypingSurface({
+  target,
+  session,
+  size = "md",
+  hint,
+  autoFocus = true,
+  className,
+}: Props) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const activeRef = useRef<HTMLSpanElement>(null);
   const chars = useMemo(() => Array.from(target), [target]);
@@ -91,7 +98,11 @@ export default function TypingSurface({ target, session, size = "md", hint, auto
         aria-hidden="true"
         className={cn(
           "pointer-events-none relative font-mono leading-relaxed break-words whitespace-pre-wrap select-none",
-          size === "xl" ? "text-2xl sm:text-3xl" : size === "lg" ? "text-xl sm:text-2xl" : "text-lg sm:text-xl",
+          size === "xl"
+            ? "text-2xl sm:text-3xl"
+            : size === "lg"
+              ? "text-xl sm:text-2xl"
+              : "text-lg sm:text-xl",
         )}
       >
         {chars.map((char, index) => {
@@ -106,8 +117,11 @@ export default function TypingSurface({ target, session, size = "md", hint, auto
                 "rounded-[3px]",
                 state === "pending" && "text-muted-foreground/80",
                 state === "correct" && "text-foreground",
-                state === "wrong" && "bg-destructive/15 text-destructive underline decoration-destructive decoration-2 underline-offset-4",
-                isActive && !session.done && "caret-blink bg-primary/20 text-foreground shadow-[inset_0_-2px_0_var(--primary)]",
+                state === "wrong" &&
+                  "bg-destructive/15 text-destructive underline decoration-destructive decoration-2 underline-offset-4",
+                isActive &&
+                  !session.done &&
+                  "caret-blink bg-primary/20 text-foreground shadow-[inset_0_-2px_0_var(--primary)]",
               )}
             >
               {char === " " && state === "wrong" ? "␣" : char === "\n" ? "↵\n" : char}

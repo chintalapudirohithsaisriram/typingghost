@@ -26,10 +26,16 @@ export default function HandGuide({ nextChar, className }: Props) {
   const finger = FINGER_BY_KEY[key];
   const shiftSide = shift ? shiftSideFor(key) : null;
   const active = (id: string) =>
-    finger === id || (shiftSide === "left" && id === "left pinky") || (shiftSide === "right" && id === "right pinky");
+    finger === id ||
+    (shiftSide === "left" && id === "left pinky") ||
+    (shiftSide === "right" && id === "right pinky");
 
   return (
-    <div className={cn("pointer-events-none select-none", className)} aria-hidden="true" data-testid="hand-guide">
+    <div
+      className={cn("pointer-events-none select-none", className)}
+      aria-hidden="true"
+      data-testid="hand-guide"
+    >
       <svg viewBox="0 0 200 120" className="mx-auto h-auto w-full max-w-xs">
         {[...LEFT, ...RIGHT].map((f) => (
           <rect
@@ -45,8 +51,24 @@ export default function HandGuide({ nextChar, className }: Props) {
         ))}
         <rect x={4} y={86} width={82} height={30} rx={14} className="fill-secondary" />
         <rect x={114} y={86} width={82} height={30} rx={14} className="fill-secondary" />
-        <rect x={84} y={78} width={14} height={30} rx={7} transform="rotate(-25 91 93)" className={finger === "thumbs" ? "fill-primary" : "fill-secondary"} />
-        <rect x={102} y={78} width={14} height={30} rx={7} transform="rotate(25 109 93)" className={finger === "thumbs" ? "fill-primary" : "fill-secondary"} />
+        <rect
+          x={84}
+          y={78}
+          width={14}
+          height={30}
+          rx={7}
+          transform="rotate(-25 91 93)"
+          className={finger === "thumbs" ? "fill-primary" : "fill-secondary"}
+        />
+        <rect
+          x={102}
+          y={78}
+          width={14}
+          height={30}
+          rx={7}
+          transform="rotate(25 109 93)"
+          className={finger === "thumbs" ? "fill-primary" : "fill-secondary"}
+        />
       </svg>
       <p className="mt-2 text-center text-xs text-muted-foreground">
         {finger ? (
