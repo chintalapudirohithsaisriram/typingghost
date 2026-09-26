@@ -31,7 +31,11 @@ export default function TypingSurface({
   const prevLength = useRef(0);
 
   useEffect(() => {
-    if (!session.done && autoFocus) inputRef.current?.focus({ preventScroll: true });
+    if (session.done || !autoFocus) return;
+    // Don't steal focus from another field the user is editing (e.g. custom letters).
+    const active = document.activeElement;
+    if (active && active !== inputRef.current && active.matches("input, textarea, select")) return;
+    inputRef.current?.focus({ preventScroll: true });
   }, [session.done, target, autoFocus]);
 
   useEffect(() => {
