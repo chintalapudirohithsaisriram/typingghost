@@ -96,8 +96,16 @@ export const levelFromXp = (xp: number) => {
   };
 };
 
-export const xpForSession = (stats: TypingStats) =>
-  Math.round((stats.netWpm * (stats.realAccuracy / 100) * stats.elapsedMs) / 6000) + 5;
+/**
+ * XP only rewards genuine practice: sessions shorter than 20 typed characters
+ * or 5 seconds, or below 50% accuracy, earn nothing. Per-session XP is capped
+ * so one long run can't dwarf steady learning.
+ */
+export const xpForSession = (stats: TypingStats) => {
+  if (stats.typed < 20 || stats.elapsedMs < 5000 || stats.realAccuracy < 50) return 0;
+  const earned = (stats.netWpm * (stats.realAccuracy / 100) * stats.elapsedMs) / 6000 + 5;
+  return Math.min(150, Math.round(earned));
+};
 
 export function recordSession(
   profile: ProfileState,
@@ -178,8 +186,9 @@ export const strongestKeys = (profile: ProfileState, count = 6) =>
     .slice(0, count);
 
 export const nextLesson = (profile: ProfileState) =>
-  LESSONS.find((lesson) => !profile.completedLessons.includes(lesson.id)) ??
-  LESSONS[LESSONS.length - 1];
+  LESSONS.find((lesson) => !profile.completedLessons.includes(lesson.id));
+
+export const courseComplete = (profile: ProfileState) => nextLesson(profile) === undefined;
 
 export const dayKey = (timestamp: number) => new Date(timestamp).toISOString().slice(0, 10);
 

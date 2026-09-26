@@ -48,7 +48,8 @@ function LearnIndex() {
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Button asChild size="lg">
-              <Link to="/learn/$lessonId" params={{ lessonId: upcoming?.id ?? LESSONS[0]!.id }}>
+              {upcoming || !started ? (
+<Link to="/learn/$lessonId" params={{ lessonId: upcoming?.id ?? LESSONS[0]!.id }}>
                 {started ? `Continue: ${upcoming?.title}` : "Start lesson 1"}{" "}
                 <ArrowRight aria-hidden="true" />
               </Link>

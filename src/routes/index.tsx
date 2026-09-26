@@ -71,8 +71,9 @@ function HomePage() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg">
-              <Link to="/learn/$lessonId" params={{ lessonId: upcoming?.id ?? LESSONS[0]!.id }}>
-                {hasHistory && upcoming ? `Continue: ${upcoming.title}` : "Start learning"}{" "}
+              {upcoming || !hasHistory ? (
+<Link to="/learn/$lessonId" params={{ lessonId: upcoming?.id ?? LESSONS[0]!.id }}>
+                {hasHistory && upcoming ? `Continue: ${upcoming?.title}` : "Start learning"}{" "}
                 <ArrowRight aria-hidden="true" />
               </Link>
             </Button>
