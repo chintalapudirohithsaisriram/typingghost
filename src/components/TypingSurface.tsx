@@ -40,7 +40,30 @@ export default function TypingSurface({
     activeRef.current?.scrollIntoView({ block: "nearest" });
   }, [typed.length, session.lastWrong]);
 
-  const { handleBeforeInput, appendText } = session;
+  const { handleBeforeInput, appendText, handleKeyDown, done } = session;
+
+  // If focus drifted to the page (e.g. after clicking the visual guide), a
+  // keystroke re-focuses the typing area and still counts.
+  useEffect(() => {
+    if (!autoFocus || done) return;
+    const onKey = (event: KeyboardEvent) => {
+      const active = document.activeElement;
+      if (active && active !== document.body) return;
+      if (event.ctrlKey || event.metaKey || event.altKey) return;
+      if (event.key !== "Backspace" && event.key.length !== 1) return;
+      inputRef.current?.focus({ preventScroll: true });
+      handleKeyDown({
+        key: event.key,
+        ctrlKey: false,
+        metaKey: false,
+        altKey: false,
+        nativeEvent: event,
+        preventDefault: () => event.preventDefault(),
+      } as unknown as React.KeyboardEvent<HTMLElement>);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [autoFocus, done, handleKeyDown]);
   useEffect(() => {
     const el = inputRef.current;
     if (!el) return;
