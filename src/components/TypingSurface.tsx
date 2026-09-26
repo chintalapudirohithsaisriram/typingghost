@@ -46,13 +46,16 @@ export default function TypingSurface({
 
   const { handleBeforeInput, appendText, handleKeyDown, done } = session;
 
-  // If focus drifted to the page (e.g. after clicking the visual guide), a
+  // If focus drifted to the page or a button (e.g. after clicking the visual guide), a
   // keystroke re-focuses the typing area and still counts.
   useEffect(() => {
     if (!autoFocus || done) return;
     const onKey = (event: KeyboardEvent) => {
       const active = document.activeElement;
-      if (active && active !== document.body) return;
+      // Buttons (e.g. "Show tap keyboard") hand typing back to the surface;
+      // real text fields, links and Tab/Enter keep their normal behaviour.
+      if (active && active !== document.body && active.tagName !== "BUTTON") return;
+      if (active?.tagName === "BUTTON" && (event.key === " " || event.key === "Enter")) return;
       if (event.ctrlKey || event.metaKey || event.altKey) return;
       if (event.key !== "Backspace" && event.key.length !== 1) return;
       inputRef.current?.focus({ preventScroll: true });
