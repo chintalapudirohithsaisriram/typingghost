@@ -31,7 +31,11 @@ export default function TypingSurface({
   const prevLength = useRef(0);
 
   useEffect(() => {
-    if (!session.done && autoFocus) inputRef.current?.focus({ preventScroll: true });
+    if (session.done || !autoFocus) return;
+    // Don't steal focus from another field the user is editing (e.g. custom letters).
+    const active = document.activeElement;
+    if (active && active !== inputRef.current && active.matches("input, textarea, select")) return;
+    inputRef.current?.focus({ preventScroll: true });
   }, [session.done, target, autoFocus]);
 
   useEffect(() => {
@@ -40,7 +44,33 @@ export default function TypingSurface({
     activeRef.current?.scrollIntoView({ block: "nearest" });
   }, [typed.length, session.lastWrong]);
 
-  const { handleBeforeInput, appendText } = session;
+  const { handleBeforeInput, appendText, handleKeyDown, done } = session;
+
+  // If focus drifted to the page or a button (e.g. after clicking the visual guide), a
+  // keystroke re-focuses the typing area and still counts.
+  useEffect(() => {
+    if (!autoFocus || done) return;
+    const onKey = (event: KeyboardEvent) => {
+      const active = document.activeElement;
+      // Buttons (e.g. "Show tap keyboard") hand typing back to the surface;
+      // real text fields, links and Tab/Enter keep their normal behaviour.
+      if (active && active !== document.body && active.tagName !== "BUTTON") return;
+      if (active?.tagName === "BUTTON" && (event.key === " " || event.key === "Enter")) return;
+      if (event.ctrlKey || event.metaKey || event.altKey) return;
+      if (event.key !== "Backspace" && event.key.length !== 1) return;
+      inputRef.current?.focus({ preventScroll: true });
+      handleKeyDown({
+        key: event.key,
+        ctrlKey: false,
+        metaKey: false,
+        altKey: false,
+        nativeEvent: event,
+        preventDefault: () => event.preventDefault(),
+      } as unknown as React.KeyboardEvent<HTMLElement>);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [autoFocus, done, handleKeyDown]);
   useEffect(() => {
     const el = inputRef.current;
     if (!el) return;

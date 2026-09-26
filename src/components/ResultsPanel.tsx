@@ -88,7 +88,7 @@ export default function ResultsPanel({
           hint="Measured, never limited"
         />
       </div>
-      <details className="panel group p-4">
+      <details className="panel group p-4" open>
         <summary className="cursor-pointer text-sm font-medium">More detail</summary>
         <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
           <StatTile label="Raw WPM" value={round(stats.grossWpm)} hint="All keystrokes" />

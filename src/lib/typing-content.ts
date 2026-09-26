@@ -106,7 +106,7 @@ const RAW_LESSONS: Lesson[] = [
   },
   {
     id: "top-row-words",
-    level: 0,
+    level: 8,
     stage: "Reaches",
     title: "Top Row Words",
     description: "Whole words that live on the top row, reached and returned cleanly.",
@@ -119,7 +119,7 @@ const RAW_LESSONS: Lesson[] = [
   },
   {
     id: "lower-row",
-    level: 8,
+    level: 9,
     stage: "Reaches",
     title: "Bottom Row",
     description: "Curl down into the bottom row while keeping your wrists relaxed.",
@@ -132,7 +132,7 @@ const RAW_LESSONS: Lesson[] = [
   },
   {
     id: "all-letters",
-    level: 9,
+    level: 10,
     stage: "Fluency",
     title: "All Letters",
     description: "Combine all three letter rows without looking down.",
@@ -145,7 +145,7 @@ const RAW_LESSONS: Lesson[] = [
   },
   {
     id: "word-building",
-    level: 10,
+    level: 11,
     stage: "Fluency",
     title: "Common Words",
     description: "Automate the two hundred words you type most often.",
@@ -159,7 +159,7 @@ const RAW_LESSONS: Lesson[] = [
   },
   {
     id: "tricky-patterns",
-    level: 11,
+    level: 12,
     stage: "Fluency",
     title: "Tricky Patterns",
     description: "Drill the letter transitions that break most people's rhythm.",
@@ -173,7 +173,7 @@ const RAW_LESSONS: Lesson[] = [
   },
   {
     id: "capital-letters",
-    level: 12,
+    level: 13,
     stage: "Fluency",
     title: "Shift and Capitals",
     description: "Coordinate Shift with the opposite hand and keep your rhythm.",
@@ -187,7 +187,7 @@ const RAW_LESSONS: Lesson[] = [
   },
   {
     id: "numbers",
-    level: 13,
+    level: 14,
     stage: "Mastery",
     title: "Number Row",
     description: "Reach for numbers while your home position stays stable.",
@@ -200,7 +200,7 @@ const RAW_LESSONS: Lesson[] = [
   },
   {
     id: "numbers-in-context",
-    level: 0,
+    level: 15,
     stage: "Mastery",
     title: "Numbers in Context",
     description: "Dates, prices and quantities mixed into real sentences.",
@@ -213,7 +213,7 @@ const RAW_LESSONS: Lesson[] = [
   },
   {
     id: "punctuation",
-    level: 14,
+    level: 16,
     stage: "Mastery",
     title: "Punctuation",
     description: "Commas, quotes, colons and sentence endings without hesitation.",
@@ -227,7 +227,7 @@ const RAW_LESSONS: Lesson[] = [
   },
   {
     id: "symbols",
-    level: 15,
+    level: 17,
     stage: "Mastery",
     title: "Symbols",
     description: "Shifted symbols used in email, code and everyday writing.",
@@ -240,7 +240,7 @@ const RAW_LESSONS: Lesson[] = [
   },
   {
     id: "accuracy-loop",
-    level: 16,
+    level: 18,
     stage: "Mastery",
     title: "Accuracy Loop",
     description: "Slow, exact repetition until the hard patterns settle.",
@@ -254,7 +254,7 @@ const RAW_LESSONS: Lesson[] = [
   },
   {
     id: "speed-builder",
-    level: 17,
+    level: 19,
     stage: "Mastery",
     title: "Speed Builder",
     description: "Raise your pace while protecting accuracy and rhythm.",
@@ -268,7 +268,7 @@ const RAW_LESSONS: Lesson[] = [
   },
   {
     id: "endurance",
-    level: 18,
+    level: 20,
     stage: "Mastery",
     title: "Endurance",
     description: "Hold reliable technique through a longer piece of text.",
