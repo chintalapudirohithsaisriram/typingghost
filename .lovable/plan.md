@@ -16,6 +16,7 @@
 - Profile loading handles invalid JSON, but runtime shape validation is incomplete; structurally malformed stored objects can still reach application logic.
 - The lesson route displays `error.message` directly, unlike the generic root error screen. Internal error details should not be exposed to users.
 - Client and server error reporting can transmit messages and stacks. Current code does not intentionally attach typed passages or progress, but a privacy-safe scrubber and explicit allowlist are advisable before features expand.
+- Server error capture keeps the last error in shared module state for five seconds. This can associate the wrong stack with a concurrent request's log and should be replaced with request-scoped handling.
 - CSRF middleware is present for server functions. There is currently no account system or protected backend, so broken access control is not presently applicable; future authentication must enforce authorization server-side.
 - No application code was found evaluating user strings or rendering typed text as HTML. The shared chart utility uses `dangerouslySetInnerHTML` for internally supplied CSS variables, so it should remain restricted to trusted token values.
 - A fresh dependency scan found two **high-severity CPU-exhaustion advisories** in transitive `js-yaml` through `@tanstack/react-start` 1.168.32. The persisted security scan is older and reported no findings, so the fresh lockfile result takes precedence for remediation planning.
@@ -29,6 +30,7 @@ Typing.com keeps the keyboard and hands together, offers independent keyboard/ha
 ### P0 — Input correctness, data safety, and the integrated teaching surface
 1. **Protect and test the typing engine before visual work**
    - Add focused tests around `src/hooks/useTypingSession.ts`, `src/components/TypingSurface.tsx`, and `src/lib/typing.ts` for hydration/focus recovery, physical keys, touch `beforeinput`, composition/IME commit, Backspace, Enter, Shift/symbol input, duplicate-event prevention, completion idempotency, active-character scrolling, and reset/target changes.
+   - Strengthen focus guards to recognize editable elements beyond native inputs, including `contenteditable` and textbox-like widgets, without weakening the typing-surface recovery behavior.
    - Preserve the hidden textarea as the sole physical/mobile input boundary and preserve the real-button path for tap typing.
 
 2. **Create one keyboard-and-hands system**
@@ -48,7 +50,7 @@ Typing.com keeps the keyboard and hands together, offers independent keyboard/ha
 4. **Harden local data and visible errors**
    - Add schema-based validation and bounded normalization for profile/settings data in `src/lib/profile.ts`, `src/lib/settings.ts`, and `src/lib/storage.ts`; recover safely from malformed, oversized, or future-version records without destroying valid v3 history.
    - Replace lesson-level raw error messages with the generic user-safe error treatment.
-   - Add privacy-safe error serialization in `src/lib/error-capture.ts` and `src/lib/lovable-error-reporting.ts`; exclude typed text, stored progress, URLs with sensitive query data, and arbitrary object payloads.
+   - Add request-scoped, privacy-safe error serialization in `src/lib/error-capture.ts`, `src/lib/lovable-error-reporting.ts`, `src/start.ts`, and `src/server.ts`; remove the shared last-error buffer and exclude typed text, stored progress, URLs with sensitive query data, and arbitrary object payloads.
 
 ### P1 — Refined soft-surface system and complete-site consistency
 5. **Build the restrained soft-surface design tokens**
