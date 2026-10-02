@@ -34,7 +34,12 @@ export default function TypingSurface({
     if (session.done || !autoFocus) return;
     // Don't steal focus from another field the user is editing (e.g. custom letters).
     const active = document.activeElement;
-    if (active && active !== inputRef.current && active.matches("input, textarea, select")) return;
+    if (
+      active &&
+      active !== inputRef.current &&
+      active.matches("input, textarea, select, [contenteditable='true'], [role='textbox']")
+    )
+      return;
     inputRef.current?.focus({ preventScroll: true });
   }, [session.done, target, autoFocus]);
 
@@ -148,7 +153,9 @@ export default function TypingSurface({
                 state === "correct" && "text-foreground",
                 state === "wrong" &&
                   "text-destructive underline decoration-destructive/70 decoration-2 underline-offset-4",
-                isActive && !session.done && "text-foreground shadow-[inset_0_-3px_0_var(--primary)]",
+                isActive &&
+                  !session.done &&
+                  "text-foreground shadow-[inset_0_-3px_0_var(--primary)]",
               )}
             >
               {char === " " && state === "wrong" ? "␣" : char === "\n" ? "↵\n" : char}

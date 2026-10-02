@@ -31,6 +31,11 @@ export type ProfileState = {
 const STORAGE_KEY = "typenova.profile.v3";
 const LEGACY_KEYS = ["typenova.profile.v2"];
 const MAX_SESSIONS = 500;
+const MAX_XP = 10_000_000;
+const cleanNumber = (value: unknown, max: number) =>
+  typeof value === "number" && Number.isFinite(value) ? Math.min(max, Math.max(0, value)) : 0;
+const cleanText = (value: unknown, max = 120) =>
+  typeof value === "string" ? value.replace(/[\u0000-\u001f\u007f]/g, "").slice(0, max) : "";
 
 export const defaultProfile = (): ProfileState => ({
   version: 3,
@@ -44,20 +49,70 @@ export const defaultProfile = (): ProfileState => ({
 
 function normalise(parsed: Partial<ProfileState> | null): ProfileState {
   if (!parsed || typeof parsed !== "object") return defaultProfile();
-  const sessions = Array.isArray(parsed.sessions) ? parsed.sessions : [];
+  const sessions = Array.isArray(parsed.sessions)
+    ? parsed.sessions.slice(-MAX_SESSIONS).flatMap((value) => {
+        if (!value || typeof value !== "object") return [];
+        const session = value as Partial<SessionRecord>;
+        const modes: SessionRecord["mode"][] = ["lesson", "test", "practice", "game", "focus"];
+        const legacyMode = (session.mode as string) === "drill" ? "practice" : session.mode;
+        if (!modes.includes(legacyMode as SessionRecord["mode"])) return [];
+        return [
+          {
+            id: cleanText(session.id, 80) || `recovered-${Date.now()}`,
+            at: cleanNumber(session.at, Date.now() + 86_400_000),
+            mode: legacyMode as SessionRecord["mode"],
+            label: cleanText(session.label) || "Recovered session",
+            wpm: cleanNumber(session.wpm, 500),
+            netWpm: cleanNumber(session.netWpm, 500),
+            accuracy: cleanNumber(session.accuracy, 100),
+            consistency: cleanNumber(session.consistency, 100),
+            durationMs: cleanNumber(session.durationMs, 86_400_000),
+            characters: cleanNumber(session.characters, 1_000_000),
+            errors: cleanNumber(session.errors, 1_000_000),
+            ...(typeof session.lessonId === "string" &&
+            LESSONS.some((lesson) => lesson.id === session.lessonId)
+              ? { lessonId: session.lessonId }
+              : {}),
+            ...(typeof session.passed === "boolean" ? { passed: session.passed } : {}),
+          },
+        ];
+      })
+    : [];
+  const rawKeyStats = parsed.keyStats && typeof parsed.keyStats === "object" ? parsed.keyStats : {};
+  const keyStats = Object.fromEntries(
+    Object.entries(rawKeyStats)
+      .slice(0, 120)
+      .flatMap(([key, value]) => {
+        if (key.length > 2 || !value || typeof value !== "object") return [];
+        const stat = value as { hits?: unknown; misses?: unknown };
+        return [
+          [
+            key,
+            {
+              hits: cleanNumber(stat.hits, 1_000_000),
+              misses: cleanNumber(stat.misses, 1_000_000),
+            },
+          ],
+        ];
+      }),
+  );
   return {
-    ...defaultProfile(),
-    ...parsed,
     version: 3,
-    // Older builds called practice "drill"; keep the record, rename the mode.
-    sessions: sessions.map((s) => ({
-      ...s,
-      mode: (s.mode as string) === "drill" ? "practice" : s.mode,
-    })),
+    xp: cleanNumber(parsed.xp, MAX_XP),
+    sessions,
     completedLessons: Array.isArray(parsed.completedLessons)
-      ? parsed.completedLessons.filter((id) => LESSONS.some((lesson) => lesson.id === id))
+      ? Array.from(
+          new Set(
+            parsed.completedLessons.filter(
+              (id): id is string =>
+                typeof id === "string" && LESSONS.some((lesson) => lesson.id === id),
+            ),
+          ),
+        )
       : [],
-    keyStats: parsed.keyStats && typeof parsed.keyStats === "object" ? parsed.keyStats : {},
+    keyStats,
+    bestWpm: cleanNumber(parsed.bestWpm, 500),
+    bestAccuracy: cleanNumber(parsed.bestAccuracy, 100),
   };
 }
 

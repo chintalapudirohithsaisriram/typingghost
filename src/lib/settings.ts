@@ -27,12 +27,35 @@ const listeners = new Set<() => void>();
 function ensureLoaded() {
   if (loaded || typeof window === "undefined") return;
   loaded = true;
-  current = { ...DEFAULT_SETTINGS, ...(storage.read<Partial<Settings>>(KEY) ?? {}) };
+  const saved = storage.read<Partial<Settings>>(KEY);
+  current = normaliseSettings(saved);
+}
+
+function normaliseSettings(saved: Partial<Settings> | null): Settings {
+  if (!saved || typeof saved !== "object") return DEFAULT_SETTINGS;
+  const themes = ["paper", "sand", "dark"] as const;
+  const animations = ["system", "on", "off"] as const;
+  const scales = [90, 100, 115, 130] as const;
+  return {
+    theme: themes.includes(saved.theme as (typeof themes)[number])
+      ? (saved.theme as Settings["theme"])
+      : DEFAULT_SETTINGS.theme,
+    sound: typeof saved.sound === "boolean" ? saved.sound : DEFAULT_SETTINGS.sound,
+    animations: animations.includes(saved.animations as (typeof animations)[number])
+      ? (saved.animations as Settings["animations"])
+      : DEFAULT_SETTINGS.animations,
+    fontScale: scales.includes(saved.fontScale as (typeof scales)[number])
+      ? (saved.fontScale as Settings["fontScale"])
+      : DEFAULT_SETTINGS.fontScale,
+    showKeyboard:
+      typeof saved.showKeyboard === "boolean" ? saved.showKeyboard : DEFAULT_SETTINGS.showKeyboard,
+    showHands: typeof saved.showHands === "boolean" ? saved.showHands : DEFAULT_SETTINGS.showHands,
+  };
 }
 
 export function updateSettings(patch: Partial<Settings>) {
   ensureLoaded();
-  current = { ...current, ...patch };
+  current = normaliseSettings({ ...current, ...patch });
   storage.write(KEY, current);
   listeners.forEach((l) => l());
 }
