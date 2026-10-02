@@ -34,7 +34,12 @@ export default function TypingSurface({
     if (session.done || !autoFocus) return;
     // Don't steal focus from another field the user is editing (e.g. custom letters).
     const active = document.activeElement;
-    if (active && active !== inputRef.current && active.matches("input, textarea, select")) return;
+    if (
+      active &&
+      active !== inputRef.current &&
+      active.matches("input, textarea, select, [contenteditable='true'], [role='textbox']")
+    )
+      return;
     inputRef.current?.focus({ preventScroll: true });
   }, [session.done, target, autoFocus]);
 
@@ -54,7 +59,12 @@ export default function TypingSurface({
       const active = document.activeElement;
       // Buttons (e.g. "Show tap keyboard") hand typing back to the surface;
       // real text fields, links and Tab/Enter keep their normal behaviour.
-      if (active && active !== document.body && active.tagName !== "BUTTON") return;
+      if (
+        active &&
+        active !== document.body &&
+        active.tagName !== "BUTTON"
+      )
+        return;
       if (active?.tagName === "BUTTON" && (event.key === " " || event.key === "Enter")) return;
       if (event.ctrlKey || event.metaKey || event.altKey) return;
       if (event.key !== "Backspace" && event.key.length !== 1) return;

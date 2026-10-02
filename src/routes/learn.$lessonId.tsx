@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, Keyboard, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import CourseSidebar from "@/components/CourseSidebar";
-import HandGuide from "@/components/HandGuide";
+import KeyboardHandsGuide from "@/components/KeyboardHandsGuide";
 import ResultsPanel from "@/components/ResultsPanel";
 import TypingSurface from "@/components/TypingSurface";
 import { Button } from "@/components/ui/button";
@@ -38,7 +38,12 @@ export const Route = createFileRoute("/learn/$lessonId")({
   errorComponent: ({ error }) => (
     <div className="mx-auto max-w-3xl px-4 py-16 text-center">
       <h1 className="font-display text-2xl font-bold">This lesson could not load.</h1>
-      <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Something went wrong while opening this lesson. Return to the course and try again.
+      </p>
+      <Button asChild className="mt-6">
+        <Link to="/learn">Open the course</Link>
+      </Button>
     </div>
   ),
   component: LessonPage,
@@ -58,7 +63,8 @@ function LessonNotFound() {
 
 function LessonPage() {
   const { lessonId } = Route.useLoaderData();
-  const lesson = lessonById(lessonId)!;
+  const lesson = lessonById(lessonId);
+  if (!lesson) return <LessonNotFound />;
   const { profile, update } = useProfile();
   const settings = useSettings();
   const [result, setResult] = useState<(TypingResult & { passed: boolean }) | null>(null);
@@ -224,20 +230,14 @@ function LessonPage() {
 
               <TypingSurface target={lesson.exercise} session={session} size="lg" />
 
-              <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
-                {settings.showKeyboard ? (
-                  <VirtualKeyboard
+               {settings.showKeyboard ? (
+                 <KeyboardHandsGuide
                     nextChar={session.currentChar}
                     highlightKeys={targetKeys}
                     errorKeys={session.errors}
+                    showHands={settings.showHands}
                   />
                 ) : null}
-                {settings.showHands ? (
-                  <div className="panel flex flex-col justify-center p-4">
-                    <HandGuide nextChar={session.currentChar} />
-                  </div>
-                ) : null}
-              </div>
 
               <div className="flex flex-wrap items-center gap-2">
                 <Button
