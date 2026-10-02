@@ -66,7 +66,7 @@ export default function VirtualKeyboard({
 
   const keyClass = (active: boolean, extra?: string) =>
     cn(
-      "flex h-9 min-w-0 flex-1 items-center justify-center rounded-md border border-border bg-surface font-mono text-xs uppercase shadow-[0_1px_0_var(--border)] sm:h-11 sm:text-sm",
+      "soft-key flex h-9 min-w-0 flex-1 items-center justify-center font-mono text-xs uppercase transition-[box-shadow,transform,background-color] sm:h-11 sm:text-sm",
       active && "border-primary bg-primary text-primary-foreground glow-ring",
       extra,
     );
@@ -89,7 +89,7 @@ export default function VirtualKeyboard({
           key={key}
           type="button"
           onMouseDown={keepFocus}
-          className={cn(cls, "hover:bg-secondary active:translate-y-px")}
+          className={cn(cls, "hover:bg-secondary active:translate-y-px active:shadow-[var(--shadow-inset)]")}
           aria-label={`Type ${label}`}
           onClick={() => press(key)}
         >
