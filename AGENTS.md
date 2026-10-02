@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Treat browser-stored progress as untrusted presentation data; any future rankings, certificates, purchases, shared challenges, or protected state require authenticated server-side validation because local data is user-modifiable.
+- Keep physical/mobile typing exclusively in TypingSurface and tap typing in explicitly interactive keyboard buttons; passive keyboard and hand guidance must never dispatch input.
