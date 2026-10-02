@@ -59,12 +59,7 @@ export default function TypingSurface({
       const active = document.activeElement;
       // Buttons (e.g. "Show tap keyboard") hand typing back to the surface;
       // real text fields, links and Tab/Enter keep their normal behaviour.
-      if (
-        active &&
-        active !== document.body &&
-        active.tagName !== "BUTTON"
-      )
-        return;
+      if (active && active !== document.body && active.tagName !== "BUTTON") return;
       if (active?.tagName === "BUTTON" && (event.key === " " || event.key === "Enter")) return;
       if (event.ctrlKey || event.metaKey || event.altKey) return;
       if (event.key !== "Backspace" && event.key.length !== 1) return;
@@ -158,7 +153,9 @@ export default function TypingSurface({
                 state === "correct" && "text-foreground",
                 state === "wrong" &&
                   "text-destructive underline decoration-destructive/70 decoration-2 underline-offset-4",
-                isActive && !session.done && "text-foreground shadow-[inset_0_-3px_0_var(--primary)]",
+                isActive &&
+                  !session.done &&
+                  "text-foreground shadow-[inset_0_-3px_0_var(--primary)]",
               )}
             >
               {char === " " && state === "wrong" ? "␣" : char === "\n" ? "↵\n" : char}

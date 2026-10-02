@@ -89,7 +89,10 @@ export default function VirtualKeyboard({
           key={key}
           type="button"
           onMouseDown={keepFocus}
-          className={cn(cls, "hover:bg-secondary active:translate-y-px active:shadow-[var(--shadow-inset)]")}
+          className={cn(
+            cls,
+            "hover:bg-secondary active:translate-y-px active:shadow-[var(--shadow-inset)]",
+          )}
           aria-label={`Type ${label}`}
           onClick={() => press(key)}
         >

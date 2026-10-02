@@ -49,8 +49,7 @@ function normaliseSettings(saved: Partial<Settings> | null): Settings {
       : DEFAULT_SETTINGS.fontScale,
     showKeyboard:
       typeof saved.showKeyboard === "boolean" ? saved.showKeyboard : DEFAULT_SETTINGS.showKeyboard,
-    showHands:
-      typeof saved.showHands === "boolean" ? saved.showHands : DEFAULT_SETTINGS.showHands,
+    showHands: typeof saved.showHands === "boolean" ? saved.showHands : DEFAULT_SETTINGS.showHands,
   };
 }
 

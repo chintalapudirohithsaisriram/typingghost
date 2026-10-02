@@ -123,7 +123,8 @@
   --shadow-glow: 0 0 0 3px color-mix(in oklab, var(--primary) 22%, transparent);
   --shadow-panel: -5px -5px 14px oklch(1 0 0 / 72%), 6px 7px 16px oklch(0.35 0.02 75 / 11%);
   --shadow-soft-sm: -2px -2px 6px oklch(1 0 0 / 72%), 3px 3px 7px oklch(0.35 0.02 75 / 12%);
-  --shadow-inset: inset 2px 2px 5px oklch(0.35 0.02 75 / 11%), inset -2px -2px 5px oklch(1 0 0 / 65%);
+  --shadow-inset:
+    inset 2px 2px 5px oklch(0.35 0.02 75 / 11%), inset -2px -2px 5px oklch(1 0 0 / 65%);
   color-scheme: light;
 }
 
@@ -169,7 +170,8 @@
   --key-border: oklch(1 0 0 / 14%);
   --shadow-panel: -5px -5px 14px oklch(0.32 0.01 80 / 42%), 7px 8px 18px oklch(0 0 0 / 38%);
   --shadow-soft-sm: -2px -2px 6px oklch(0.34 0.01 80 / 38%), 3px 3px 8px oklch(0 0 0 / 36%);
-  --shadow-inset: inset 2px 2px 5px oklch(0 0 0 / 35%), inset -2px -2px 5px oklch(0.4 0.01 80 / 22%);
+  --shadow-inset:
+    inset 2px 2px 5px oklch(0 0 0 / 35%), inset -2px -2px 5px oklch(0.4 0.01 80 / 22%);
 }
 
 .reduce-motion *,

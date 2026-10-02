@@ -230,14 +230,14 @@ function LessonPage() {
 
               <TypingSurface target={lesson.exercise} session={session} size="lg" />
 
-               {settings.showKeyboard ? (
-                 <KeyboardHandsGuide
-                    nextChar={session.currentChar}
-                    highlightKeys={targetKeys}
-                    errorKeys={session.errors}
-                    showHands={settings.showHands}
-                  />
-                ) : null}
+              {settings.showKeyboard ? (
+                <KeyboardHandsGuide
+                  nextChar={session.currentChar}
+                  highlightKeys={targetKeys}
+                  errorKeys={session.errors}
+                  showHands={settings.showHands}
+                />
+              ) : null}
 
               <div className="flex flex-wrap items-center gap-2">
                 <Button

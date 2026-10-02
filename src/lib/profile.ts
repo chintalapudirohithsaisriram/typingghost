@@ -56,41 +56,59 @@ function normalise(parsed: Partial<ProfileState> | null): ProfileState {
         const modes: SessionRecord["mode"][] = ["lesson", "test", "practice", "game", "focus"];
         const legacyMode = (session.mode as string) === "drill" ? "practice" : session.mode;
         if (!modes.includes(legacyMode as SessionRecord["mode"])) return [];
-        return [{
-          id: cleanText(session.id, 80) || `recovered-${Date.now()}`,
-          at: cleanNumber(session.at, Date.now() + 86_400_000),
-          mode: legacyMode as SessionRecord["mode"],
-          label: cleanText(session.label) || "Recovered session",
-          wpm: cleanNumber(session.wpm, 500),
-          netWpm: cleanNumber(session.netWpm, 500),
-          accuracy: cleanNumber(session.accuracy, 100),
-          consistency: cleanNumber(session.consistency, 100),
-          durationMs: cleanNumber(session.durationMs, 86_400_000),
-          characters: cleanNumber(session.characters, 1_000_000),
-          errors: cleanNumber(session.errors, 1_000_000),
-          ...(typeof session.lessonId === "string" && LESSONS.some((lesson) => lesson.id === session.lessonId)
-            ? { lessonId: session.lessonId }
-            : {}),
-          ...(typeof session.passed === "boolean" ? { passed: session.passed } : {}),
-        }];
+        return [
+          {
+            id: cleanText(session.id, 80) || `recovered-${Date.now()}`,
+            at: cleanNumber(session.at, Date.now() + 86_400_000),
+            mode: legacyMode as SessionRecord["mode"],
+            label: cleanText(session.label) || "Recovered session",
+            wpm: cleanNumber(session.wpm, 500),
+            netWpm: cleanNumber(session.netWpm, 500),
+            accuracy: cleanNumber(session.accuracy, 100),
+            consistency: cleanNumber(session.consistency, 100),
+            durationMs: cleanNumber(session.durationMs, 86_400_000),
+            characters: cleanNumber(session.characters, 1_000_000),
+            errors: cleanNumber(session.errors, 1_000_000),
+            ...(typeof session.lessonId === "string" &&
+            LESSONS.some((lesson) => lesson.id === session.lessonId)
+              ? { lessonId: session.lessonId }
+              : {}),
+            ...(typeof session.passed === "boolean" ? { passed: session.passed } : {}),
+          },
+        ];
       })
     : [];
   const rawKeyStats = parsed.keyStats && typeof parsed.keyStats === "object" ? parsed.keyStats : {};
   const keyStats = Object.fromEntries(
-    Object.entries(rawKeyStats).slice(0, 120).flatMap(([key, value]) => {
-      if (key.length > 2 || !value || typeof value !== "object") return [];
-      const stat = value as { hits?: unknown; misses?: unknown };
-      return [[key, { hits: cleanNumber(stat.hits, 1_000_000), misses: cleanNumber(stat.misses, 1_000_000) }]];
-    }),
+    Object.entries(rawKeyStats)
+      .slice(0, 120)
+      .flatMap(([key, value]) => {
+        if (key.length > 2 || !value || typeof value !== "object") return [];
+        const stat = value as { hits?: unknown; misses?: unknown };
+        return [
+          [
+            key,
+            {
+              hits: cleanNumber(stat.hits, 1_000_000),
+              misses: cleanNumber(stat.misses, 1_000_000),
+            },
+          ],
+        ];
+      }),
   );
   return {
     version: 3,
     xp: cleanNumber(parsed.xp, MAX_XP),
     sessions,
     completedLessons: Array.isArray(parsed.completedLessons)
-      ? Array.from(new Set(parsed.completedLessons.filter((id): id is string =>
-          typeof id === "string" && LESSONS.some((lesson) => lesson.id === id),
-        )))
+      ? Array.from(
+          new Set(
+            parsed.completedLessons.filter(
+              (id): id is string =>
+                typeof id === "string" && LESSONS.some((lesson) => lesson.id === id),
+            ),
+          ),
+        )
       : [],
     keyStats,
     bestWpm: cleanNumber(parsed.bestWpm, 500),

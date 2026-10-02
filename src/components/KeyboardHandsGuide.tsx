@@ -12,10 +12,10 @@ type Props = {
 type KeyBox = { key: string; x: number; y: number; w: number; h: number };
 
 const ROWS = [
-  { keys: KEYBOARD_ROWS[0], x: 58, y: 224, w: 66, gap: 8 },
-  { keys: KEYBOARD_ROWS[1], x: 90, y: 292, w: 72, gap: 8 },
-  { keys: KEYBOARD_ROWS[2], x: 118, y: 360, w: 72, gap: 8 },
-  { keys: KEYBOARD_ROWS[3], x: 170, y: 428, w: 72, gap: 8 },
+  { keys: KEYBOARD_ROWS[0] ?? [], x: 58, y: 224, w: 66, gap: 8 },
+  { keys: KEYBOARD_ROWS[1] ?? [], x: 90, y: 292, w: 72, gap: 8 },
+  { keys: KEYBOARD_ROWS[2] ?? [], x: 118, y: 360, w: 72, gap: 8 },
+  { keys: KEYBOARD_ROWS[3] ?? [], x: 170, y: 428, w: 72, gap: 8 },
 ] as const;
 
 const KEY_BOXES: KeyBox[] = ROWS.flatMap((row) =>
