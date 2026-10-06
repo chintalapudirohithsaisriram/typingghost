@@ -84,7 +84,11 @@ export default function TypingSurface({
     const onBefore = (event: Event) => {
       const input = event as InputEvent;
       if (composingRef.current || input.isComposing) return;
-      if (committedRef.current !== null && input.data === committedRef.current && ["insertText", "insertFromComposition"].includes(input.inputType)) {
+      if (
+        committedRef.current !== null &&
+        input.data === committedRef.current &&
+        ["insertText", "insertFromComposition"].includes(input.inputType)
+      ) {
         input.preventDefault();
         committedRef.current = null;
         return;
@@ -92,7 +96,10 @@ export default function TypingSurface({
       committedRef.current = null;
       handleBeforeInput(input);
     };
-    const onCompositionStart = () => { composingRef.current = true; committedRef.current = null; };
+    const onCompositionStart = () => {
+      composingRef.current = true;
+      committedRef.current = null;
+    };
     const onCompositionEnd = (event: CompositionEvent) => {
       composingRef.current = false;
       if (event.data) appendText(event.data);
@@ -147,7 +154,7 @@ export default function TypingSurface({
       <span className="sr-only" aria-live="polite">
         {session.done
           ? `Finished. ${Math.round(session.stats.netWpm)} words per minute at ${Math.round(session.stats.realAccuracy)} percent accuracy.`
-                  : ""}
+          : ""}
       </span>
 
       <p
