@@ -1,4 +1,5 @@
-import { FINGER_BY_KEY, KEYBOARD_ROWS, keyFor, shiftSideFor } from "@/lib/typing-content";
+import { FINGER_BY_KEY, keyFor, shiftSideFor } from "@/lib/typing-content";
+import { HOME_KEY_BY_FINGER, KEY_LAYOUT, keyLabel } from "@/lib/keyboard-layout";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -6,40 +7,9 @@ type Props = {
   highlightKeys?: string[];
   errorKeys?: Record<string, number>;
   showHands?: boolean;
-  className?: string;
+  className?: string | undefined;
 };
-
-type KeyBox = { key: string; x: number; y: number; w: number; h: number };
-
-const ROWS = [
-  { keys: KEYBOARD_ROWS[0] ?? [], x: 58, y: 224, w: 66, gap: 8 },
-  { keys: KEYBOARD_ROWS[1] ?? [], x: 90, y: 292, w: 72, gap: 8 },
-  { keys: KEYBOARD_ROWS[2] ?? [], x: 118, y: 360, w: 72, gap: 8 },
-  { keys: KEYBOARD_ROWS[3] ?? [], x: 170, y: 428, w: 72, gap: 8 },
-] as const;
-
-const KEY_BOXES: KeyBox[] = ROWS.flatMap((row) =>
-  row.keys.map((key, index) => ({ key, x: row.x + index * (row.w + row.gap), y: row.y, w: row.w, h: 54 })),
-);
-const SHIFT_BOXES: KeyBox[] = [
-  { key: "shift-left", x: 58, y: 428, w: 104, h: 54 },
-  { key: "shift-right", x: 826, y: 428, w: 116, h: 54 },
-];
-const SPACE_BOX: KeyBox = { key: " ", x: 322, y: 496, w: 356, h: 50 };
-
-const FINGER_HOME: Record<string, { x: number; y: number }> = {
-  "left pinky": { x: 235, y: 164 },
-  "left ring": { x: 300, y: 142 },
-  "left middle": { x: 365, y: 130 },
-  "left index": { x: 430, y: 150 },
-  "right index": { x: 570, y: 150 },
-  "right middle": { x: 635, y: 130 },
-  "right ring": { x: 700, y: 142 },
-  "right pinky": { x: 765, y: 164 },
-  thumbs: { x: 500, y: 198 },
-};
-
-const labelFor = (key: string) => (key === " " ? "space" : key);
+const boxFor = (key: string) => KEY_LAYOUT.find((box) => box.key === key);
 
 export default function KeyboardHandsGuide({
   nextChar = "",
@@ -51,85 +21,146 @@ export default function KeyboardHandsGuide({
   const { key: targetKey, shift } = keyFor(nextChar);
   const finger = FINGER_BY_KEY[targetKey];
   const shiftSide = shift ? shiftSideFor(targetKey) : null;
-  const target = targetKey === " " ? SPACE_BOX : KEY_BOXES.find((box) => box.key === targetKey);
-  const targetPoint = target ? { x: target.x + target.w / 2, y: target.y + 7 } : undefined;
-  const activeFinger = finger ? FINGER_HOME[finger] : undefined;
-  const shiftTarget = shiftSide ? SHIFT_BOXES.find((box) => box.key === `shift-${shiftSide}`) : undefined;
-  const shiftPoint = shiftTarget
-    ? { x: shiftTarget.x + shiftTarget.w / 2, y: shiftTarget.y + 7 }
-    : undefined;
-  const shiftFinger = shiftSide ? FINGER_HOME[`${shiftSide} pinky`] : undefined;
-
+  const fingertips = Object.entries(HOME_KEY_BY_FINGER).flatMap(([id, homeKey]) => {
+    const home = boxFor(homeKey);
+    const destination =
+      id === finger
+        ? boxFor(targetKey)
+        : id === `${shiftSide} pinky`
+          ? boxFor(`shift-${shiftSide}`)
+          : home;
+    if (!home || !destination) return [];
+    return [{ id, home, destination, active: id === finger || id === `${shiftSide} pinky` }];
+  });
   return (
     <figure
-      className={cn("soft-panel overflow-hidden p-2 sm:p-4", className)}
+      className={cn("keyboard-stage", className)}
       data-testid="keyboard-hands-guide"
+      aria-hidden="true"
     >
-      <div className="mx-auto w-full max-w-4xl" aria-hidden="true">
-        <svg viewBox="0 0 1000 570" className="block h-auto w-full select-none" focusable="false">
-          {showHands ? (
-            <g className="pointer-events-none">
-              <path d="M165 205 C205 116 295 84 438 113 L482 210 L410 247 L250 242 Z" className="fill-hand stroke-hand-edge" strokeWidth="3" />
-              <path d="M835 205 C795 116 705 84 562 113 L518 210 L590 247 L750 242 Z" className="fill-hand stroke-hand-edge" strokeWidth="3" />
-              {Object.entries(FINGER_HOME).filter(([id]) => id !== "thumbs").map(([id, point]) => {
-                const isActive = id === finger || id === `${shiftSide} pinky`;
-                return <circle key={id} cx={point.x} cy={point.y} r={isActive ? 17 : 12} className={isActive ? "fill-primary stroke-primary" : "fill-hand-detail stroke-hand-edge"} strokeWidth="3" />;
-              })}
-              <path d="M430 205 Q470 225 500 271" className={finger === "thumbs" ? "stroke-primary" : "stroke-hand-edge"} strokeWidth="24" strokeLinecap="round" fill="none" />
-              <path d="M570 205 Q530 225 500 271" className={finger === "thumbs" ? "stroke-primary" : "stroke-hand-edge"} strokeWidth="24" strokeLinecap="round" fill="none" />
-              {activeFinger && targetPoint ? (
-                <path d={`M ${activeFinger.x} ${activeFinger.y + 15} Q ${activeFinger.x} ${(activeFinger.y + targetPoint.y) / 2} ${targetPoint.x} ${targetPoint.y}`} className="stroke-primary" strokeWidth="9" strokeLinecap="round" fill="none" />
-              ) : null}
-              {shiftFinger && shiftPoint ? (
-                <path d={`M ${shiftFinger.x} ${shiftFinger.y + 15} Q ${shiftFinger.x} ${(shiftFinger.y + shiftPoint.y) / 2} ${shiftPoint.x} ${shiftPoint.y}`} className="stroke-primary" strokeWidth="7" strokeLinecap="round" strokeDasharray="12 9" fill="none" />
+      <svg
+        viewBox="0 0 1000 448"
+        className="pointer-events-none block h-auto w-full select-none"
+        focusable="false"
+      >
+        {KEY_LAYOUT.map((box) => {
+          const active = box.key === targetKey || box.key === `shift-${shiftSide}`;
+          const lesson = highlightKeys.includes(box.key);
+          return (
+            <g key={box.key} data-guide-key={box.key} data-active={active}>
+              <rect
+                x={box.x}
+                y={box.y + 3}
+                width={box.w}
+                height={box.h}
+                rx="8"
+                className="fill-surface-2 stroke-key-border"
+              />
+              <rect
+                x={box.x}
+                y={box.y}
+                width={box.w}
+                height={box.h}
+                rx="8"
+                className={cn(
+                  "stroke-key-border",
+                  active
+                    ? "fill-key-accent stroke-primary"
+                    : lesson
+                      ? "fill-key-accent"
+                      : "fill-key",
+                )}
+                strokeWidth={active ? 3 : 1.5}
+              />
+              {active ? (
+                <path
+                  d={`M${box.x + 8} ${box.y + box.h - 5}h${box.w - 16}`}
+                  className="stroke-primary"
+                  strokeWidth="3"
+                />
               ) : null}
             </g>
-          ) : null}
-
-          {[...KEY_BOXES, ...SHIFT_BOXES, SPACE_BOX].map((box) => {
-            const baseKey = box.key.startsWith("shift-") ? "shift" : box.key;
-            const isTarget = baseKey === targetKey || box.key === `shift-${shiftSide}`;
-            const isLessonKey = highlightKeys.includes(baseKey);
-            const hasErrors = (errorKeys[baseKey] ?? 0) > 0;
-            return (
-              <g key={box.key}>
-                <rect
-                  x={box.x}
-                  y={box.y}
-                  width={box.w}
-                  height={box.h}
-                  rx="11"
-                  className={cn(
-                    "stroke-key-border",
-                    isTarget ? "fill-primary" : isLessonKey ? "fill-key-accent" : "fill-key",
-                  )}
-                  strokeWidth={isTarget ? 4 : 2}
-                />
-                <text
-                  x={box.x + box.w / 2}
-                  y={box.y + box.h / 2 + 5}
-                  textAnchor="middle"
-                  className={cn(
-                    "font-mono text-[16px] font-semibold uppercase",
-                    isTarget ? "fill-primary-foreground" : hasErrors ? "fill-destructive" : "fill-foreground",
-                  )}
-                >
-                  {box.key.startsWith("shift-") ? "shift" : labelFor(box.key)}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
-      </div>
-      <figcaption className="-mt-1 px-2 pb-1 text-center text-sm text-muted-foreground" aria-live="polite">
+          );
+        })}
+        {showHands ? (
+          <g className="guide-hands" opacity="0.72">
+            <path
+              d="M205 448 L195 389 Q190 343 230 331 L377 326 Q420 328 434 367 L443 448 Z"
+              className="fill-hand stroke-hand-edge"
+              strokeWidth="2"
+            />
+            <path
+              d="M795 448 L805 389 Q810 343 770 331 L623 326 Q580 328 566 367 L557 448 Z"
+              className="fill-hand stroke-hand-edge"
+              strokeWidth="2"
+            />
+            {fingertips.map(({ id, home, destination, active }) => {
+              const x = destination.x + destination.w / 2;
+              const y = destination.y + 9;
+              const baseX = home.x + home.w / 2;
+              return (
+                <g key={id} className={active ? "stroke-primary" : "stroke-hand-edge"}>
+                  <path
+                    d={`M${baseX} 362 Q${baseX} 316 ${x} ${y + 12}`}
+                    strokeWidth={active ? 17 : 14}
+                    strokeLinecap="round"
+                    fill="none"
+                  />
+                  <circle
+                    cx="0"
+                    cy="0"
+                    r={active ? 7 : 5}
+                    className={cn("guide-fingertip", active ? "fill-primary" : "fill-hand-detail")}
+                    style={{ transform: `translate(${x}px, ${y}px)` }}
+                    data-finger={id}
+                    data-target={active ? destination.key : undefined}
+                  />
+                </g>
+              );
+            })}
+            {["left", "right"].map((side) => (
+              <path
+                key={side}
+                d={
+                  targetKey === " "
+                    ? `M${side === "left" ? 407 : 593} 385 Q${side === "left" ? 460 : 540} 345 ${side === "left" ? 470 : 530} 281`
+                    : `M${side === "left" ? 407 : 593} 385 Q${side === "left" ? 440 : 560} 360 ${side === "left" ? 465 : 535} 345`
+                }
+                className={targetKey === " " ? "stroke-primary" : "stroke-hand-edge"}
+                strokeWidth="18"
+                strokeLinecap="round"
+                fill="none"
+              />
+            ))}
+          </g>
+        ) : null}
+        {KEY_LAYOUT.map((box) => (
+          <text
+            key={box.key}
+            x={box.x + box.w / 2}
+            y={box.y + 35}
+            textAnchor="middle"
+            className={cn(
+              "font-mono text-[18px] font-semibold uppercase",
+              (errorKeys[box.key] ?? 0) > 0 ? "fill-destructive" : "fill-foreground",
+            )}
+            stroke="var(--key)"
+            strokeWidth="4"
+            paintOrder="stroke"
+          >
+            {box.label}
+          </text>
+        ))}
+      </svg>
+      <figcaption className="px-2 pb-2 text-center text-sm text-muted-foreground">
         {targetKey ? (
           <>
-            Next <kbd className="soft-key mx-1 px-2 py-0.5 font-mono text-foreground">{labelFor(nextChar)}</kbd>
-            <span className="text-foreground">{finger ?? "special key"}</span>
-            {shiftSide ? <> · hold {shiftSide} Shift with your pinky</> : null}
+            <kbd className="font-mono font-semibold text-foreground">{keyLabel(nextChar)}</kbd> ·{" "}
+            {finger ?? "special key"}
+            {shiftSide ? <> · {shiftSide} Shift pinky</> : null}
           </>
         ) : (
-          "Rest on A S D F and J K L ;"
+          "A S D F · J K L ;"
         )}
       </figcaption>
     </figure>

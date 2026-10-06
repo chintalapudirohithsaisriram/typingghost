@@ -29,6 +29,8 @@ export default function TypingSurface({
   const chars = useMemo(() => Array.from(target), [target]);
   const typed = useMemo(() => Array.from(session.value), [session.value]);
   const prevLength = useRef(0);
+  const composingRef = useRef(false);
+  const committedRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (session.done || !autoFocus) return;
@@ -79,16 +81,38 @@ export default function TypingSurface({
   useEffect(() => {
     const el = inputRef.current;
     if (!el) return;
-    const onBefore = (event: Event) => handleBeforeInput(event as InputEvent);
+    const onBefore = (event: Event) => {
+      const input = event as InputEvent;
+      if (composingRef.current || input.isComposing) return;
+      if (
+        committedRef.current !== null &&
+        input.data === committedRef.current &&
+        ["insertText", "insertFromComposition"].includes(input.inputType)
+      ) {
+        input.preventDefault();
+        committedRef.current = null;
+        return;
+      }
+      committedRef.current = null;
+      handleBeforeInput(input);
+    };
+    const onCompositionStart = () => {
+      composingRef.current = true;
+      committedRef.current = null;
+    };
     const onCompositionEnd = (event: CompositionEvent) => {
+      composingRef.current = false;
       if (event.data) appendText(event.data);
+      committedRef.current = event.data || null;
       el.value = "";
     };
+    el.addEventListener("compositionstart", onCompositionStart);
     el.addEventListener("beforeinput", onBefore);
     el.addEventListener("compositionend", onCompositionEnd);
     return () => {
       el.removeEventListener("beforeinput", onBefore);
       el.removeEventListener("compositionend", onCompositionEnd);
+      el.removeEventListener("compositionstart", onCompositionStart);
     };
   }, [handleBeforeInput, appendText]);
 
@@ -116,10 +140,14 @@ export default function TypingSurface({
         autoComplete="off"
         spellCheck={false}
         readOnly={session.done}
-        onKeyDown={session.handleKeyDown}
+        onKeyDown={(event) => {
+          if (composingRef.current) return;
+          committedRef.current = null;
+          session.handleKeyDown(event);
+        }}
         onInput={(event) => {
           // Anything not handled above must never accumulate in the hidden field.
-          (event.target as HTMLTextAreaElement).value = "";
+          if (!composingRef.current) (event.target as HTMLTextAreaElement).value = "";
         }}
       />
 

@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { Maximize2, Settings as SettingsIcon } from "lucide-react";
@@ -38,15 +39,14 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-dvh items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
           This page didn't load
@@ -137,10 +137,10 @@ const NAV = [
 function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/92 shadow-[0_3px_12px_color-mix(in_oklab,var(--foreground)_6%,transparent)] backdrop-blur">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3 sm:px-6">
+      <div className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 px-4 py-3 sm:flex sm:flex-wrap sm:justify-between sm:px-6">
         <Link
           to="/"
-          className="flex items-center gap-2 rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          className="flex min-w-0 items-center gap-2 rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           aria-label="TypeNova home"
         >
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground font-display text-sm font-extrabold text-background">
@@ -170,7 +170,7 @@ function SiteHeader() {
         </div>
         <nav
           aria-label="Main"
-          className="order-last -mx-1 flex w-full items-center gap-0.5 overflow-x-auto sm:order-2 sm:w-auto"
+          className="order-last col-span-2 -mx-1 flex min-w-0 w-full items-center gap-0.5 overflow-x-auto sm:order-2 sm:w-auto"
         >
           {NAV.map((item) => (
             <Link

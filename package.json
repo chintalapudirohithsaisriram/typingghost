@@ -12,7 +12,9 @@
     "format": "prettier --write ."
   },
   "overrides": {
-    "rolldown": "1.2.1"
+    "rolldown": "1.2.1",
+    "js-yaml": "^4.3.2",
+    "source-map-js": "^1.2.2"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -70,7 +72,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
-    "@lovable.dev/vite-tanstack-config": "2.23.1",
+    "@lovable.dev/vite-tanstack-config": "2.25.2",
     "@types/node": "^22.16.5",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",

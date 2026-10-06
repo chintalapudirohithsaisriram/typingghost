@@ -14,7 +14,7 @@ import { recordSession } from "@/lib/profile";
 import { pageHead } from "@/lib/seo";
 import { useSettings, updateSettings } from "@/lib/settings";
 import { round } from "@/lib/typing";
-import { LESSONS, lessonById } from "@/lib/typing-content";
+import { LESSONS, lessonById, type Lesson } from "@/lib/typing-content";
 
 export const Route = createFileRoute("/learn/$lessonId")({
   loader: ({ params }) => {
@@ -65,6 +65,10 @@ function LessonPage() {
   const { lessonId } = Route.useLoaderData();
   const lesson = lessonById(lessonId);
   if (!lesson) return <LessonNotFound />;
+  return <LessonExperience key={lesson.id} lesson={lesson} />;
+}
+
+function LessonExperience({ lesson }: { lesson: Lesson }) {
   const { profile, update } = useProfile();
   const settings = useSettings();
   const [result, setResult] = useState<(TypingResult & { passed: boolean }) | null>(null);
@@ -157,7 +161,7 @@ function LessonPage() {
             </div>
           </div>
 
-          <header className="panel p-5 sm:p-6">
+          <header className="border-b border-border pb-5 sm:pb-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0">
                 <p className="text-sm font-medium text-primary">
@@ -251,16 +255,19 @@ function LessonPage() {
                 <Button
                   variant="ghost"
                   size="sm"
+                  aria-pressed={settings.showKeyboard}
                   onClick={() => updateSettings({ showKeyboard: !settings.showKeyboard })}
                 >
-                  {settings.showKeyboard ? "Hide" : "Show"} key guide
+                  {settings.showKeyboard ? "Hide" : "Show"} keyboard + hands
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
+                  disabled={!settings.showKeyboard}
+                  aria-pressed={settings.showHands}
                   onClick={() => updateSettings({ showHands: !settings.showHands })}
                 >
-                  {settings.showHands ? "Hide" : "Show"} hand guide
+                  {settings.showHands ? "Hide" : "Show"} hands
                 </Button>
               </div>
               {tapKeys ? (

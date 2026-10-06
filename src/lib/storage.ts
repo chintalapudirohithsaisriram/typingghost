@@ -13,7 +13,7 @@ const localAdapter: StorageAdapter = {
     if (typeof window === "undefined") return null;
     try {
       const raw = window.localStorage.getItem(key);
-      return raw ? (JSON.parse(raw) as T) : null;
+      return raw && raw.length <= 2_000_000 ? (JSON.parse(raw) as T) : null;
     } catch {
       return null;
     }

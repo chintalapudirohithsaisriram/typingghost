@@ -35,7 +35,11 @@ const MAX_XP = 10_000_000;
 const cleanNumber = (value: unknown, max: number) =>
   typeof value === "number" && Number.isFinite(value) ? Math.min(max, Math.max(0, value)) : 0;
 const cleanText = (value: unknown, max = 120) =>
-  typeof value === "string" ? value.replace(/[\u0000-\u001f\u007f]/g, "").slice(0, max) : "";
+  typeof value === "string"
+    ? Array.from(value.slice(0, max))
+        .filter((char) => (char.codePointAt(0) ?? 0) >= 32 && char !== "\u007f")
+        .join("")
+    : "";
 
 export const defaultProfile = (): ProfileState => ({
   version: 3,
@@ -49,6 +53,7 @@ export const defaultProfile = (): ProfileState => ({
 
 function normalise(parsed: Partial<ProfileState> | null): ProfileState {
   if (!parsed || typeof parsed !== "object") return defaultProfile();
+  if (typeof parsed.version === "number" && parsed.version > 3) return defaultProfile();
   const sessions = Array.isArray(parsed.sessions)
     ? parsed.sessions.slice(-MAX_SESSIONS).flatMap((value) => {
         if (!value || typeof value !== "object") return [];
@@ -103,10 +108,12 @@ function normalise(parsed: Partial<ProfileState> | null): ProfileState {
     completedLessons: Array.isArray(parsed.completedLessons)
       ? Array.from(
           new Set(
-            parsed.completedLessons.filter(
-              (id): id is string =>
-                typeof id === "string" && LESSONS.some((lesson) => lesson.id === id),
-            ),
+            parsed.completedLessons
+              .slice(0, 1000)
+              .filter(
+                (id): id is string =>
+                  typeof id === "string" && LESSONS.some((lesson) => lesson.id === id),
+              ),
           ),
         )
       : [],
@@ -131,6 +138,8 @@ export function loadProfile(): ProfileState {
 }
 
 export function saveProfile(profile: ProfileState) {
+  const saved = storage.read<{ version?: unknown }>(STORAGE_KEY);
+  if (saved && typeof saved.version === "number" && saved.version > 3) return;
   storage.write(STORAGE_KEY, profile);
 }
 
