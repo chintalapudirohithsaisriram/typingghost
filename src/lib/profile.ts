@@ -104,10 +104,12 @@ function normalise(parsed: Partial<ProfileState> | null): ProfileState {
     completedLessons: Array.isArray(parsed.completedLessons)
       ? Array.from(
           new Set(
-            parsed.completedLessons.slice(0, 1000).filter(
-              (id): id is string =>
-                typeof id === "string" && LESSONS.some((lesson) => lesson.id === id),
-            ),
+            parsed.completedLessons
+              .slice(0, 1000)
+              .filter(
+                (id): id is string =>
+                  typeof id === "string" && LESSONS.some((lesson) => lesson.id === id),
+              ),
           ),
         )
       : [],

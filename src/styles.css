@@ -219,7 +219,9 @@
   border-top: 1px solid var(--border);
   padding-top: 1rem;
 }
-.guide-fingertip { transition: transform 180ms ease-out; }
+.guide-fingertip {
+  transition: transform 180ms ease-out;
+}
 .tap-keyboard-viewport {
   max-width: 100%;
   overflow-x: auto;
