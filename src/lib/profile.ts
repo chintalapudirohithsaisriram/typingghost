@@ -35,7 +35,7 @@ const MAX_XP = 10_000_000;
 const cleanNumber = (value: unknown, max: number) =>
   typeof value === "number" && Number.isFinite(value) ? Math.min(max, Math.max(0, value)) : 0;
 const cleanText = (value: unknown, max = 120) =>
-  typeof value === "string" ? value.replace(/[\u0000-\u001f\u007f]/g, "").slice(0, max) : "";
+  typeof value === "string" ? Array.from(value.slice(0, max)).filter((char) => (char.codePointAt(0) ?? 0) >= 32 && char !== "\u007f").join("") : "";
 
 export const defaultProfile = (): ProfileState => ({
   version: 3,

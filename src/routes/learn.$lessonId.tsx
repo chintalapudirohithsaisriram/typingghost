@@ -14,7 +14,7 @@ import { recordSession } from "@/lib/profile";
 import { pageHead } from "@/lib/seo";
 import { useSettings, updateSettings } from "@/lib/settings";
 import { round } from "@/lib/typing";
-import { LESSONS, lessonById } from "@/lib/typing-content";
+import { LESSONS, lessonById, type Lesson } from "@/lib/typing-content";
 
 export const Route = createFileRoute("/learn/$lessonId")({
   loader: ({ params }) => {
@@ -65,6 +65,10 @@ function LessonPage() {
   const { lessonId } = Route.useLoaderData();
   const lesson = lessonById(lessonId);
   if (!lesson) return <LessonNotFound />;
+  return <LessonExperience key={lesson.id} lesson={lesson} />;
+}
+
+function LessonExperience({ lesson }: { lesson: Lesson }) {
   const { profile, update } = useProfile();
   const settings = useSettings();
   const [result, setResult] = useState<(TypingResult & { passed: boolean }) | null>(null);

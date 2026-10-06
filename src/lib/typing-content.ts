@@ -362,7 +362,6 @@ export const FINGER_BY_KEY: Record<string, string> = {
   "'": "right pinky",
   "-": "right pinky",
   "=": "right pinky",
-  "`": "left pinky",
   "[": "right pinky",
   "]": "right pinky",
   "\\": "right pinky",

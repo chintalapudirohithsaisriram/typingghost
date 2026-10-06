@@ -7,7 +7,7 @@ type Props = {
   highlightKeys?: string[];
   errorKeys?: Record<string, number>;
   showHands?: boolean;
-  className?: string;
+  className?: string | undefined;
 };
 const boxFor = (key: string) => KEY_LAYOUT.find((box) => box.key === key);
 
