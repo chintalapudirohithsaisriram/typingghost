@@ -49,6 +49,7 @@ export const defaultProfile = (): ProfileState => ({
 
 function normalise(parsed: Partial<ProfileState> | null): ProfileState {
   if (!parsed || typeof parsed !== "object") return defaultProfile();
+  if (typeof parsed.version === "number" && parsed.version > 3) return defaultProfile();
   const sessions = Array.isArray(parsed.sessions)
     ? parsed.sessions.slice(-MAX_SESSIONS).flatMap((value) => {
         if (!value || typeof value !== "object") return [];
@@ -103,7 +104,7 @@ function normalise(parsed: Partial<ProfileState> | null): ProfileState {
     completedLessons: Array.isArray(parsed.completedLessons)
       ? Array.from(
           new Set(
-            parsed.completedLessons.filter(
+            parsed.completedLessons.slice(0, 1000).filter(
               (id): id is string =>
                 typeof id === "string" && LESSONS.some((lesson) => lesson.id === id),
             ),
@@ -131,6 +132,8 @@ export function loadProfile(): ProfileState {
 }
 
 export function saveProfile(profile: ProfileState) {
+  const saved = storage.read<{ version?: unknown }>(STORAGE_KEY);
+  if (saved && typeof saved.version === "number" && saved.version > 3) return;
   storage.write(STORAGE_KEY, profile);
 }
 

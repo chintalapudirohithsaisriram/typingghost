@@ -68,7 +68,7 @@
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 0.5rem;
 
   /* Warm paper, charcoal ink, olive accent */
   --background: oklch(0.975 0.008 85);
@@ -79,12 +79,12 @@
   --card-foreground: oklch(0.24 0.012 70);
   --popover: oklch(0.992 0.005 85);
   --popover-foreground: oklch(0.24 0.012 70);
-  --primary: oklch(0.55 0.11 125);
+  --primary: oklch(0.47 0.1 125);
   --primary-foreground: oklch(0.985 0.01 110);
   --secondary: oklch(0.935 0.014 90);
   --secondary-foreground: oklch(0.28 0.015 70);
   --muted: oklch(0.94 0.012 85);
-  --muted-foreground: oklch(0.5 0.015 70);
+  --muted-foreground: oklch(0.44 0.015 70);
   --accent: oklch(0.88 0.1 120);
   --accent-foreground: oklch(0.3 0.06 125);
   --destructive: oklch(0.55 0.19 28);
@@ -115,11 +115,7 @@
   --key: oklch(0.985 0.006 85);
   --key-accent: oklch(0.91 0.055 120);
   --key-border: oklch(0.3 0.015 70 / 18%);
-  --gradient-hero: radial-gradient(
-    60% 70% at 85% 0%,
-    color-mix(in oklab, var(--accent) 45%, transparent),
-    transparent 70%
-  );
+  --gradient-hero: none;
   --shadow-glow: 0 0 0 3px color-mix(in oklab, var(--primary) 22%, transparent);
   --shadow-panel: -5px -5px 14px oklch(1 0 0 / 72%), 6px 7px 16px oklch(0.35 0.02 75 / 11%);
   --shadow-soft-sm: -2px -2px 6px oklch(1 0 0 / 72%), 3px 3px 7px oklch(0.35 0.02 75 / 12%);
@@ -136,6 +132,9 @@
   --muted: oklch(0.915 0.02 80);
   --secondary: oklch(0.905 0.024 82);
   --key: oklch(0.96 0.017 82);
+  --popover: var(--surface);
+  --key-accent: oklch(0.87 0.055 120);
+  --shadow-panel: -4px -4px 12px oklch(1 0.01 82 / 55%), 5px 6px 14px oklch(0.35 0.02 75 / 12%);
 }
 
 .dark {
@@ -195,6 +194,11 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  :where(a, button, input, textarea, select, [tabindex]):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+
   h1,
   h2,
   h3,
@@ -206,6 +210,27 @@
   ::selection {
     background: color-mix(in oklab, var(--primary) 35%, transparent);
   }
+}
+
+.keyboard-stage {
+  width: 100%;
+  max-width: 56rem;
+  margin-inline: auto;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+.guide-fingertip { transition: transform 180ms ease-out; }
+.tap-keyboard-viewport {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 0.75rem 0.25rem;
+  border-top: 1px solid var(--border);
+}
+.tap-keyboard-layout {
+  position: relative;
+  width: 100%;
+  min-width: 780px;
+  aspect-ratio: 1000 / 342;
 }
 
 @utility hero-glow {
