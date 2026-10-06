@@ -362,6 +362,13 @@ export const FINGER_BY_KEY: Record<string, string> = {
   "'": "right pinky",
   "-": "right pinky",
   "=": "right pinky",
+  "`": "left pinky",
+  "[": "right pinky",
+  "]": "right pinky",
+  "\\": "right pinky",
+  enter: "right pinky",
+  Backspace: "right pinky",
+  Tab: "left pinky",
   " ": "thumbs",
 };
 
@@ -392,12 +399,16 @@ export const SHIFT_MAP: Record<string, string> = {
   ">": ".",
   "?": "/",
   "~": "`",
+  "{": "[",
+  "}": "]",
+  "|": "\\",
 };
 
 /** Physical key + whether Shift is needed for a target character. */
 export function keyFor(char: string): { key: string; shift: boolean } {
   if (!char) return { key: "", shift: false };
   if (char === "\n") return { key: "enter", shift: false };
+  if (char === "\t") return { key: "Tab", shift: false };
   if (SHIFT_MAP[char]) return { key: SHIFT_MAP[char], shift: true };
   if (/[A-Z]/.test(char)) return { key: char.toLowerCase(), shift: true };
   return { key: char, shift: false };
