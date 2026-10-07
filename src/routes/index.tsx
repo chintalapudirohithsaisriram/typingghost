@@ -170,11 +170,13 @@ function HomePage() {
             </span>
           </Link>
           <Link
-            to="/focus"
+            to="/settings"
             className="rounded-2xl border border-border p-5 hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           >
-            <span className="font-semibold">Focus mode</span>
-            <span className="mt-1 block text-sm text-muted-foreground">Nothing but the text.</span>
+            <span className="font-semibold">Settings</span>
+            <span className="mt-1 block text-sm text-muted-foreground">
+              Themes, sound, hands guidance and font size.
+            </span>
           </Link>
         </div>
       </section>

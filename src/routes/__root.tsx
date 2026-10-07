@@ -9,8 +9,7 @@ import {
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
-import { Maximize2, Settings as SettingsIcon } from "lucide-react";
-import { useRouterState } from "@tanstack/react-router";
+import { Settings as SettingsIcon } from "lucide-react";
 import { useApplySettings } from "../lib/settings";
 import { Button } from "@/components/ui/button";
 
