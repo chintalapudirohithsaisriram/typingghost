@@ -10,10 +10,8 @@ export type SessionRecord = {
   lessonId?: string;
   passed?: boolean;
   label: string;
-  wpm: number;
   netWpm: number;
   accuracy: number;
-  consistency: number;
   durationMs: number;
   characters: number;
 };
@@ -67,10 +65,8 @@ function normalise(parsed: Partial<ProfileState> | null): ProfileState {
             at: cleanNumber(session.at, Date.now() + 86_400_000),
             mode: legacyMode as SessionRecord["mode"],
             label: cleanText(session.label) || "Recovered session",
-            wpm: cleanNumber(session.wpm, 500),
             netWpm: cleanNumber(session.netWpm, 500),
             accuracy: cleanNumber(session.accuracy, 100),
-            consistency: cleanNumber(session.consistency, 100),
             durationMs: cleanNumber(session.durationMs, 86_400_000),
             characters: cleanNumber(session.characters, 1_000_000),
             errors: cleanNumber(session.errors, 1_000_000),
@@ -189,10 +185,8 @@ export function recordSession(
     at: Date.now(),
     mode: entry.mode,
     label: entry.label,
-    wpm: Math.round(stats.grossWpm),
     netWpm: Math.round(stats.netWpm),
     accuracy: Math.round(stats.realAccuracy * 10) / 10,
-    consistency: Math.round(stats.consistency),
     durationMs: stats.elapsedMs,
     characters: stats.typed,
     errors: stats.errors,
