@@ -5,7 +5,6 @@ import { useMemo, useState } from "react";
 import ResultsPanel from "@/components/ResultsPanel";
 import TypingSurface from "@/components/TypingSurface";
 import { Button } from "@/components/ui/button";
-import VirtualKeyboard from "@/components/VirtualKeyboard";
 import { useProfile } from "@/hooks/useProfile";
 import { seededRandom, useSeed } from "@/hooks/useSeed";
 import { useTypingSession } from "@/hooks/useTypingSession";
