@@ -242,12 +242,6 @@ function PracticePage() {
               </div>
             </div>
             <TypingSurface target={target} session={session} size="lg" />
-            <VirtualKeyboard
-              nextChar={session.currentChar}
-              highlightKeys={keys}
-              errorKeys={session.errors}
-              className="hidden md:block"
-            />
           </>
         )}
       </section>
