@@ -28,7 +28,7 @@ export const Route = createFileRoute("/test")({
   head: () =>
     pageHead(
       "Typing Test — Passages, Words, Numbers & Punctuation | TypeNova",
-      "An untimed typing test with rotating passages, words, numbers, punctuation and custom letters. See net WPM, accuracy, consistency and a character-by-character review.",
+      "An untimed typing test with rotating passages, words, numbers, punctuation and custom letters. See net WPM, accuracy and a character-by-character review.",
     ),
   component: TestPage,
 });

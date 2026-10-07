@@ -90,14 +90,7 @@ export default function ResultsPanel({
       </div>
       <details className="panel group p-4" open>
         <summary className="cursor-pointer text-sm font-medium">More detail</summary>
-        <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
-          <StatTile label="Raw WPM" value={round(stats.grossWpm)} hint="All keystrokes" />
-          <StatTile
-            label="Consistency"
-            value={round(stats.consistency)}
-            unit="%"
-            hint="Steadiness of pace"
-          />
+        <div className="mt-4 grid grid-cols-2 gap-3">
           <StatTile
             label="Errors"
             value={stats.errors}
@@ -166,8 +159,8 @@ export default function ResultsPanel({
 
       <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
         <div className="panel p-5">
-          <h3 className="mb-3 text-sm font-medium">Pace through the run</h3>
-          <Sparkline values={samples} label="Words per minute over time" />
+          <h3 className="mb-3 text-sm font-medium">Net WPM through the run</h3>
+          <Sparkline values={samples} label="Net words per minute over time" />
         </div>
         <div className="panel p-5">
           <h3 className="mb-3 text-sm font-medium">Keys that tripped you up</h3>
