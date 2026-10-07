@@ -59,7 +59,8 @@ export default function TypingSurface({
     if (!autoFocus || done) return;
     const onKey = (event: KeyboardEvent) => {
       const active = document.activeElement;
-      // Buttons (e.g. "Show tap keyboard") hand typing back to the surface;
+      // Buttons elsewhere hand typing back to the surface through the session
+      // so a click never produces a second character from a real keystroke.
       // real text fields, links and Tab/Enter keep their normal behaviour.
       if (active && active !== document.body && active.tagName !== "BUTTON") return;
       if (active?.tagName === "BUTTON" && (event.key === " " || event.key === "Enter")) return;
