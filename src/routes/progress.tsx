@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Award, Download, RotateCcw } from "lucide-react";
+import { Award, Download, RotateCcw, TrendingDown, TrendingUp } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import Sparkline from "@/components/Sparkline";
 import StatTile from "@/components/StatTile";
+import TrajectoryChart from "@/components/TrajectoryChart";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useProfile";
 import {
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/progress")({
   head: () =>
     pageHead(
       "Your Typing Progress | TypeNova",
-      "Speed, accuracy and consistency trends, weak and strong keys, error patterns, practice time, streaks and milestones — from your own sessions.",
+      "Net WPM and accuracy trajectories, a diagnostic session log, weakest keys, error patterns, practice time, streaks and milestones — from your own sessions.",
     ),
   component: ProgressPage,
 });
@@ -37,6 +37,29 @@ const MODE_LABEL = {
   game: "Game",
   focus: "Focus",
 } as const;
+
+const shortDate = (ts: number) =>
+  new Date(ts).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+const fullDate = (ts: number) =>
+  new Date(ts).toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+function Delta({ value }: { value: number | null }) {
+  if (value === null || !Number.isFinite(value)) return <span>—</span>;
+  if (value === 0) return <span className="text-muted-foreground">±0</span>;
+  const up = value > 0;
+  return (
+    <span className={cn("inline-flex items-center gap-1", up ? "text-success" : "text-destructive")}>
+      {up ? <TrendingUp aria-hidden="true" className="size-3" /> : <TrendingDown aria-hidden="true" className="size-3" />}
+      {up ? "+" : "−"}
+      {Math.abs(value)}
+    </span>
+  );
+}
 
 function ProgressPage() {
   const { profile, ready, clear } = useProfile();
@@ -54,10 +77,28 @@ function ProgressPage() {
     () => ({
       netWpm: Math.round(averageOf(recent.slice(-10).map((s) => s.netWpm))),
       accuracy: Math.round(averageOf(recent.slice(-10).map((s) => s.accuracy)) * 10) / 10,
-      consistency: Math.round(averageOf(recent.slice(-10).map((s) => s.consistency))),
     }),
     [recent],
   );
+
+  const trajectory = useMemo(
+    () =>
+      recent.slice(-24).map((s) => ({
+        label: shortDate(s.at),
+        wpm: s.netWpm,
+        accuracy: s.accuracy,
+        title: `${s.label} · ${fullDate(s.at)} · ${s.netWpm} WPM · ${s.accuracy}% accuracy`,
+      })),
+    [recent],
+  );
+
+  const recentSessions = useMemo(
+    () => sessions.slice(-8).reverse(),
+    [sessions],
+  );
+  const maxRecentWpm = Math.max(1, ...recentSessions.map((s) => s.netWpm));
+  const deltaFor = (index: number) =>
+    index > 0 ? sessions[index].netWpm - sessions[index - 1].netWpm : null;
 
   const fingerErrors = useMemo(() => {
     const totals: Record<string, number> = {};
@@ -153,42 +194,25 @@ function ProgressPage() {
         />
         <StatTile label="Avg accuracy" value={averages.accuracy} unit="%" hint="Last 10 sessions" />
         <StatTile
-          label="Consistency"
-          value={averages.consistency}
-          unit="%"
-          hint="Last 10 sessions"
-        />
-        <StatTile
           label="Practice time"
           value={formatSeconds(activeMs)}
           hint={`${sessions.length} sessions`}
+        />
+        <StatTile
+          label="Day streak"
+          value={streak}
+          hint={`${profile.completedLessons.length} of ${LESSONS.length} lessons passed`}
         />
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         <div className="panel p-5 lg:col-span-2">
-          <h2 className="font-semibold">Trends</h2>
-          <div className="mt-4 grid gap-5 sm:grid-cols-3">
-            <div>
-              <p className="mb-2 text-xs text-muted-foreground">Net WPM</p>
-              <Sparkline values={recent.map((s) => s.netWpm)} height={90} label="Net WPM trend" />
-            </div>
-            <div>
-              <p className="mb-2 text-xs text-muted-foreground">Accuracy</p>
-              <Sparkline
-                values={recent.map((s) => s.accuracy)}
-                height={90}
-                label="Accuracy trend"
-              />
-            </div>
-            <div>
-              <p className="mb-2 text-xs text-muted-foreground">Consistency</p>
-              <Sparkline
-                values={recent.map((s) => s.consistency)}
-                height={90}
-                label="Consistency trend"
-              />
-            </div>
+          <h2 className="font-semibold">WPM &amp; accuracy trajectory</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Net WPM (solid) and accuracy (dashed) across your last {trajectory.length} sessions.
+          </p>
+          <div className="mt-4">
+            <TrajectoryChart points={trajectory} />
           </div>
         </div>
         <div className="panel p-5">
@@ -209,12 +233,34 @@ function ProgressPage() {
               style={{ width: `${level.progress}%` }}
             />
           </div>
-          <p className="mt-4 text-sm">
-            <span className="font-display text-2xl font-bold">{streak}</span> day streak
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {profile.completedLessons.length} of {LESSONS.length} lessons passed
-          </p>
+          <div className="mt-4">
+            <p className="mb-2 text-xs text-muted-foreground">Recent net WPM</p>
+            <ul className="space-y-2">
+              {recentSessions.map((s) => {
+                const i = sessions.indexOf(s);
+                return (
+                  <li key={s.id} className="text-sm">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="truncate">{s.label}</span>
+                      <span className="shrink-0 tabular-nums">
+                        <Delta value={deltaFor(i)} />
+                      </span>
+                      <span className="font-display font-bold tabular-nums">{s.netWpm}</span>
+                    </div>
+                    <div
+                      className="mt-1 h-1.5 overflow-hidden rounded-full bg-secondary"
+                      aria-hidden="true"
+                    >
+                      <div
+                        className="h-full rounded-full bg-primary/70"
+                        style={{ width: `${Math.round((s.netWpm / maxRecentWpm) * 100)}%` }}
+                      />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -289,16 +335,22 @@ function ProgressPage() {
 
       <section className="mt-4 panel overflow-x-auto p-5" aria-labelledby="history">
         <h2 id="history" className="font-semibold">
-          History
+          Diagnostic log
         </h2>
-        <table className="mt-3 w-full min-w-[560px] text-sm">
+        <p className="mt-1 text-xs text-muted-foreground">
+          Your last 25 sessions with speed changes between runs.
+        </p>
+        <table className="mt-3 w-full min-w-[760px] text-sm">
           <thead className="text-left text-xs text-muted-foreground">
             <tr>
               <th className="py-2 font-medium">When</th>
               <th className="font-medium">Session</th>
               <th className="font-medium">Type</th>
               <th className="text-right font-medium">Net WPM</th>
+              <th className="text-right font-medium">Δ</th>
               <th className="text-right font-medium">Accuracy</th>
+              <th className="text-right font-medium">Errors</th>
+              <th className="text-right font-medium">Characters</th>
               <th className="text-right font-medium">Active time</th>
             </tr>
           </thead>
@@ -306,26 +358,27 @@ function ProgressPage() {
             {sessions
               .slice(-25)
               .reverse()
-              .map((s) => (
-                <tr key={s.id} className="border-t border-border">
-                  <td className="py-2 text-muted-foreground">
-                    {new Date(s.at).toLocaleString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </td>
-                  <td>
-                    {s.label}
-                    {s.passed ? <span className="ml-2 text-xs text-success">passed</span> : null}
-                  </td>
-                  <td className="text-muted-foreground">{MODE_LABEL[s.mode] ?? s.mode}</td>
-                  <td className="text-right tabular-nums">{s.netWpm}</td>
-                  <td className="text-right tabular-nums">{s.accuracy}%</td>
-                  <td className="text-right tabular-nums">{formatSeconds(s.durationMs)}</td>
-                </tr>
-              ))}
+              .map((s) => {
+                const i = sessions.indexOf(s);
+                return (
+                  <tr key={s.id} className="border-t border-border">
+                    <td className="py-2 text-muted-foreground">{fullDate(s.at)}</td>
+                    <td>
+                      {s.label}
+                      {s.passed ? <span className="ml-2 text-xs text-success">passed</span> : null}
+                    </td>
+                    <td className="text-muted-foreground">{MODE_LABEL[s.mode] ?? s.mode}</td>
+                    <td className="text-right tabular-nums">{s.netWpm}</td>
+                    <td className="text-right tabular-nums">
+                      <Delta value={deltaFor(i)} />
+                    </td>
+                    <td className="text-right tabular-nums">{s.accuracy}%</td>
+                    <td className="text-right tabular-nums">{s.errors ?? 0}</td>
+                    <td className="text-right tabular-nums">{s.characters}</td>
+                    <td className="text-right tabular-nums">{formatSeconds(s.durationMs)}</td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </section>
