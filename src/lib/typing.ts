@@ -3,13 +3,11 @@ export type TypingStats = {
   correct: number;
   incorrect: number;
   typed: number;
-  grossWpm: number;
   netWpm: number;
   accuracy: number;
   realAccuracy: number;
   errorRate: number;
   errors: number;
-  consistency: number;
 };
 
 const finite = (value: number) => (Number.isFinite(value) ? value : 0);
@@ -33,20 +31,10 @@ export function calculateNetWpm(grossWpm: number, errors: number, elapsedMs: num
   return Math.max(0, gross - calculateWpm(wrong, elapsed));
 }
 
-export function calculateConsistency(samples: number[]): number {
-  const clean = samples.filter((value) => Number.isFinite(value) && value >= 0);
-  if (clean.length < 2) return clean.length ? 100 : 0;
-  const mean = clean.reduce((sum, value) => sum + value, 0) / clean.length;
-  if (!mean) return 0;
-  const variance = clean.reduce((sum, value) => sum + (value - mean) ** 2, 0) / clean.length;
-  return clamp(100 - (Math.sqrt(variance) / mean) * 100, 0, 100);
-}
-
 export function calculateStats(
   correct: number,
   incorrect: number,
   elapsedMs: number,
-  samples: number[] = [],
   errorCount = incorrect,
 ): TypingStats {
   const right = Math.max(0, finite(correct));
@@ -54,26 +42,23 @@ export function calculateStats(
   const typed = right + wrong;
   const elapsed = Math.max(0, finite(elapsedMs));
   const errors = Math.max(0, finite(errorCount));
-  const grossWpm = calculateWpm(typed, elapsed);
+  const gross = calculateWpm(typed, elapsed);
   // Net WPM penalises errors left uncorrected in the final text (standard definition).
-  const netWpm = calculateNetWpm(grossWpm, wrong, elapsed);
+  const netWpm = calculateNetWpm(gross, wrong, elapsed);
   const accuracy = typed ? clamp((right / typed) * 100, 0, 100) : 0;
   const realAccuracy = typed ? clamp(((typed - errors) / typed) * 100, 0, 100) : 0;
   const errorRate = typed ? clamp((errors / typed) * 100, 0, 100) : 0;
-  const consistency = typed ? calculateConsistency(samples.length ? samples : [grossWpm]) : 0;
 
   return {
     elapsedMs: elapsed,
     correct: right,
     incorrect: wrong,
     typed,
-    grossWpm,
     netWpm,
     accuracy,
     realAccuracy,
     errorRate,
     errors,
-    consistency,
   };
 }
 
