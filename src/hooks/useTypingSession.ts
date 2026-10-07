@@ -84,7 +84,6 @@ export function useTypingSession({
       comparison.correct,
       comparison.incorrect,
       finalElapsed,
-      finalSamples,
       mistakesRef.current,
     );
     lastKeyAtRef.current = null;
@@ -112,7 +111,8 @@ export function useTypingSession({
           comparison.correct,
           comparison.incorrect,
           Math.max(1, elapsed),
-        ).grossWpm;
+          mistakesRef.current,
+        ).netWpm;
         samplesRef.current = [...samplesRef.current, sample];
         setSamples(samplesRef.current);
       }
@@ -243,8 +243,8 @@ export function useTypingSession({
 
   const comparison = useMemo(() => compareTypedText(target, value), [target, value]);
   const stats = useMemo(
-    () => calculateStats(comparison.correct, comparison.incorrect, elapsedMs, samples, mistakes),
-    [comparison, elapsedMs, mistakes, samples],
+    () => calculateStats(comparison.correct, comparison.incorrect, elapsedMs, mistakes),
+    [comparison, elapsedMs, mistakes],
   );
   const targetChars = useMemo(() => Array.from(target), [target]);
   const typedLength = Array.from(value).length;

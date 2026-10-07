@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Keyboard, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import CourseSidebar from "@/components/CourseSidebar";
@@ -7,7 +7,6 @@ import KeyboardHandsGuide from "@/components/KeyboardHandsGuide";
 import ResultsPanel from "@/components/ResultsPanel";
 import TypingSurface from "@/components/TypingSurface";
 import { Button } from "@/components/ui/button";
-import VirtualKeyboard from "@/components/VirtualKeyboard";
 import { useProfile } from "@/hooks/useProfile";
 import { useTypingSession, type TypingResult } from "@/hooks/useTypingSession";
 import { recordSession } from "@/lib/profile";
@@ -72,7 +71,6 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
   const { profile, update } = useProfile();
   const settings = useSettings();
   const [result, setResult] = useState<(TypingResult & { passed: boolean }) | null>(null);
-  const [tapKeys, setTapKeys] = useState(false);
   const index = LESSONS.findIndex((item) => item.id === lesson.id);
   const next = LESSONS[index + 1];
   const previous = index > 0 ? LESSONS[index - 1] : undefined;
@@ -245,14 +243,6 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
 
               <div className="flex flex-wrap items-center gap-2">
                 <Button
-                  variant="outline"
-                  size="sm"
-                  aria-pressed={tapKeys}
-                  onClick={() => setTapKeys((v) => !v)}
-                >
-                  <Keyboard aria-hidden="true" /> {tapKeys ? "Hide" : "Show"} tap keyboard
-                </Button>
-                <Button
                   variant="ghost"
                   size="sm"
                   aria-pressed={settings.showKeyboard}
@@ -270,9 +260,6 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
                   {settings.showHands ? "Hide" : "Show"} hands
                 </Button>
               </div>
-              {tapKeys ? (
-                <VirtualKeyboard nextChar={session.currentChar} onKey={session.handleVirtualKey} />
-              ) : null}
             </>
           ) : (
             <ResultsPanel

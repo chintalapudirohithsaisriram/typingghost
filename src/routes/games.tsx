@@ -5,7 +5,6 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import StatTile from "@/components/StatTile";
 import TypingSurface from "@/components/TypingSurface";
 import { Button } from "@/components/ui/button";
-import VirtualKeyboard from "@/components/VirtualKeyboard";
 import { useProfile } from "@/hooks/useProfile";
 import { seededRandom, useSeed } from "@/hooks/useSeed";
 import { useTypingSession, type TypingResult } from "@/hooks/useTypingSession";
@@ -323,15 +322,6 @@ function KeyHunt() {
         <StatTile label="First-try hits" value={firstTry} tone="primary" />
         <StatTile label="Misses" value={misses} tone={misses ? "destructive" : "default"} />
       </div>
-      <details className="text-sm">
-        <summary className="cursor-pointer text-muted-foreground">
-          Use a tap keyboard (touch screens)
-        </summary>
-        <VirtualKeyboard
-          onKey={(k) => k !== "Backspace" && k !== " " && press(k)}
-          className="mt-3"
-        />
-      </details>
     </div>
   );
 }

@@ -9,8 +9,7 @@ import {
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
-import { Maximize2, Settings as SettingsIcon } from "lucide-react";
-import { useRouterState } from "@tanstack/react-router";
+import { Settings as SettingsIcon } from "lucide-react";
 import { useApplySettings } from "../lib/settings";
 import { Button } from "@/components/ui/button";
 
@@ -150,15 +149,6 @@ function SiteHeader() {
         </Link>
         <div className="flex items-center gap-1 sm:order-3">
           <Link
-            to="/focus"
-            aria-label="Focus mode"
-            title="Focus mode"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-            activeProps={{ className: "bg-secondary text-foreground" }}
-          >
-            <Maximize2 className="size-4" aria-hidden="true" />
-          </Link>
-          <Link
             to="/settings"
             aria-label="Settings"
             title="Settings"
@@ -202,8 +192,6 @@ function SiteFooter() {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   useApplySettings();
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const focus = pathname === "/focus";
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -214,11 +202,11 @@ function RootComponent() {
         Skip to content
       </a>
       <div className="flex min-h-dvh flex-col">
-        {focus ? null : <SiteHeader />}
+        <SiteHeader />
         <main id="main" className="flex-1">
           <Outlet />
         </main>
-        {focus ? null : <SiteFooter />}
+        <SiteFooter />
       </div>
     </QueryClientProvider>
   );

@@ -5,7 +5,6 @@ import { useMemo, useState } from "react";
 import ResultsPanel from "@/components/ResultsPanel";
 import TypingSurface from "@/components/TypingSurface";
 import { Button } from "@/components/ui/button";
-import VirtualKeyboard from "@/components/VirtualKeyboard";
 import { useProfile } from "@/hooks/useProfile";
 import { seededRandom, useSeed } from "@/hooks/useSeed";
 import { useTypingSession } from "@/hooks/useTypingSession";
@@ -242,12 +241,6 @@ function PracticePage() {
               </div>
             </div>
             <TypingSurface target={target} session={session} size="lg" />
-            <VirtualKeyboard
-              nextChar={session.currentChar}
-              highlightKeys={keys}
-              errorKeys={session.errors}
-              className="hidden md:block"
-            />
           </>
         )}
       </section>

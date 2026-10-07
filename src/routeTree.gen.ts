@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ChallengesRouteImport } from './routes/challenges'
 import { Route as DrillsRouteImport } from './routes/drills'
-import { Route as FocusRouteImport } from './routes/focus'
 import { Route as GamesRouteImport } from './routes/games'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as ProgressRouteImport } from './routes/progress'
@@ -35,11 +34,6 @@ const ChallengesRoute = ChallengesRouteImport.update({
 const DrillsRoute = DrillsRouteImport.update({
   id: '/drills',
   path: '/drills',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FocusRoute = FocusRouteImport.update({
-  id: '/focus',
-  path: '/focus',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GamesRoute = GamesRouteImport.update({
@@ -87,7 +81,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/challenges': typeof ChallengesRoute
   '/drills': typeof DrillsRoute
-  '/focus': typeof FocusRoute
   '/games': typeof GamesRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
@@ -101,7 +94,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/challenges': typeof ChallengesRoute
   '/drills': typeof DrillsRoute
-  '/focus': typeof FocusRoute
   '/games': typeof GamesRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
@@ -116,7 +108,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/challenges': typeof ChallengesRoute
   '/drills': typeof DrillsRoute
-  '/focus': typeof FocusRoute
   '/games': typeof GamesRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
@@ -132,7 +123,6 @@ export interface FileRouteTypes {
     | '/'
     | '/challenges'
     | '/drills'
-    | '/focus'
     | '/games'
     | '/practice'
     | '/progress'
@@ -146,7 +136,6 @@ export interface FileRouteTypes {
     | '/'
     | '/challenges'
     | '/drills'
-    | '/focus'
     | '/games'
     | '/practice'
     | '/progress'
@@ -160,7 +149,6 @@ export interface FileRouteTypes {
     | '/'
     | '/challenges'
     | '/drills'
-    | '/focus'
     | '/games'
     | '/practice'
     | '/progress'
@@ -175,7 +163,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ChallengesRoute: typeof ChallengesRoute
   DrillsRoute: typeof DrillsRoute
-  FocusRoute: typeof FocusRoute
   GamesRoute: typeof GamesRoute
   PracticeRoute: typeof PracticeRoute
   ProgressRoute: typeof ProgressRoute
@@ -207,13 +194,6 @@ declare module '@tanstack/react-router' {
       path: '/drills'
       fullPath: '/drills'
       preLoaderRoute: typeof DrillsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/focus': {
-      id: '/focus'
-      path: '/focus'
-      fullPath: '/focus'
-      preLoaderRoute: typeof FocusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/games': {
@@ -279,7 +259,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ChallengesRoute: ChallengesRoute,
   DrillsRoute: DrillsRoute,
-  FocusRoute: FocusRoute,
   GamesRoute: GamesRoute,
   PracticeRoute: PracticeRoute,
   ProgressRoute: ProgressRoute,
