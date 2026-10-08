@@ -13,7 +13,7 @@ const W = 640;
 const H = 240;
 const PAD = { left: 44, right: 52, top: 14, bottom: 26 };
 
-const niceBounds = (min: number, max: number) => {
+const niceBounds = (min: number, max: number): [number, number] => {
   const lo = Math.max(0, Math.floor(min - 5));
   const hi = Math.ceil(max + 5);
   return hi - lo < 10 ? [Math.max(0, hi - 10), hi] : [lo, hi];
