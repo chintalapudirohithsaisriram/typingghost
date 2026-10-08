@@ -220,7 +220,36 @@
   padding-top: 1rem;
 }
 .guide-fingertip {
-  transition: transform 180ms ease-out;
+  transition: transform 220ms ease-out;
+}
+.guide-finger-path {
+  transition: d 220ms ease-out;
+}
+.guide-digit-rest {
+  opacity: 0.32;
+}
+.guide-digit-active {
+  opacity: 1;
+}
+.guide-caption {
+  margin-bottom: 1rem;
+  padding-inline: 0.5rem;
+}
+.guide-target {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-md);
+  background: var(--key-accent);
+  color: var(--foreground);
+  box-shadow: var(--shadow-inset);
+  font-family: var(--font-mono);
+  font-size: 1.125rem;
+  font-weight: 600;
 }
 .tap-keyboard-viewport {
   max-width: 100%;
