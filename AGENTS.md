@@ -11,3 +11,4 @@
 
 - Treat browser-stored progress as untrusted presentation data; any future rankings, certificates, purchases, shared challenges, or protected state require authenticated server-side validation because local data is user-modifiable.
 - Keep physical/mobile typing exclusively in TypingSurface and tap typing in explicitly interactive keyboard buttons; passive keyboard and hand guidance must never dispatch input.
+- Draw instructional fingers and target markers from the shared keyboard layout and typing mappings; a single scalable SVG keeps their alignment exact at every size.
