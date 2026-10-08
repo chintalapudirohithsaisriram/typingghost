@@ -53,8 +53,14 @@ function Delta({ value }: { value: number | null }) {
   if (value === 0) return <span className="text-muted-foreground">±0</span>;
   const up = value > 0;
   return (
-    <span className={cn("inline-flex items-center gap-1", up ? "text-success" : "text-destructive")}>
-      {up ? <TrendingUp aria-hidden="true" className="size-3" /> : <TrendingDown aria-hidden="true" className="size-3" />}
+    <span
+      className={cn("inline-flex items-center gap-1", up ? "text-success" : "text-destructive")}
+    >
+      {up ? (
+        <TrendingUp aria-hidden="true" className="size-3" />
+      ) : (
+        <TrendingDown aria-hidden="true" className="size-3" />
+      )}
       {up ? "+" : "−"}
       {Math.abs(value)}
     </span>
