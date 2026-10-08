@@ -259,7 +259,7 @@ function KeyHunt() {
         setIndex(next);
         if (next >= HUNT_LENGTH) {
           const elapsed = Math.max(1, Date.now() - started.current);
-          const stats = calculateStats(HUNT_LENGTH, 0, elapsed, [], misses);
+          const stats = calculateStats(HUNT_LENGTH, 0, elapsed, misses);
           update((c) =>
             recordSession(c, {
               mode: "game",
