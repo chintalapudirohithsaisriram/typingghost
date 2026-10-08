@@ -92,13 +92,13 @@ function ProgressPage() {
     [recent],
   );
 
-  const recentSessions = useMemo(
-    () => sessions.slice(-8).reverse(),
-    [sessions],
-  );
+  const recentSessions = useMemo(() => sessions.slice(-8).reverse(), [sessions]);
   const maxRecentWpm = Math.max(1, ...recentSessions.map((s) => s.netWpm));
-  const deltaFor = (index: number) =>
-    index > 0 ? sessions[index].netWpm - sessions[index - 1].netWpm : null;
+  const deltaFor = (index: number) => {
+    const current = sessions[index];
+    const prev = sessions[index - 1];
+    return current && prev ? current.netWpm - prev.netWpm : null;
+  };
 
   const fingerErrors = useMemo(() => {
     const totals: Record<string, number> = {};
