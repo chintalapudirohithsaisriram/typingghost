@@ -219,17 +219,77 @@
   border-top: 1px solid var(--border);
   padding-top: 1rem;
 }
+:root {
+  --finger-pinky: oklch(0.62 0.17 330);
+  --finger-ring: oklch(0.6 0.14 260);
+  --finger-middle: oklch(0.62 0.12 195);
+  --finger-index: oklch(0.66 0.15 140);
+  --finger-thumb: oklch(0.72 0.14 70);
+}
+.dark {
+  --finger-pinky: oklch(0.72 0.15 330);
+  --finger-ring: oklch(0.72 0.12 260);
+  --finger-middle: oklch(0.75 0.11 195);
+  --finger-index: oklch(0.78 0.14 140);
+  --finger-thumb: oklch(0.8 0.13 70);
+}
 .guide-fingertip {
-  transition: transform 220ms ease-out;
+  transition: transform 260ms cubic-bezier(0.3, 0.7, 0.3, 1);
 }
 .guide-finger-path {
-  transition: d 220ms ease-out;
+  transition: d 260ms cubic-bezier(0.3, 0.7, 0.3, 1), opacity 200ms;
 }
-.guide-digit-rest {
-  opacity: 0.32;
+.guide-palm {
+  fill: var(--hand);
+  stroke: var(--hand-edge);
+  stroke-width: 1.5;
+  opacity: 0.55;
 }
-.guide-digit-active {
-  opacity: 1;
+.guide-finger {
+  fill: none;
+  stroke: var(--hand);
+  stroke-linecap: round;
+  opacity: 0.6;
+}
+.guide-digit-active .guide-finger {
+  opacity: 0.85;
+}
+.guide-key-active {
+  fill-opacity: 0.35;
+  animation: key-glow 1.4s ease-in-out infinite;
+}
+@keyframes key-glow {
+  0%, 100% { fill-opacity: 0.28; }
+  50% { fill-opacity: 0.5; }
+}
+.guide-ping {
+  fill: none;
+  stroke-width: 2.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: guide-ping 1.4s ease-out infinite;
+}
+@keyframes guide-ping {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+.guide-dot {
+  display: inline-block;
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 999px;
+  margin-right: 0.3rem;
+  vertical-align: middle;
+}
+.guide-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+  color: var(--muted-foreground);
 }
 .guide-caption {
   margin-bottom: 1rem;
