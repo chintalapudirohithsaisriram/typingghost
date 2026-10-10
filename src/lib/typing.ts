@@ -86,6 +86,12 @@ export const round = (value: number, digits = 0) => {
 export type CharState = "correct" | "wrong" | "missed";
 export type CharReview = { expected: string; typed: string | undefined; state: CharState };
 
+export type WordAttempt = {
+  target: string;
+  attempt: string;
+  errorKeys: string[];
+};
+
 /** Character-by-character comparison of the final attempt against the target. */
 export function reviewCharacters(target: string, typed: string): CharReview[] {
   const expected = Array.from(target);
@@ -98,4 +104,40 @@ export function reviewCharacters(target: string, typed: string): CharReview[] {
       state: input === undefined ? "missed" : input === char ? "correct" : "wrong",
     };
   });
+}
+
+/**
+ * Returns only word-sized mistakes. Punctuation stays attached so "Work." and
+ * "work" remain distinct teaching patterns; whitespace and full passages do not.
+ */
+export function reviewWordAttempts(target: string, typed: string): WordAttempt[] {
+  const expected = Array.from(target);
+  const actual = Array.from(typed);
+  const attempts: WordAttempt[] = [];
+  let start = 0;
+
+  const flush = (end: number) => {
+    if (end <= start) return;
+    const targetWord = expected.slice(start, end).join("");
+    const attempt = actual.slice(start, Math.min(end, actual.length)).join("");
+    if (attempt === targetWord || (!attempt && start >= actual.length)) return;
+    const errorKeys = Array.from(
+      new Set(
+        expected
+          .slice(start, end)
+          .filter((char, index) => actual[start + index] !== char)
+          .map((char) => char.toLowerCase()),
+      ),
+    );
+    attempts.push({ target: targetWord, attempt, errorKeys });
+  };
+
+  expected.forEach((char, index) => {
+    if (/\s/u.test(char)) {
+      flush(index);
+      start = index + 1;
+    }
+  });
+  flush(expected.length);
+  return attempts;
 }
