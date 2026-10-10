@@ -3,7 +3,15 @@ import { Check } from "lucide-react";
 import { LESSONS, type Lesson } from "@/lib/typing-content";
 import { cn } from "@/lib/utils";
 
-const STAGES: Lesson["stage"][] = ["Foundations", "Reaches", "Fluency", "Mastery"];
+const STAGES: Lesson["stage"][] = [
+  "Getting started",
+  "Home row",
+  "Reaches",
+  "Capitals and Shift",
+  "Numbers and punctuation",
+  "Words and patterns",
+  "Fluency and transfer",
+];
 
 type Props = { completed: string[]; currentId?: string; className?: string };
 

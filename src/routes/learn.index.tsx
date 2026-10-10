@@ -17,12 +17,23 @@ export const Route = createFileRoute("/learn/")({
   component: LearnIndex,
 });
 
-const STAGES: Lesson["stage"][] = ["Foundations", "Reaches", "Fluency", "Mastery"];
+const STAGES: Lesson["stage"][] = [
+  "Getting started",
+  "Home row",
+  "Reaches",
+  "Capitals and Shift",
+  "Numbers and punctuation",
+  "Words and patterns",
+  "Fluency and transfer",
+];
 const STAGE_BLURB: Record<Lesson["stage"], string> = {
-  Foundations: "Anchor your hands and learn the home row without looking.",
+  "Getting started": "Set up a physical keyboard, relax your hands, and learn how to follow the guide.",
+  "Home row": "Anchor your fingers and build controlled movement around their home positions.",
   Reaches: "Leave the home row and return cleanly, one finger at a time.",
-  Fluency: "Whole words, common patterns and capital letters.",
-  Mastery: "Numbers, punctuation, symbols, accuracy and endurance.",
+  "Capitals and Shift": "Use the opposite-hand pinky for Shift while the other hand types the letter.",
+  "Numbers and punctuation": "Add the number row, sentence marks, and shifted symbols in small groups.",
+  "Words and patterns": "Join learned keys into useful words and troublesome letter patterns.",
+  "Fluency and transfer": "Apply accurate technique to mixed and everyday text.",
 };
 
 function LearnIndex() {
@@ -43,8 +54,8 @@ function LearnIndex() {
             The touch typing course
           </h1>
           <p className="mt-4 max-w-2xl text-muted-foreground">
-            {LESSONS.length} short lessons in four stages. Each one has a clear objective and a
-            speed and accuracy goal. Take as long as you need — there is never a time limit.
+            {LESSONS.length} short lessons in seven stages. Each one explains the keys and fingers,
+            demonstrates the movement, and uses accuracy-based mastery. Take as long as you need.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Button asChild size="lg">
@@ -94,7 +105,7 @@ function LearnIndex() {
                               {lesson.description}
                             </span>
                             <span className="mt-2 block text-xs text-muted-foreground">
-                              Goal {lesson.goalWpm} WPM · {lesson.goalAccuracy}% accuracy
+                              Mastery: complete · {lesson.goalAccuracy}% accuracy
                             </span>
                           </span>
                         </Link>

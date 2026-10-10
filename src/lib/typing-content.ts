@@ -1,7 +1,14 @@
 export type Lesson = {
   id: string;
   level: number;
-  stage: "Foundations" | "Reaches" | "Fluency" | "Mastery";
+  stage:
+    | "Getting started"
+    | "Home row"
+    | "Reaches"
+    | "Capitals and Shift"
+    | "Numbers and punctuation"
+    | "Words and patterns"
+    | "Fluency and transfer";
   title: string;
   description: string;
   tip: string;
@@ -10,9 +17,15 @@ export type Lesson = {
   exercise: string;
   goalWpm: number;
   goalAccuracy: number;
+  demonstration: string;
+  success: string;
 };
 
-const RAW_LESSONS: Lesson[] = [
+type RawLesson = Omit<Lesson, "stage" | "demonstration" | "success"> & {
+  stage: string;
+};
+
+const RAW_LESSONS: RawLesson[] = [
   {
     id: "first-keystrokes",
     level: 1,
@@ -282,10 +295,53 @@ const RAW_LESSONS: Lesson[] = [
   },
 ];
 
-export const LESSONS: Lesson[] = RAW_LESSONS.map((lesson, index) => ({
-  ...lesson,
-  level: index + 1,
-}));
+const COURSE_ORDER = [
+  "first-keystrokes",
+  "home-row",
+  "home-row-words",
+  "g-and-h",
+  "left-reach",
+  "right-reach",
+  "reach-return",
+  "top-row-words",
+  "lower-row",
+  "all-letters",
+  "capital-letters",
+  "numbers",
+  "numbers-in-context",
+  "punctuation",
+  "symbols",
+  "word-building",
+  "tricky-patterns",
+  "accuracy-loop",
+  "speed-builder",
+  "endurance",
+] as const;
+
+const stageFor = (id: string): Lesson["stage"] => {
+  if (id === "first-keystrokes") return "Getting started";
+  if (["home-row", "home-row-words", "g-and-h"].includes(id)) return "Home row";
+  if (["left-reach", "right-reach", "reach-return", "top-row-words", "lower-row", "all-letters"].includes(id)) return "Reaches";
+  if (id === "capital-letters") return "Capitals and Shift";
+  if (["numbers", "numbers-in-context", "punctuation", "symbols"].includes(id)) return "Numbers and punctuation";
+  if (["word-building", "tricky-patterns"].includes(id)) return "Words and patterns";
+  return "Fluency and transfer";
+};
+
+export const LESSONS: Lesson[] = COURSE_ORDER.map((id, index) => {
+  const lesson = RAW_LESSONS.find((item) => item.id === id);
+  if (!lesson) throw new Error(`Missing lesson: ${id}`);
+  return {
+    ...lesson,
+    level: index + 1,
+    stage: stageFor(id),
+    demonstration:
+      id === "first-keystrokes"
+        ? "Place your index fingers on the raised bumps at F and J. Keep wrists straight, shoulders relaxed, and the keyboard directly in front of you."
+        : `${lesson.tip} After each reach, bring the finger back to its home position.`,
+    success: `Complete the full exercise with at least ${lesson.goalAccuracy}% real accuracy. Speed is information, not a pass requirement.`,
+  };
+});
 
 export const lessonById = (id: string) => LESSONS.find((lesson) => lesson.id === id);
 
