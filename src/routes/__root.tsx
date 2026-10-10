@@ -80,6 +80,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "TypeNova — Learn Touch Typing, Free" },
+      { name: "google-site-verification", content: "jUAwzNBdTQAHPq79X8-72UbziLedfq78SrdIA5xVPsQ" },
       {
         name: "description",
         content:
