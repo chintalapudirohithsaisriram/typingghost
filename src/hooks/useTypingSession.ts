@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { calculateStats, calculateWpm, compareTypedText, type TypingStats } from "@/lib/typing";
+import {
+  calculateStats,
+  calculateWpm,
+  compareTypedText,
+  reviewWordAttempts,
+  type TypingStats,
+  type WordAttempt,
+} from "@/lib/typing";
 
 /** Gaps longer than this between keystrokes don't count toward active time. */
 const IDLE_CAP_MS = 3000;
@@ -10,6 +17,7 @@ export type TypingResult = {
   hits: Record<string, number>;
   target: string;
   typed: string;
+  wordAttempts: WordAttempt[];
 };
 
 export type TypingSessionOptions = {
@@ -96,6 +104,7 @@ export function useTypingSession({
       hits: { ...hitsRef.current },
       target: targetRef.current,
       typed,
+      wordAttempts: reviewWordAttempts(targetRef.current, typed),
     });
   }, []);
 

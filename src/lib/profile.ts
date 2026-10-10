@@ -1,4 +1,4 @@
-import type { TypingStats } from "./typing";
+import type { TypingStats, WordAttempt } from "./typing";
 import { LESSONS } from "./typing-content";
 import { storage } from "./storage";
 
@@ -17,19 +17,31 @@ export type SessionRecord = {
 };
 
 export type ProfileState = {
-  version: 3;
+  version: 4;
   xp: number;
   sessions: SessionRecord[];
   completedLessons: string[];
   keyStats: Record<string, { hits: number; misses: number }>;
   bestWpm: number;
   bestAccuracy: number;
+  mistakes: MistakeRecord[];
+};
+
+export type MistakeRecord = {
+  id: string;
+  target: string;
+  attempt: string;
+  errorKeys: string[];
+  occurrences: number;
+  correctStreak: number;
+  updatedAt: number;
 };
 
 const STORAGE_KEY = "typenova.profile.v3";
 const LEGACY_KEYS = ["typenova.profile.v2"];
 const MAX_SESSIONS = 500;
 const MAX_XP = 10_000_000;
+const MAX_MISTAKES = 80;
 const cleanNumber = (value: unknown, max: number) =>
   typeof value === "number" && Number.isFinite(value) ? Math.min(max, Math.max(0, value)) : 0;
 const cleanText = (value: unknown, max = 120) =>
@@ -40,18 +52,19 @@ const cleanText = (value: unknown, max = 120) =>
     : "";
 
 export const defaultProfile = (): ProfileState => ({
-  version: 3,
+  version: 4,
   xp: 0,
   sessions: [],
   completedLessons: [],
   keyStats: {},
   bestWpm: 0,
   bestAccuracy: 0,
+  mistakes: [],
 });
 
 function normalise(parsed: Partial<ProfileState> | null): ProfileState {
   if (!parsed || typeof parsed !== "object") return defaultProfile();
-  if (typeof parsed.version === "number" && parsed.version > 3) return defaultProfile();
+  if (typeof parsed.version === "number" && parsed.version > 4) return defaultProfile();
   const sessions = Array.isArray(parsed.sessions)
     ? parsed.sessions.slice(-MAX_SESSIONS).flatMap((value) => {
         if (!value || typeof value !== "object") return [];
@@ -98,7 +111,7 @@ function normalise(parsed: Partial<ProfileState> | null): ProfileState {
       }),
   );
   return {
-    version: 3,
+    version: 4,
     xp: cleanNumber(parsed.xp, MAX_XP),
     sessions,
     completedLessons: Array.isArray(parsed.completedLessons)
@@ -116,6 +129,26 @@ function normalise(parsed: Partial<ProfileState> | null): ProfileState {
     keyStats,
     bestWpm: cleanNumber(parsed.bestWpm, 500),
     bestAccuracy: cleanNumber(parsed.bestAccuracy, 100),
+    mistakes: Array.isArray(parsed.mistakes)
+      ? parsed.mistakes.slice(-MAX_MISTAKES).flatMap((value) => {
+          if (!value || typeof value !== "object") return [];
+          const item = value as Partial<MistakeRecord>;
+          const target = cleanText(item.target, 40);
+          const attempt = cleanText(item.attempt, 40);
+          if (!target) return [];
+          return [{
+            id: cleanText(item.id, 90) || target.toLowerCase(),
+            target,
+            attempt,
+            errorKeys: Array.isArray(item.errorKeys)
+              ? item.errorKeys.map((key) => cleanText(key, 2)).filter(Boolean).slice(0, 12)
+              : [],
+            occurrences: Math.max(1, cleanNumber(item.occurrences, 10_000)),
+            correctStreak: cleanNumber(item.correctStreak, 100),
+            updatedAt: cleanNumber(item.updatedAt, Date.now() + 86_400_000),
+          }];
+        })
+      : [],
   };
 }
 
@@ -133,15 +166,15 @@ export function loadProfile(): ProfileState {
   return defaultProfile();
 }
 
-export function saveProfile(profile: ProfileState) {
+export function saveProfile(profile: ProfileState): boolean {
   const saved = storage.read<{ version?: unknown }>(STORAGE_KEY);
-  if (saved && typeof saved.version === "number" && saved.version > 3) return;
-  storage.write(STORAGE_KEY, profile);
+  if (saved && typeof saved.version === "number" && saved.version > 4) return false;
+  return storage.write(STORAGE_KEY, profile);
 }
 
-export function resetProfile() {
-  storage.remove(STORAGE_KEY);
-  LEGACY_KEYS.forEach((key) => storage.remove(key));
+export function resetProfile(): boolean {
+  const removed = storage.remove(STORAGE_KEY);
+  return LEGACY_KEYS.reduce((ok, key) => storage.remove(key) && ok, removed);
 }
 
 export const levelFromXp = (xp: number) => {
@@ -177,6 +210,7 @@ export function recordSession(
     hits: Record<string, number>;
     lessonId?: string;
     passed?: boolean;
+    wordAttempts?: WordAttempt[];
   },
 ): ProfileState {
   const { stats } = entry;
@@ -209,6 +243,8 @@ export function recordSession(
       ? [...profile.completedLessons, entry.lessonId]
       : profile.completedLessons;
 
+  const mistakes = mergeMistakes(profile.mistakes, entry.wordAttempts ?? []);
+
   return {
     ...profile,
     xp: profile.xp + xpForSession(stats),
@@ -217,6 +253,46 @@ export function recordSession(
     completedLessons,
     bestWpm: Math.max(profile.bestWpm, session.netWpm),
     bestAccuracy: Math.max(profile.bestAccuracy, session.accuracy),
+    mistakes,
+  };
+}
+
+export function mergeMistakes(current: MistakeRecord[], attempts: WordAttempt[]): MistakeRecord[] {
+  const next = current.map((item) => ({ ...item }));
+  for (const attempt of attempts) {
+    const target = cleanText(attempt.target, 40);
+    const typed = cleanText(attempt.attempt, 40);
+    if (!target) continue;
+    const id = `${target.toLowerCase()}::${typed.toLowerCase()}`;
+    const existing = next.find((item) => item.id === id);
+    if (existing) {
+      existing.occurrences = Math.min(10_000, existing.occurrences + 1);
+      existing.correctStreak = 0;
+      existing.updatedAt = Date.now();
+      existing.errorKeys = Array.from(new Set([...existing.errorKeys, ...attempt.errorKeys])).slice(0, 12);
+    } else {
+      next.push({ id, target, attempt: typed, errorKeys: attempt.errorKeys.slice(0, 12), occurrences: 1, correctStreak: 0, updatedAt: Date.now() });
+    }
+  }
+  return next.sort((a, b) => b.occurrences - a.occurrences || b.updatedAt - a.updatedAt).slice(0, MAX_MISTAKES);
+}
+
+export const dismissMistake = (profile: ProfileState, id: string): ProfileState => ({
+  ...profile,
+  mistakes: profile.mistakes.filter((item) => item.id !== id),
+});
+
+export const clearMistakes = (profile: ProfileState): ProfileState => ({ ...profile, mistakes: [] });
+
+export function markMistakePractised(profile: ProfileState, targets: string[]): ProfileState {
+  const cleanTargets = new Set(targets.map((target) => target.toLowerCase()));
+  return {
+    ...profile,
+    mistakes: profile.mistakes
+      .map((item) => cleanTargets.has(item.target.toLowerCase())
+        ? { ...item, correctStreak: item.correctStreak + 1, occurrences: Math.max(0, item.occurrences - 1), updatedAt: Date.now() }
+        : item)
+      .filter((item) => item.occurrences > 0 || item.correctStreak < 3),
   };
 }
 

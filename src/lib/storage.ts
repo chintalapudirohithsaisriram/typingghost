@@ -4,8 +4,8 @@
  */
 export type StorageAdapter = {
   read<T>(key: string): T | null;
-  write<T>(key: string, value: T): void;
-  remove(key: string): void;
+  write<T>(key: string, value: T): boolean;
+  remove(key: string): boolean;
 };
 
 const localAdapter: StorageAdapter = {
@@ -19,19 +19,21 @@ const localAdapter: StorageAdapter = {
     }
   },
   write(key, value) {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") return false;
     try {
       window.localStorage.setItem(key, JSON.stringify(value));
+      return true;
     } catch {
-      /* storage full or blocked */
+      return false;
     }
   },
   remove(key) {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") return false;
     try {
       window.localStorage.removeItem(key);
+      return true;
     } catch {
-      /* ignore */
+      return false;
     }
   },
 };
