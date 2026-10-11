@@ -18,7 +18,7 @@ declare global {
 /** Deliberately exclude input, exception text, URLs, stacks and arbitrary context. */
 export function reportLovableError(_error: unknown, _context: Record<string, unknown> = {}) {
   if (typeof window === "undefined") return;
-  const message = "TypeNova could not render this page";
+  const message = "TypingGhost could not render this page";
   window.__lovableEvents?.captureException?.(
     new Error(message),
     { source: "react_error_boundary" },
