@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/challenges")({
   head: () =>
     pageHead(
-      "Typing Challenges — Daily, Weekly, Monthly | TypeNova",
+      "Typing Challenges — Daily, Weekly, Monthly | TypingGhost",
       "Daily, weekly and monthly typing goals tracked from your real practice sessions. No fake progress.",
     ),
   component: ChallengesPage,
