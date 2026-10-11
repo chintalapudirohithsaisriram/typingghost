@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/progress")({
   head: () =>
     pageHead(
-      "Your Typing Progress | TypeNova",
+      "Your Typing Progress | TypingGhost",
       "Net WPM and accuracy trajectories, a diagnostic session log, weakest keys, error patterns, practice time, streaks and milestones — from your own sessions.",
     ),
   component: ProgressPage,
@@ -122,7 +122,7 @@ function ProgressPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "typenova-progress.json";
+    a.download = "typingghost-progress.json";
     a.click();
     URL.revokeObjectURL(url);
   };
