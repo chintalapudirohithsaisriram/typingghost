@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/games")({
   head: () =>
     pageHead(
-      "Typing Games — Word Ladder, Clean Streak, Key Hunt | TypeNova",
+      "Typing Games — Word Ladder, Clean Streak, Key Hunt | TypingGhost",
       "Short, skill-focused typing games with no time pressure: climb a word ladder, build a clean streak, or hunt keys by feel.",
     ),
   component: GamesPage,
