@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/practice")({
   head: () =>
     pageHead(
-      "Typing Practice — Weak Keys, Accuracy and Speed | TypeNova",
+      "Typing Practice — Weak Keys, Accuracy and Speed | TypingGhost",
       "Unlimited, adaptive typing practice built from your own mistakes: weak keys, error words, accuracy and speed modes.",
     ),
   component: PracticePage,
