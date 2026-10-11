@@ -79,14 +79,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "TypeNova — Learn Touch Typing, Free" },
+      { title: "TypingGhost — Learn Touch Typing, Free" },
       { name: "google-site-verification", content: "jUAwzNBdTQAHPq79X8-72UbziLedfq78SrdIA5xVPsQ" },
       {
         name: "description",
         content:
           "A calm, free touch typing course with unlimited practice, typing tests, games and honest progress tracking.",
       },
-      { property: "og:title", content: "TypeNova — Learn Touch Typing, Free" },
+      { property: "og:title", content: "TypingGhost — Learn Touch Typing, Free" },
       {
         property: "og:description",
         content: "Learn, practise, test and improve your typing — no time limits, no sign-up.",
@@ -141,12 +141,12 @@ function SiteHeader() {
         <Link
           to="/"
           className="flex min-w-0 items-center gap-2 rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-          aria-label="TypeNova home"
+          aria-label="TypingGhost home"
         >
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground font-display text-sm font-extrabold text-background">
             Tn
           </span>
-          <span className="font-display text-lg font-bold tracking-tight">TypeNova</span>
+          <span className="font-display text-lg font-bold tracking-tight">TypingGhost</span>
         </Link>
         <div className="flex items-center gap-1 sm:order-3">
           <Link
@@ -183,7 +183,7 @@ function SiteFooter() {
   return (
     <footer className="mt-20 border-t border-border py-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <p>TypeNova — learn, practise, test, improve. Progress stays on this device.</p>
+        <p>TypingGhost — learn, practise, test, improve. Progress stays on this device.</p>
         <p>No time limits. Accuracy first, speed follows.</p>
       </div>
     </footer>
