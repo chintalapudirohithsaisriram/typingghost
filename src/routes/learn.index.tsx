@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/learn/")({
   head: () =>
     pageHead(
-      `Typing Course — ${LESSONS.length} Guided Lessons | TypeNova`,
+      `Typing Course — ${LESSONS.length} Guided Lessons | TypingGhost`,
       "A structured touch typing course from the home row to numbers, punctuation, symbols and endurance. Unlimited time, clear goals.",
     ),
   component: LearnIndex,
