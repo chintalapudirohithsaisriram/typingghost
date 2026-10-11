@@ -25,11 +25,11 @@ export const Route = createFileRoute("/learn/$lessonId")({
     const lesson = loaderData ? lessonById(loaderData.lessonId) : undefined;
     if (!lesson)
       return pageHead(
-        "Lesson not found | TypeNova",
-        "This lesson is not part of the TypeNova course.",
+        "Lesson not found | TypingGhost",
+        "This lesson is not part of the TypingGhost course.",
       );
     return pageHead(
-      `Lesson ${lesson.level}: ${lesson.title} | TypeNova`,
+      `Lesson ${lesson.level}: ${lesson.title} | TypingGhost`,
       `${lesson.description} Goal: ${lesson.goalWpm} WPM at ${lesson.goalAccuracy}% accuracy, with no time limit.`,
     );
   },
