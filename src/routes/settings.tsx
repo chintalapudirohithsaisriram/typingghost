@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/settings")({
   head: () =>
     pageHead(
-      "Settings — Theme, Sound, Motion, Text Size | TypeNova",
-      "Choose a theme, key sounds, animation level, text size and on-screen guides for TypeNova.",
+      "Settings — Theme, Sound, Motion, Text Size | TypingGhost",
+      "Choose a theme, key sounds, animation level, text size and on-screen guides for TypingGhost.",
     ),
   component: SettingsPage,
 });
