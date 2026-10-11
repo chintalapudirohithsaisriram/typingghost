@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/test")({
   head: () =>
     pageHead(
-      "Typing Test — Passages, Words, Numbers & Punctuation | TypeNova",
+      "Typing Test — Passages, Words, Numbers & Punctuation | TypingGhost",
       "An untimed typing test with rotating passages, words, numbers, punctuation and custom letters. See net WPM, accuracy and a character-by-character review.",
     ),
   component: TestPage,
