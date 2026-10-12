@@ -8,6 +8,7 @@ export type SessionRecord = {
   mode: "lesson" | "test" | "practice" | "game" | "focus";
   errors?: number;
   lessonId?: string;
+  activityId?: string;
   passed?: boolean;
   label: string;
   netWpm: number;
@@ -17,10 +18,11 @@ export type SessionRecord = {
 };
 
 export type ProfileState = {
-  version: 4;
+  version: 5;
   xp: number;
   sessions: SessionRecord[];
   completedLessons: string[];
+  lessonProgress: Record<string, { completedActivities: number; lastPracticedAt: number }>;
   keyStats: Record<string, { hits: number; misses: number }>;
   bestWpm: number;
   bestAccuracy: number;
@@ -52,10 +54,11 @@ const cleanText = (value: unknown, max = 120) =>
     : "";
 
 export const defaultProfile = (): ProfileState => ({
-  version: 4,
+  version: 5,
   xp: 0,
   sessions: [],
   completedLessons: [],
+  lessonProgress: {},
   keyStats: {},
   bestWpm: 0,
   bestAccuracy: 0,
@@ -64,7 +67,7 @@ export const defaultProfile = (): ProfileState => ({
 
 function normalise(parsed: Partial<ProfileState> | null): ProfileState {
   if (!parsed || typeof parsed !== "object") return defaultProfile();
-  if (typeof parsed.version === "number" && parsed.version > 4) return defaultProfile();
+  if (typeof parsed.version === "number" && parsed.version > 5) return defaultProfile();
   const sessions = Array.isArray(parsed.sessions)
     ? parsed.sessions.slice(-MAX_SESSIONS).flatMap((value) => {
         if (!value || typeof value !== "object") return [];
@@ -86,6 +89,9 @@ function normalise(parsed: Partial<ProfileState> | null): ProfileState {
             ...(typeof session.lessonId === "string" &&
             LESSONS.some((lesson) => lesson.id === session.lessonId)
               ? { lessonId: session.lessonId }
+              : {}),
+            ...(typeof session.activityId === "string" && session.activityId.length <= 120
+              ? { activityId: cleanText(session.activityId, 120) }
               : {}),
             ...(typeof session.passed === "boolean" ? { passed: session.passed } : {}),
           },
@@ -111,7 +117,7 @@ function normalise(parsed: Partial<ProfileState> | null): ProfileState {
       }),
   );
   return {
-    version: 4,
+    version: 5,
     xp: cleanNumber(parsed.xp, MAX_XP),
     sessions,
     completedLessons: Array.isArray(parsed.completedLessons)
@@ -126,6 +132,29 @@ function normalise(parsed: Partial<ProfileState> | null): ProfileState {
           ),
         )
       : [],
+    lessonProgress: Object.fromEntries(
+      Object.entries(
+        parsed.lessonProgress && typeof parsed.lessonProgress === "object"
+          ? parsed.lessonProgress
+          : {},
+      ).flatMap(([id, value]) => {
+        if (!LESSONS.some((lesson) => lesson.id === id) || !value || typeof value !== "object")
+          return [];
+        const progress = value as { completedActivities?: unknown; lastPracticedAt?: unknown };
+        return [
+          [
+            id,
+            {
+              completedActivities: Math.min(
+                LESSONS.find((lesson) => lesson.id === id)!.activities.length,
+                Math.floor(cleanNumber(progress.completedActivities, 20)),
+              ),
+              lastPracticedAt: cleanNumber(progress.lastPracticedAt, Date.now() + 86_400_000),
+            },
+          ],
+        ];
+      }),
+    ),
     keyStats,
     bestWpm: cleanNumber(parsed.bestWpm, 500),
     bestAccuracy: cleanNumber(parsed.bestAccuracy, 100),
@@ -136,17 +165,22 @@ function normalise(parsed: Partial<ProfileState> | null): ProfileState {
           const target = cleanText(item.target, 40);
           const attempt = cleanText(item.attempt, 40);
           if (!target) return [];
-          return [{
-            id: cleanText(item.id, 90) || target.toLowerCase(),
-            target,
-            attempt,
-            errorKeys: Array.isArray(item.errorKeys)
-              ? item.errorKeys.map((key) => cleanText(key, 2)).filter(Boolean).slice(0, 12)
-              : [],
-            occurrences: Math.max(1, cleanNumber(item.occurrences, 10_000)),
-            correctStreak: cleanNumber(item.correctStreak, 100),
-            updatedAt: cleanNumber(item.updatedAt, Date.now() + 86_400_000),
-          }];
+          return [
+            {
+              id: cleanText(item.id, 90) || target.toLowerCase(),
+              target,
+              attempt,
+              errorKeys: Array.isArray(item.errorKeys)
+                ? item.errorKeys
+                    .map((key) => cleanText(key, 2))
+                    .filter(Boolean)
+                    .slice(0, 12)
+                : [],
+              occurrences: Math.max(1, cleanNumber(item.occurrences, 10_000)),
+              correctStreak: cleanNumber(item.correctStreak, 100),
+              updatedAt: cleanNumber(item.updatedAt, Date.now() + 86_400_000),
+            },
+          ];
         })
       : [],
   };
@@ -168,7 +202,7 @@ export function loadProfile(): ProfileState {
 
 export function saveProfile(profile: ProfileState): boolean {
   const saved = storage.read<{ version?: unknown }>(STORAGE_KEY);
-  if (saved && typeof saved.version === "number" && saved.version > 4) return false;
+  if (saved && typeof saved.version === "number" && saved.version > 5) return false;
   return storage.write(STORAGE_KEY, profile);
 }
 
@@ -209,7 +243,10 @@ export function recordSession(
     errors: Record<string, number>;
     hits: Record<string, number>;
     lessonId?: string;
+    activityId?: string;
     passed?: boolean;
+    lessonCompleted?: boolean;
+    lessonActivityIndex?: number;
     wordAttempts?: WordAttempt[];
   },
 ): ProfileState {
@@ -225,6 +262,7 @@ export function recordSession(
     characters: stats.typed,
     errors: stats.errors,
     ...(entry.lessonId ? { lessonId: entry.lessonId } : {}),
+    ...(entry.activityId ? { activityId: entry.activityId } : {}),
     ...(entry.passed !== undefined ? { passed: entry.passed } : {}),
   };
 
@@ -239,9 +277,26 @@ export function recordSession(
   }
 
   const completedLessons =
-    entry.lessonId && entry.passed && !profile.completedLessons.includes(entry.lessonId)
+    entry.lessonId &&
+    (entry.lessonCompleted || (entry.lessonActivityIndex === undefined && entry.passed)) &&
+    !profile.completedLessons.includes(entry.lessonId)
       ? [...profile.completedLessons, entry.lessonId]
       : profile.completedLessons;
+
+  const lessonProgress = { ...profile.lessonProgress };
+  if (entry.lessonId && Number.isInteger(entry.lessonActivityIndex)) {
+    const lesson = LESSONS.find((item) => item.id === entry.lessonId);
+    if (lesson) {
+      const prior = lessonProgress[entry.lessonId]?.completedActivities ?? 0;
+      lessonProgress[entry.lessonId] = {
+        completedActivities: Math.min(
+          lesson.activities.length,
+          Math.max(prior, entry.lessonActivityIndex! + 1),
+        ),
+        lastPracticedAt: Date.now(),
+      };
+    }
+  }
 
   const mistakes = mergeMistakes(profile.mistakes, entry.wordAttempts ?? []);
 
@@ -251,6 +306,7 @@ export function recordSession(
     sessions: [...profile.sessions, session].slice(-MAX_SESSIONS),
     keyStats,
     completedLessons,
+    lessonProgress,
     bestWpm: Math.max(profile.bestWpm, session.netWpm),
     bestAccuracy: Math.max(profile.bestAccuracy, session.accuracy),
     mistakes,
@@ -269,12 +325,25 @@ export function mergeMistakes(current: MistakeRecord[], attempts: WordAttempt[])
       existing.occurrences = Math.min(10_000, existing.occurrences + 1);
       existing.correctStreak = 0;
       existing.updatedAt = Date.now();
-      existing.errorKeys = Array.from(new Set([...existing.errorKeys, ...attempt.errorKeys])).slice(0, 12);
+      existing.errorKeys = Array.from(new Set([...existing.errorKeys, ...attempt.errorKeys])).slice(
+        0,
+        12,
+      );
     } else {
-      next.push({ id, target, attempt: typed, errorKeys: attempt.errorKeys.slice(0, 12), occurrences: 1, correctStreak: 0, updatedAt: Date.now() });
+      next.push({
+        id,
+        target,
+        attempt: typed,
+        errorKeys: attempt.errorKeys.slice(0, 12),
+        occurrences: 1,
+        correctStreak: 0,
+        updatedAt: Date.now(),
+      });
     }
   }
-  return next.sort((a, b) => b.occurrences - a.occurrences || b.updatedAt - a.updatedAt).slice(0, MAX_MISTAKES);
+  return next
+    .sort((a, b) => b.occurrences - a.occurrences || b.updatedAt - a.updatedAt)
+    .slice(0, MAX_MISTAKES);
 }
 
 export const dismissMistake = (profile: ProfileState, id: string): ProfileState => ({
@@ -282,16 +351,26 @@ export const dismissMistake = (profile: ProfileState, id: string): ProfileState 
   mistakes: profile.mistakes.filter((item) => item.id !== id),
 });
 
-export const clearMistakes = (profile: ProfileState): ProfileState => ({ ...profile, mistakes: [] });
+export const clearMistakes = (profile: ProfileState): ProfileState => ({
+  ...profile,
+  mistakes: [],
+});
 
 export function markMistakePractised(profile: ProfileState, targets: string[]): ProfileState {
   const cleanTargets = new Set(targets.map((target) => target.toLowerCase()));
   return {
     ...profile,
     mistakes: profile.mistakes
-      .map((item) => cleanTargets.has(item.target.toLowerCase())
-        ? { ...item, correctStreak: item.correctStreak + 1, occurrences: Math.max(0, item.occurrences - 1), updatedAt: Date.now() }
-        : item)
+      .map((item) =>
+        cleanTargets.has(item.target.toLowerCase())
+          ? {
+              ...item,
+              correctStreak: item.correctStreak + 1,
+              occurrences: Math.max(0, item.occurrences - 1),
+              updatedAt: Date.now(),
+            }
+          : item,
+      )
       .filter((item) => item.occurrences > 0 || item.correctStreak < 3),
   };
 }
@@ -319,8 +398,19 @@ export const strongestKeys = (profile: ProfileState, count = 6) =>
     .sort((a, b) => b.accuracy - a.accuracy || b.attempts - a.attempts)
     .slice(0, count);
 
+export function lessonStatus(
+  profile: ProfileState,
+  id: string,
+): "not-started" | "in-progress" | "completed" {
+  if (profile.completedLessons.includes(id)) return "completed";
+  if ((profile.lessonProgress[id]?.completedActivities ?? 0) > 0) return "in-progress";
+  if (profile.sessions.some((session) => session.lessonId === id)) return "in-progress";
+  return "not-started";
+}
+
 export const nextLesson = (profile: ProfileState) =>
-  LESSONS.find((lesson) => !profile.completedLessons.includes(lesson.id));
+  LESSONS.find((lesson) => lessonStatus(profile, lesson.id) === "in-progress") ??
+  LESSONS.find((lesson) => lessonStatus(profile, lesson.id) === "not-started");
 
 export const courseComplete = (profile: ProfileState) => nextLesson(profile) === undefined;
 
@@ -391,16 +481,16 @@ export function badgesFor(profile: ProfileState): Badge[] {
     {
       id: "home",
       title: "Home row",
-      description: "Pass the first three lessons.",
+      description: "Complete the first three lessons.",
       earned: ["first-keystrokes", "home-row", "home-row-words"].every((id) =>
         profile.completedLessons.includes(id),
       ),
     },
-    { id: "half", title: "Halfway", description: "Pass 10 lessons.", earned: lessons >= 10 },
+    { id: "half", title: "Halfway", description: "Complete 25 lessons.", earned: lessons >= 25 },
     {
       id: "grad",
       title: "Graduate",
-      description: `Pass all ${LESSONS.length} lessons.`,
+      description: `Complete all ${LESSONS.length} lessons.`,
       earned: lessons >= LESSONS.length,
     },
     {

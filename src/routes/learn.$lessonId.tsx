@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import CourseSidebar from "@/components/CourseSidebar";
 import KeyboardHandsGuide from "@/components/KeyboardHandsGuide";
@@ -9,7 +9,7 @@ import TypingSurface from "@/components/TypingSurface";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useProfile";
 import { useTypingSession, type TypingResult } from "@/hooks/useTypingSession";
-import { recordSession } from "@/lib/profile";
+import { lessonStatus, recordSession } from "@/lib/profile";
 import { pageHead } from "@/lib/seo";
 import { useSettings, updateSettings } from "@/lib/settings";
 import { round } from "@/lib/typing";
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/learn/$lessonId")({
       );
     return pageHead(
       `Lesson ${lesson.level}: ${lesson.title} | TypingGhost`,
-      `${lesson.description} Goal: ${lesson.goalWpm} WPM at ${lesson.goalAccuracy}% accuracy, with no time limit.`,
+      lesson.description + " Accuracy is supportive feedback, and speed is personal progress.",
     );
   },
   notFoundComponent: LessonNotFound,
@@ -68,68 +68,96 @@ function LessonPage() {
 }
 
 function LessonExperience({ lesson }: { lesson: Lesson }) {
-  const { profile, update } = useProfile();
+  const { profile, ready, update } = useProfile();
   const settings = useSettings();
   const [result, setResult] = useState<(TypingResult & { passed: boolean }) | null>(null);
+  const [activityIndex, setActivityIndex] = useState(0);
+  const [progressReady, setProgressReady] = useState(false);
+  const initializedLesson = useRef<string | null>(null);
+  const savedActivityCount = profile.lessonProgress[lesson.id]?.completedActivities ?? 0;
+
+  useEffect(() => {
+    if (!ready || initializedLesson.current === lesson.id) return;
+    initializedLesson.current = lesson.id;
+    setActivityIndex(Math.min(savedActivityCount, lesson.activities.length - 1));
+    setProgressReady(true);
+  }, [ready, savedActivityCount, lesson.id, lesson.activities.length]);
+
+  const activity = lesson.activities[activityIndex] ?? lesson.activities[0]!;
+  const isFinalActivity = activityIndex === lesson.activities.length - 1;
+  const activityKeys = activity.focusKeys ?? lesson.targetKeys;
   const index = LESSONS.findIndex((item) => item.id === lesson.id);
   const next = LESSONS[index + 1];
   const previous = index > 0 ? LESSONS[index - 1] : undefined;
-  const passedBefore = profile.completedLessons.includes(lesson.id);
+  const completedBefore = profile.completedLessons.includes(lesson.id);
 
   const session = useTypingSession({
-    target: lesson.exercise,
+    target: activity.text,
     onComplete: (run) => {
-      const passed =
-        run.stats.netWpm >= lesson.goalWpm && run.stats.realAccuracy >= lesson.goalAccuracy;
-      setResult({ ...run, passed });
+      const accuracyMet = run.stats.realAccuracy >= lesson.goalAccuracy;
+      setResult({ ...run, passed: true });
       update((current) =>
         recordSession(current, {
           mode: "lesson",
-          label: `Lesson ${lesson.level}: ${lesson.title}`,
+          label:
+            "Lesson " + lesson.level + ", activity " + (activityIndex + 1) + ": " + lesson.title,
           stats: run.stats,
           errors: run.errors,
           hits: run.hits,
           lessonId: lesson.id,
-          passed,
+          activityId: activity.id,
+          passed: accuracyMet,
+          lessonCompleted: isFinalActivity,
+          lessonActivityIndex: activityIndex,
         }),
       );
     },
   });
 
-  const targetKeys = useMemo(
-    () => lesson.targetKeys.filter((k) => k !== "all" && k !== "shift"),
-    [lesson.targetKeys],
-  );
+  const targetKeys = activityKeys.filter((key) => key !== "all" && key !== "shift");
   const restart = () => {
     setResult(null);
     session.reset();
   };
+  const continueActivity = () => {
+    setResult(null);
+    session.reset();
+    setActivityIndex((current) => Math.min(current + 1, lesson.activities.length - 1));
+  };
 
   const verdict = result
     ? {
-        passed: result.passed,
-        message: result.passed
-          ? passedBefore
-            ? "Another clean pass — this run was added to your progress."
-            : "Both goals cleared. The next lesson is ready."
-          : [
-              result.stats.realAccuracy < lesson.goalAccuracy
-                ? `Accuracy was ${round(result.stats.realAccuracy, 1)}% (goal ${lesson.goalAccuracy}%). Slow down slightly and aim for clean keystrokes.`
-                : null,
-              result.stats.netWpm < lesson.goalWpm
-                ? `Speed was ${round(result.stats.netWpm)} WPM (goal ${lesson.goalWpm}). Keep a steady rhythm; speed builds with repetition.`
-                : null,
-            ]
-              .filter(Boolean)
-              .join(" "),
+        passed: true,
+        label: isFinalActivity ? "Lesson complete" : "Activity complete",
+        message:
+          (isFinalActivity ? "Lesson complete." : "Activity complete.") +
+          " Accuracy: " +
+          round(result.stats.realAccuracy, 1) +
+          "%" +
+          (result.stats.realAccuracy < lesson.goalAccuracy
+            ? " (suggested focus: " + lesson.goalAccuracy + "%)."
+            : ".") +
+          " WPM is progress information; continue whenever you are ready." +
+          (completedBefore ? " Your earlier completion remains saved." : ""),
       }
     : undefined;
+
+  if (!progressReady) {
+    return (
+      <p className="mx-auto max-w-3xl px-4 py-16 text-center text-muted-foreground">
+        Loading your saved lesson progress…
+      </p>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
       <div className="grid gap-6 lg:grid-cols-[250px_minmax(0,1fr)]">
         <CourseSidebar
           completed={profile.completedLessons}
+          inProgress={LESSONS.filter(
+            (item) => lessonStatus(profile, item.id) === "in-progress",
+          ).map((item) => item.id)}
           currentId={lesson.id}
           className="hidden max-h-[calc(100dvh-7rem)] self-start overflow-y-auto lg:sticky lg:top-24 lg:block"
         />
@@ -164,7 +192,7 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
               <div className="min-w-0">
                 <p className="text-sm font-medium text-primary">
                   Lesson {lesson.level} of {LESSONS.length} · {lesson.stage}
-                  {passedBefore ? " · Passed" : ""}
+                  {completedBefore ? " · Completed" : ""}
                 </p>
                 <h1 className="mt-1 font-display text-3xl font-bold tracking-tight sm:text-4xl">
                   {lesson.title}
@@ -177,15 +205,16 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
               <dl className="grid grid-cols-2 gap-2 text-center">
                 <div className="rounded-xl bg-secondary px-4 py-2">
                   <dt className="text-[11px] tracking-wide text-muted-foreground uppercase">
-                    Goal speed
+                    Activity
                   </dt>
                   <dd className="font-display text-xl font-bold">
-                    {lesson.goalWpm} <span className="text-xs font-normal">WPM</span>
+                    {activityIndex + 1}{" "}
+                    <span className="text-xs font-normal">of {lesson.activities.length}</span>
                   </dd>
                 </div>
                 <div className="rounded-xl bg-secondary px-4 py-2">
                   <dt className="text-[11px] tracking-wide text-muted-foreground uppercase">
-                    Goal accuracy
+                    Accuracy guide
                   </dt>
                   <dd className="font-display text-xl font-bold">{lesson.goalAccuracy}%</dd>
                 </div>
@@ -198,10 +227,19 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
                   key={key}
                   className="rounded-md border border-border bg-surface-2 px-2 py-0.5 font-mono text-xs"
                 >
-                  {key === "all" ? "all keys" : key}
+                  {key === "all" ? "all keys" : key === " " ? "Space" : key}
                 </kbd>
               ))}
               <span className="ml-auto text-muted-foreground">Tip: {lesson.tip}</span>
+            </div>
+            <div className="mt-4 rounded-xl bg-secondary/70 p-4">
+              <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                {activity.kind} · activity {activityIndex + 1} of {lesson.activities.length}
+              </p>
+              <p className="mt-1 text-sm">{activity.instruction}</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Accuracy is supportive feedback; speed never blocks progress.
+              </p>
             </div>
           </header>
 
@@ -211,14 +249,14 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
                 <div
                   className="h-2 min-w-40 flex-1 overflow-hidden rounded-full bg-secondary"
                   role="progressbar"
-                  aria-label="Lesson progress"
+                  aria-label="Activity progress"
                   aria-valuemin={0}
                   aria-valuemax={100}
                   aria-valuenow={Math.round(session.progress)}
                 >
                   <div
                     className="h-full rounded-full bg-primary transition-[width]"
-                    style={{ width: `${session.progress}%` }}
+                    style={{ width: String(session.progress) + "%" }}
                   />
                 </div>
                 <span className="tabular-nums text-muted-foreground" aria-live="off">
@@ -226,11 +264,11 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
                   {session.value ? round(session.stats.realAccuracy) : 100}% accuracy
                 </span>
                 <Button onClick={restart} variant="outline" size="sm">
-                  <RotateCcw aria-hidden="true" /> Restart
+                  <RotateCcw aria-hidden="true" /> Restart activity
                 </Button>
               </div>
 
-              <TypingSurface target={lesson.exercise} session={session} size="lg" />
+              <TypingSurface target={activity.text} session={session} size="lg" />
 
               {settings.showKeyboard ? (
                 <KeyboardHandsGuide
@@ -263,11 +301,11 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
             </>
           ) : (
             <ResultsPanel
-              title={`Lesson ${lesson.level} result`}
+              title={"Lesson " + lesson.level + ", activity " + (activityIndex + 1) + " result"}
               stats={session.stats}
               samples={session.samples}
               errors={session.errors}
-              target={lesson.exercise}
+              target={activity.text}
               typed={session.value}
               verdict={verdict}
               actions={
@@ -275,8 +313,12 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
                   <Button onClick={restart} variant="outline">
                     <RotateCcw aria-hidden="true" /> Try again
                   </Button>
-                  {next ? (
-                    <Button asChild variant={result?.passed ? "default" : "outline"}>
+                  {!isFinalActivity ? (
+                    <Button onClick={continueActivity}>
+                      Continue activity <ArrowRight aria-hidden="true" />
+                    </Button>
+                  ) : next ? (
+                    <Button asChild>
                       <Link to="/learn/$lessonId" params={{ lessonId: next.id }}>
                         Next lesson <ArrowRight aria-hidden="true" />
                       </Link>

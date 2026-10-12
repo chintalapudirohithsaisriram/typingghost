@@ -207,7 +207,7 @@ function ProgressPage() {
         <StatTile
           label="Day streak"
           value={streak}
-          hint={`${profile.completedLessons.length} of ${LESSONS.length} lessons passed`}
+          hint={`${profile.completedLessons.length} of ${LESSONS.length} lessons completed`}
         />
       </div>
 
@@ -371,7 +371,11 @@ function ProgressPage() {
                     <td className="py-2 text-muted-foreground">{fullDate(s.at)}</td>
                     <td>
                       {s.label}
-                      {s.passed ? <span className="ml-2 text-xs text-success">passed</span> : null}
+                      {s.passed ? (
+                        <span className="ml-2 text-xs text-success">
+                          {s.activityId ? "accuracy guide met" : "passed"}
+                        </span>
+                      ) : null}
                     </td>
                     <td className="text-muted-foreground">{MODE_LABEL[s.mode] ?? s.mode}</td>
                     <td className="text-right tabular-nums">{s.netWpm}</td>

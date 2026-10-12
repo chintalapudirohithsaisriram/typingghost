@@ -12,7 +12,7 @@ type Props = {
   errors: Record<string, number>;
   target?: string;
   typed?: string;
-  verdict?: { passed: boolean; message: string } | undefined;
+  verdict?: { passed: boolean; message: string; label?: string } | undefined;
   actions?: ReactNode;
 };
 
@@ -57,7 +57,7 @@ export default function ResultsPanel({
           <span
             className={cn("mr-2 font-semibold", verdict.passed ? "text-success" : "text-warning")}
           >
-            {verdict.passed ? "Passed" : "Not yet"}
+            {verdict.label ?? (verdict.passed ? "Passed" : "Not yet")}
           </span>
           {verdict.message}
         </p>
