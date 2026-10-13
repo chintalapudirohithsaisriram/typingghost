@@ -11,11 +11,7 @@ type Props = {
 };
 const boxFor = (key: string) => KEY_LAYOUT.find((box) => box.key === key);
 const kindOf = (finger?: string) =>
-  !finger
-    ? "none"
-    : finger === "thumbs"
-      ? "thumb"
-      : (finger.split(" ")[1] ?? "none");
+  !finger ? "none" : finger === "thumbs" ? "thumb" : (finger.split(" ")[1] ?? "none");
 const fc = (kind: string) => `var(--finger-${kind}, var(--key-border))`;
 
 /** Original translucent hands, colour-coded by finger zone, on the shared key geometry. */
@@ -73,33 +69,76 @@ export default function KeyboardHandsGuide({
           ) : null}
         </div>
       </figcaption>
-      <svg viewBox={`0 0 1000 ${showHands ? 470 : 342}`} className="block h-auto w-full" focusable="false">
+      <svg
+        viewBox={`0 0 1000 ${showHands ? 470 : 342}`}
+        className="block h-auto w-full"
+        focusable="false"
+      >
         {KEY_LAYOUT.map((box) => {
           const kind = kindOf(FINGER_BY_KEY[box.key]);
           const active = box.key === targetKey || box.key === shiftKey;
           return (
             <g key={box.key} data-guide-key={box.key} data-active={active}>
-              <rect x={box.x} y={box.y + 4} width={box.w} height={box.h} rx="9" className="fill-surface-2" />
+              <rect
+                x={box.x}
+                y={box.y + 4}
+                width={box.w}
+                height={box.h}
+                rx="9"
+                className="fill-surface-2"
+              />
               <rect
                 x={box.x}
                 y={box.y}
                 width={box.w}
                 height={box.h}
                 rx="9"
-                className={cn("stroke-key-border", active ? "guide-key-active" : highlightKeys.includes(box.key) ? "fill-key-accent" : "fill-key")}
-                style={active ? { fill: fc(box.key === shiftKey ? "pinky" : kind), stroke: fc(box.key === shiftKey ? "pinky" : kind) } : undefined}
+                className={cn(
+                  "stroke-key-border",
+                  active
+                    ? "guide-key-active"
+                    : highlightKeys.includes(box.key)
+                      ? "fill-key-accent"
+                      : "fill-key",
+                )}
+                style={
+                  active
+                    ? {
+                        fill: fc(box.key === shiftKey ? "pinky" : kind),
+                        stroke: fc(box.key === shiftKey ? "pinky" : kind),
+                      }
+                    : undefined
+                }
                 strokeWidth={active ? 2 : 1}
               />
               {kind !== "none" ? (
-                <rect x={box.x + 10} y={box.y + box.h - 7} width={box.w - 20} height="3" rx="1.5" style={{ fill: fc(kind) }} opacity={active ? 0 : 0.55} />
+                <rect
+                  x={box.x + 10}
+                  y={box.y + box.h - 7}
+                  width={box.w - 20}
+                  height="3"
+                  rx="1.5"
+                  style={{ fill: fc(kind) }}
+                  opacity={active ? 0 : 0.55}
+                />
               ) : null}
               {SHIFTED_BY_KEY[box.key] ? (
-                <text x={box.x + 9} y={box.y + 15} className="fill-muted-foreground font-mono" fontSize="11">
+                <text
+                  x={box.x + 9}
+                  y={box.y + 15}
+                  className="fill-muted-foreground font-mono"
+                  fontSize="11"
+                >
                   {SHIFTED_BY_KEY[box.key]}
                 </text>
               ) : null}
               {box.key === "f" || box.key === "j" ? (
-                <path d={`M${box.x + 23} ${box.y + 47}h12`} className="stroke-muted-foreground" strokeWidth="2" strokeLinecap="round" />
+                <path
+                  d={`M${box.x + 23} ${box.y + 47}h12`}
+                  className="stroke-muted-foreground"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
               ) : null}
             </g>
           );
@@ -120,29 +159,64 @@ export default function KeyboardHandsGuide({
               const y = dest.y + 16;
               const d = `M${kx} ${ky} Q${(kx + x) / 2} ${(ky + y) / 2 + 10} ${x} ${y}`;
               return (
-                <g key={id} className={cn("guide-digit", active && "guide-digit-active")} data-finger={id} data-target={active ? dest.key : undefined}>
-                  <path d={d} className="guide-finger guide-finger-path" strokeWidth={kind === "pinky" ? 22 : 26} />
-                  <path d={d} className="guide-finger-path" fill="none" strokeLinecap="round" strokeWidth={kind === "pinky" ? 14 : 17} style={{ stroke: fc(kind) }} opacity={active ? 0.9 : 0.35} />
+                <g
+                  key={id}
+                  className={cn("guide-digit", active && "guide-digit-active")}
+                  data-finger={id}
+                  data-target={active ? dest.key : undefined}
+                >
+                  <path
+                    d={d}
+                    className="guide-finger guide-finger-path"
+                    strokeWidth={kind === "pinky" ? 22 : 26}
+                  />
+                  <path
+                    d={d}
+                    className="guide-finger-path"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeWidth={kind === "pinky" ? 14 : 17}
+                    style={{ stroke: fc(kind) }}
+                    opacity={active ? 0.9 : 0.35}
+                  />
                   <g className="guide-fingertip" style={{ transform: `translate(${x}px, ${y}px)` }}>
                     <ellipse rx="8" ry="6" className="fill-surface" opacity="0.85" />
-                    {active ? <circle r="20" className="guide-ping" style={{ stroke: fc(kind) }} /> : null}
+                    {active ? (
+                      <circle r="20" className="guide-ping" style={{ stroke: fc(kind) }} />
+                    ) : null}
                   </g>
                 </g>
               );
             })}
             {["left", "right"].map((side) => {
               const l = side === "left";
-              const x = spaceActive && space ? space.x + space.w * (l ? 0.36 : 0.64) : l ? 448 : 552;
+              const x =
+                spaceActive && space ? space.x + space.w * (l ? 0.36 : 0.64) : l ? 448 : 552;
               const y = spaceActive && space ? space.y + 22 : 345;
               const bx = l ? 410 : 590;
               const d = `M${bx} 380 Q${(bx + x) / 2} ${y + 30} ${x} ${y}`;
               return (
-                <g key={side} className={cn("guide-digit", spaceActive && "guide-digit-active")} data-finger={`${side} thumb`} data-target={spaceActive ? " " : undefined}>
+                <g
+                  key={side}
+                  className={cn("guide-digit", spaceActive && "guide-digit-active")}
+                  data-finger={`${side} thumb`}
+                  data-target={spaceActive ? " " : undefined}
+                >
                   <path d={d} className="guide-finger guide-finger-path" strokeWidth="28" />
-                  <path d={d} className="guide-finger-path" fill="none" strokeLinecap="round" strokeWidth="19" style={{ stroke: fc("thumb") }} opacity={spaceActive ? 0.9 : 0.35} />
+                  <path
+                    d={d}
+                    className="guide-finger-path"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeWidth="19"
+                    style={{ stroke: fc("thumb") }}
+                    opacity={spaceActive ? 0.9 : 0.35}
+                  />
                   <g className="guide-fingertip" style={{ transform: `translate(${x}px, ${y}px)` }}>
                     <ellipse rx="9" ry="6" className="fill-surface" opacity="0.85" />
-                    {spaceActive ? <circle r="22" className="guide-ping" style={{ stroke: fc("thumb") }} /> : null}
+                    {spaceActive ? (
+                      <circle r="22" className="guide-ping" style={{ stroke: fc("thumb") }} />
+                    ) : null}
                   </g>
                 </g>
               );
@@ -169,7 +243,10 @@ export default function KeyboardHandsGuide({
                 y={box.y + 40}
                 textAnchor="middle"
                 fontSize={box.label.length > 1 ? 14 : 19}
-                className={cn("font-mono font-semibold uppercase", (errorKeys[box.key] ?? 0) > 0 ? "fill-destructive" : "fill-foreground")}
+                className={cn(
+                  "font-mono font-semibold uppercase",
+                  (errorKeys[box.key] ?? 0) > 0 ? "fill-destructive" : "fill-foreground",
+                )}
               >
                 {box.label}
               </text>

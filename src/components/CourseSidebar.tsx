@@ -1,21 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { Check } from "lucide-react";
-import { LESSONS, type Lesson } from "@/lib/typing-content";
+import { COURSE_STAGES, LESSONS } from "@/lib/typing-content";
 import { cn } from "@/lib/utils";
 
-const STAGES: Lesson["stage"][] = [
-  "Getting started",
-  "Home row",
-  "Reaches",
-  "Capitals and Shift",
-  "Numbers and punctuation",
-  "Words and patterns",
-  "Fluency and transfer",
-];
+type Props = { completed: string[]; inProgress?: string[]; currentId?: string; className?: string };
 
-type Props = { completed: string[]; currentId?: string; className?: string };
-
-export default function CourseSidebar({ completed, currentId, className }: Props) {
+export default function CourseSidebar({ completed, inProgress = [], currentId, className }: Props) {
   const done = completed.length;
   return (
     <nav aria-label="Course path" className={cn("panel p-3", className)}>
@@ -24,7 +14,7 @@ export default function CourseSidebar({ completed, currentId, className }: Props
           Course path
         </p>
         <p className="mt-1 text-sm">
-          <span className="font-semibold">{done}</span> of {LESSONS.length} passed
+          <span className="font-semibold">{done}</span> of {LESSONS.length} completed
         </p>
         <div
           className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary"
@@ -40,7 +30,7 @@ export default function CourseSidebar({ completed, currentId, className }: Props
           />
         </div>
       </div>
-      {STAGES.map((stage) => (
+      {COURSE_STAGES.map(({ title: stage }) => (
         <div key={stage} className="mt-2">
           <p className="px-2 py-1 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
             {stage}
@@ -48,6 +38,7 @@ export default function CourseSidebar({ completed, currentId, className }: Props
           <ol className="space-y-0.5">
             {LESSONS.filter((l) => l.stage === stage).map((lesson) => {
               const isDone = completed.includes(lesson.id);
+              const isInProgress = inProgress.includes(lesson.id) && !isDone;
               const isCurrent = lesson.id === currentId;
               return (
                 <li key={lesson.id}>
@@ -70,9 +61,20 @@ export default function CourseSidebar({ completed, currentId, className }: Props
                             : "border-border text-muted-foreground",
                       )}
                     >
-                      {isDone ? <Check className="size-3.5" aria-label="passed" /> : lesson.level}
+                      {isDone ? (
+                        <Check className="size-3.5" aria-label="completed" />
+                      ) : (
+                        lesson.level
+                      )}
                     </span>
-                    <span className="truncate">{lesson.title}</span>
+                    <span className="min-w-0 flex-1 truncate">{lesson.title}</span>
+                    {isInProgress ? (
+                      <span
+                        className="size-2 shrink-0 rounded-full bg-primary"
+                        aria-label="In progress"
+                        title="In progress"
+                      />
+                    ) : null}
                   </Link>
                 </li>
               );

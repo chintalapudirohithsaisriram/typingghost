@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, CircleDashed } from "lucide-react";
 import CourseSidebar from "@/components/CourseSidebar";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useProfile";
-import { nextLesson } from "@/lib/profile";
+import { lessonStatus, nextLesson, weakestKeys } from "@/lib/profile";
 import { pageHead } from "@/lib/seo";
-import { LESSONS, type Lesson } from "@/lib/typing-content";
+import { COURSE_STAGES, LESSONS } from "@/lib/typing-content";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/learn/")({
@@ -17,35 +17,24 @@ export const Route = createFileRoute("/learn/")({
   component: LearnIndex,
 });
 
-const STAGES: Lesson["stage"][] = [
-  "Getting started",
-  "Home row",
-  "Reaches",
-  "Capitals and Shift",
-  "Numbers and punctuation",
-  "Words and patterns",
-  "Fluency and transfer",
-];
-const STAGE_BLURB: Record<Lesson["stage"], string> = {
-  "Getting started": "Set up a physical keyboard, relax your hands, and learn how to follow the guide.",
-  "Home row": "Anchor your fingers and build controlled movement around their home positions.",
-  Reaches: "Leave the home row and return cleanly, one finger at a time.",
-  "Capitals and Shift": "Use the opposite-hand pinky for Shift while the other hand types the letter.",
-  "Numbers and punctuation": "Add the number row, sentence marks, and shifted symbols in small groups.",
-  "Words and patterns": "Join learned keys into useful words and troublesome letter patterns.",
-  "Fluency and transfer": "Apply accurate technique to mixed and everyday text.",
-};
-
 function LearnIndex() {
   const { profile, ready } = useProfile();
   const upcoming = nextLesson(profile);
-  const started = ready && profile.completedLessons.length > 0;
+  const started =
+    ready &&
+    (profile.completedLessons.length > 0 ||
+      Object.keys(profile.lessonProgress).length > 0 ||
+      profile.sessions.some((session) => session.mode === "lesson"));
+  const weak = weakestKeys(profile, 3);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
         <CourseSidebar
           completed={profile.completedLessons}
+          inProgress={LESSONS.filter(
+            (lesson) => lessonStatus(profile, lesson.id) === "in-progress",
+          ).map((lesson) => lesson.id)}
           className="hidden self-start lg:sticky lg:top-24 lg:block"
         />
         <div>
@@ -54,8 +43,9 @@ function LearnIndex() {
             The touch typing course
           </h1>
           <p className="mt-4 max-w-2xl text-muted-foreground">
-            {LESSONS.length} short lessons in seven stages. Each one explains the keys and fingers,
-            demonstrates the movement, and uses accuracy-based mastery. Take as long as you need.
+            {LESSONS.length} self-paced lessons in eight stages. Each lesson gives you an objective,
+            a clear technique cue, focused practice, and useful text to apply the skill. Accuracy
+            and speed are feedback; neither blocks your progress.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Button asChild size="lg">
@@ -73,15 +63,19 @@ function LearnIndex() {
           </div>
 
           <div className="mt-10 space-y-10">
-            {STAGES.map((stage) => (
+            {COURSE_STAGES.map(({ title: stage, description, lessonCount }) => (
               <section key={stage} aria-labelledby={`stage-${stage}`}>
-                <h2 id={`stage-${stage}`} className="font-display text-xl font-semibold">
-                  {stage}
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground">{STAGE_BLURB[stage]}</p>
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <h2 id={`stage-${stage}`} className="font-display text-xl font-semibold">
+                    {stage}
+                  </h2>
+                  <span className="text-xs text-muted-foreground">{lessonCount} lessons</span>
+                </div>
+                <p className="mt-1 text-sm text-muted-foreground">{description}</p>
                 <ol className="mt-4 grid gap-3 sm:grid-cols-2">
                   {LESSONS.filter((l) => l.stage === stage).map((lesson) => {
-                    const done = profile.completedLessons.includes(lesson.id);
+                    const status = lessonStatus(profile, lesson.id);
+                    const done = status === "completed";
                     return (
                       <li key={lesson.id}>
                         <Link
@@ -94,10 +88,18 @@ function LearnIndex() {
                               "flex size-9 shrink-0 items-center justify-center rounded-full border text-sm font-semibold",
                               done
                                 ? "border-primary bg-primary text-primary-foreground"
-                                : "border-border",
+                                : status === "in-progress"
+                                  ? "border-primary text-primary"
+                                  : "border-border",
                             )}
                           >
-                            {done ? <Check className="size-4" aria-label="passed" /> : lesson.level}
+                            {done ? (
+                              <Check className="size-4" aria-label="completed" />
+                            ) : status === "in-progress" ? (
+                              <CircleDashed className="size-4" aria-label="in progress" />
+                            ) : (
+                              lesson.level
+                            )}
                           </span>
                           <span className="min-w-0">
                             <span className="block font-medium">{lesson.title}</span>
@@ -105,7 +107,12 @@ function LearnIndex() {
                               {lesson.description}
                             </span>
                             <span className="mt-2 block text-xs text-muted-foreground">
-                              Mastery: complete · {lesson.goalAccuracy}% accuracy
+                              {status === "completed"
+                                ? "Completed"
+                                : status === "in-progress"
+                                  ? "In progress · resume saved activities"
+                                  : "Not started"}
+                              {" · Accuracy focus: " + lesson.goalAccuracy + "% (suggestion)"}
                             </span>
                           </span>
                         </Link>
@@ -116,6 +123,21 @@ function LearnIndex() {
               </section>
             ))}
           </div>
+          {weak.length > 0 ? (
+            <aside className="mt-10 rounded-2xl border border-primary/20 bg-primary/5 p-5">
+              <h2 className="font-semibold">A useful review from your practice</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Your recent typing suggests another look at{" "}
+                {weak.map((item) => item.key.toUpperCase()).join(", ")}. Practice these keys
+                whenever it helps; they do not hold up the course.
+              </p>
+              <Button asChild variant="outline" size="sm" className="mt-3">
+                <Link to="/practice">
+                  Open Practice <ArrowRight aria-hidden="true" />
+                </Link>
+              </Button>
+            </aside>
+          ) : null}
         </div>
       </div>
     </div>

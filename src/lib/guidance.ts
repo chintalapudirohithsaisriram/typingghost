@@ -16,7 +16,8 @@ export function guidanceFor(character: string): KeyGuidance {
   const shiftSide = shift ? shiftSideFor(targetKey) : null;
   const homeKey = finger === "thumbs" ? null : (HOME_KEY_BY_FINGER[finger] ?? null);
   const label = keyLabel(character);
-  const returnCue = homeKey && homeKey !== targetKey ? `, then return to ${homeKey.toUpperCase()}` : "";
+  const returnCue =
+    homeKey && homeKey !== targetKey ? `, then return to ${homeKey.toUpperCase()}` : "";
   const shiftCue = shiftSide ? ` while the ${shiftSide} pinky holds Shift` : "";
   const instruction = targetKey
     ? `Press ${label} with ${finger}${shiftCue}${returnCue}.`
