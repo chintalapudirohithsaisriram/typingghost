@@ -1,6 +1,6 @@
-# Contributing to TypeNova
+# Contributing to TypingGhost
 
-Thank you for helping improve TypeNova. Contributions should make typing practice clearer, more reliable, accessible, and respectful of learners' data.
+Thank you for helping improve TypingGhost. Contributions should make typing practice clearer, more reliable, accessible, and respectful of learners' data.
 
 ## Before you begin
 

@@ -18,7 +18,7 @@ import { LESSONS } from "@/lib/typing-content";
 export const Route = createFileRoute("/")({
   head: () =>
     pageHead(
-      "Typingghost — Master Your  keyboard typing",
+      "TypingGhost — Learn Touch Typing, Free and Untimed",
       `Learn touch typing with ${LESSONS.length} guided lessons, unlimited practice, untimed typing tests, games and honest progress tracking. Free, no sign-up.`,
     ),
   component: HomePage,

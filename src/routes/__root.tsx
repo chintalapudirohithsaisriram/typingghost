@@ -144,7 +144,7 @@ function SiteHeader() {
           aria-label="TypingGhost home"
         >
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground font-display text-sm font-extrabold text-background">
-            Tn
+            Tg
           </span>
           <span className="font-display text-lg font-bold tracking-tight">TypingGhost</span>
         </Link>
