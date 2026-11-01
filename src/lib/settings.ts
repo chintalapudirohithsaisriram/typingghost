@@ -10,7 +10,9 @@ export type Settings = {
   showHands: boolean;
 };
 
-const KEY = "typenova.settings.v1";
+const KEY = "typingghost.settings.v1";
+// Settings saved before the rename, read once so learners keep their choices.
+const LEGACY_KEY = "typenova.settings.v1";
 export const DEFAULT_SETTINGS: Settings = {
   theme: "paper",
   sound: false,
@@ -27,7 +29,8 @@ const listeners = new Set<() => void>();
 function ensureLoaded() {
   if (loaded || typeof window === "undefined") return;
   loaded = true;
-  const saved = storage.read<Partial<Settings>>(KEY);
+  const saved =
+    storage.read<Partial<Settings>>(KEY) ?? storage.read<Partial<Settings>>(LEGACY_KEY);
   current = normaliseSettings(saved);
 }
 
