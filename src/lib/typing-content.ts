@@ -45,7 +45,8 @@ export const COURSE_STAGES: { title: LessonStage; description: string; lessonCou
   },
   {
     title: "Top-row reaches",
-    description: "Learn small top-row groups, returning each finger to home between reaches.",
+    description:
+      "Learn the strongest top-row fingers first — E, I, R, U, T, Y — then add Q, W, O and P.",
     lessonCount: 7,
   },
   {
@@ -81,6 +82,9 @@ export const COURSE_STAGES: { title: LessonStage; description: string; lessonCou
   },
 ];
 
+// Lesson order matters: every character typed must have been introduced in this
+// lesson or an earlier one. Top-row reaches start with the strongest fingers
+// (E, I, R, U, T, Y) and leave the weaker pinky/ring reaches (Q, W, O, P) last.
 const definitions: LessonDefinition[] = [
   {
     id: "first-keystrokes",
@@ -90,8 +94,10 @@ const definitions: LessonDefinition[] = [
     tip: "Sit tall with loose shoulders; keep wrists floating and the keyboard centered.",
     targetKeys: ["f", "j"],
     finger: "Both hands relaxed; index fingers find F and J",
-    drill: "fjfj",
-    transfer: "fjjf",
+    drill:
+      "fjfjjfjfjfjjffjjffjfjjfjfjfjjfjfjfjjffjjffjjfjfjfjfjjfjfjfjjffjjfjfjjfjfjfjjffjjffjjfjfjfjfjjfjfj",
+    transfer:
+      "jjffjjffjfjjffjjfjfjfjfjjffjjfjfjjffjjfjfjfjjfjfjjfjfjfjfjjffjjfjfjjfjfjfjjffjjfjfjfjfjjffjjfjfj",
     goalAccuracy: 85,
   },
   {
@@ -103,8 +109,10 @@ const definitions: LessonDefinition[] = [
     tip: "Left index rests on F and right index on J; feel the bumps with your fingertips.",
     targetKeys: ["f", "j"],
     finger: "Left index F · right index J",
-    drill: "fjfjfjfjffjjjjffjfjfjf",
-    transfer: "fjjf",
+    drill:
+      "fjfjfjfjfjffjjjjffjfjfjfjjffjjfjfjfjfjfjfjfjjffjjfjfjfjfjfjfjfjjffjjfjfjfjfjjfjfjfjfjfjfjfjjffjjfjfj",
+    transfer:
+      "fjfjfjfjfjffjjjjffjfjfjfjjffjjfjfjfjfjfjfjfjjffjjfjfjfjfjfjfjfjjffjjfjfjfjfjjfjfjfjfjfjfjfjjffjjfjfjfj",
     goalAccuracy: 88,
   },
   {
@@ -115,8 +123,10 @@ const definitions: LessonDefinition[] = [
     tip: "Keep the left hand curved and let each finger move only to its own key.",
     targetKeys: ["a", "s", "d", "f"],
     finger: "Left pinky A · ring S · middle D · index F",
-    drill: "asdfasdffsadfdas",
-    transfer: "sad",
+    drill:
+      "asdfasdffsadfdasfasdsadfaffsdasddffaasddssfaafsdfasdfasdffsadfdasfasdsadfaffsdasddffaasddssfaafsdfsadf",
+    transfer:
+      "sfasdfadsfasdsadfaffsdaasdfasdffsadfdasfasdsadfaffsdaasdfasdsadfaffsdaasdfasdfasdsadfaffsdasdfsadf",
     goalAccuracy: 90,
   },
   {
@@ -128,8 +138,10 @@ const definitions: LessonDefinition[] = [
     tip: "Right index stays on J; the little finger reaches to semicolon and returns.",
     targetKeys: ["j", "k", "l", ";"],
     finger: "Right index J · middle K · ring L · pinky semicolon",
-    drill: "jkl;jkll;;lkjjl",
-    transfer: "ask",
+    drill:
+      "jkl;jkll;;lkjjljkll;kj;jlklj;lkjkl;jkl;ll;;jjlkkljkl;jkll;;lkjjljkll;kj;jlklj;lkjkl;jkl;ll;;jjlkkljkl;",
+    transfer:
+      "jkll;;lkkjlljj;lkjkl;jkl;ljk;lkjll;;kjkll;jkl;lkjkl;jkll;;lkkjlljj;lkjkl;jkl;ll;;jjlkkl;jkl;ljk;lkjll;;",
     goalAccuracy: 90,
   },
   {
@@ -141,8 +153,9 @@ const definitions: LessonDefinition[] = [
     tip: "Left index reaches from F to G; right index reaches from J to H. Keep wrists still and use either thumb for Space.",
     targetKeys: ["g", "h", " "],
     finger: "Index fingers reach G/H · either thumb presses Space",
-    drill: "fg jh gh hg f g j h a g h;",
-    transfer: "a dad has a flag",
+    drill:
+      "fg jh gh hg fh gj hk jg hf fg jh gh hg f g j h a g h; dash flash gash half salad glass fg jh gh hg fh gj hk jg hf a dad has a flag a lad has a salad all lads ask dad fg jh gh hg f g j h a g h; gash flash dash half",
+    transfer: "a dad has a flag a lad has a salad dad adds a half glass a lass has a flash",
     goalAccuracy: 90,
   },
   {
@@ -154,70 +167,85 @@ const definitions: LessonDefinition[] = [
     tip: "Read the whole word first; let each finger return home after its reach.",
     targetKeys: ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";", " "],
     finger: "All home-row fingers and either thumb",
-    drill: "ask sad fall flask lad all dad salad falls asks lads",
-    transfer: "a sad lad asks dad",
+    drill:
+      "ask sad fall flask lad all dad salad falls asks lads flag glass hall half dash gash slash lass flask salad asks a sad lad asks dad a lad has a salad all dads ask lads fall flask glass salad falls hall dash flash gash lass a sad lad asks dad",
+    transfer: "a sad lad asks dad a lad has a salad all lads ask dad for a flask salad falls ask a lass lad falls all dads ask",
     review: "Repeat the words once slowly, then once with an even rhythm.",
     goalAccuracy: 92,
   },
 
   {
+    id: "top-row-ei",
+    stage: "Top-row reaches",
+    title: "E and I",
+    description:
+      "Reach up with the strongest middle fingers: left middle to E, right middle to I, then return to D and K.",
+    tip: "Left middle reaches E from D; right middle reaches I from K. Return home after each reach.",
+    targetKeys: ["e", "i"],
+    finger: "Left middle E · right middle I",
+    drill:
+      "de ei id ie de ei id ie eel lee lie seal feel fell fill file hill heel shell skill side said sail deal die led lid se ei le kie lel sei eis de ei id ie eel lee lie seal feel fell fill file hill heel shell skill side said sail deal die led lid",
+    transfer:
+      "a seal feels ill she feels a chill as she files a deal lillie fills a glass lillie feels ill as dad asks a seal feels ill she files a deal",
+    goalAccuracy: 91,
+  },
+  {
+    id: "top-row-ru",
+    stage: "Top-row reaches",
+    title: "R and U",
+    description:
+      "Add the strong index-finger reaches: left index to R from F, right index to U from J.",
+    tip: "Left index reaches R from F; right index reaches U from J. Keep the other fingers resting on home.",
+    targetKeys: ["r", "u"],
+    finger: "Left index R · right index U",
+    drill:
+      "fr ju ru ur urj ufr fr ju ru ur jerk just rust rule lure sure pure rural usual rest rusk us ruse fr ju ru ur er ri uir iur jerk just rust rule lure sure pure rural usual rest rusk us ruse",
+    transfer:
+      "she feels rest as a usual rule us rural lure sure rule she felt a lure to rest rusk rural usual rest as she rules a ruse",
+    goalAccuracy: 91,
+  },
+  {
+    id: "top-row-ty",
+    stage: "Top-row reaches",
+    title: "T and Y",
+    description:
+      "Extend both index fingers to T and Y, the longest reaches they make from F and J.",
+    tip: "Left index reaches T from F; right index reaches Y from J. Stretch from the knuckle, not the wrist.",
+    targetKeys: ["t", "y"],
+    finger: "Left index T · right index Y",
+    drill:
+      "ft jy yt ty tyt ytj jet yet yes jury duty dusty rusty trust truth treaty jetty try dry yurt trusty study ft jy yt ty jet yet yes jury duty dusty rusty trust truth treaty jetty try dry yurt trusty study",
+    transfer:
+      "a trusty jury yet to rest study the dusty yurt yet yes the dusty treaty is rusty yet trusty she tried to trust the jury",
+    goalAccuracy: 91,
+  },
+  {
     id: "left-reach",
     stage: "Top-row reaches",
     title: "Q and W",
-    description: "Reach from A and S to Q and W, then return to the home row.",
-    tip: "Left pinky reaches Q from A; left ring reaches W from S.",
+    description:
+      "Now add the lighter pinky and ring reaches: left pinky to Q from A, left ring to W from S.",
+    tip: "Left pinky reaches Q from A; left ring reaches W from S. Keep these reaches light — they tire fastest.",
     targetKeys: ["q", "w"],
     finger: "Left pinky Q · left ring W",
-    drill: "aq sw qa ws aq sw q w",
-    transfer: "a saw",
+    drill:
+      "aq sw qa ws aq sw wa sa aqua square quake quash swat swap was we well will wish wall walk warm ward wale wham aq sw qa ws aqua square quake quash swat swap was we well will wish wall walk warm ward wale wham",
+    transfer: "was it a quake as we swap a warm wall we wish a well what was it a quash as she walks a wall",
     goalAccuracy: 90,
   },
   {
-    id: "top-row-ert",
+    id: "top-row-op",
     stage: "Top-row reaches",
-    title: "E, R and T",
-    description: "Add E, R, and T with small reaches from the left home row.",
-    tip: "Left middle reaches E; left index reaches R and T. Return after every key.",
-    targetKeys: ["e", "r", "t"],
-    finger: "Left middle E · index R and T",
-    drill: "de fr ft er tr re te",
-    transfer: "we were free",
-    goalAccuracy: 91,
-  },
-  {
-    id: "top-row-index-return",
-    stage: "Top-row reaches",
-    title: "Left Reach and Return",
-    description: "Join Q through T while keeping the hand anchored and the reaches light.",
-    tip: "Only the assigned finger leaves home; bring it back before the next reach.",
-    targetKeys: ["q", "w", "e", "r", "t"],
-    finger: "Left hand by finger zone",
-    drill: "aq sw de fr ft qw er tw",
-    transfer: "a tree grew tall",
-    goalAccuracy: 92,
-  },
-  {
-    id: "right-reach",
-    stage: "Top-row reaches",
-    title: "Y and U",
-    description: "Reach to Y and U with the right index finger, then return to J.",
-    tip: "Right index covers Y and U; keep the other fingers resting on home keys.",
-    targetKeys: ["y", "u"],
-    finger: "Right index Y and U",
-    drill: "jy ku uj yj ju uy",
-    transfer: "a jury",
-    goalAccuracy: 91,
-  },
-  {
-    id: "right-reach-iop",
-    stage: "Top-row reaches",
-    title: "I, O and P",
-    description: "Add I, O, and P with controlled reaches across the right side of the top row.",
-    tip: "Right middle reaches I, ring reaches O, and pinky reaches P.",
-    targetKeys: ["i", "o", "p"],
-    finger: "Right middle I · ring O · pinky P",
-    drill: "ki lo ;p io op pi",
-    transfer: "oil your pipe it is quite poor",
+    title: "O and P",
+    description:
+      "Finish the top row with the right ring and pinky reaches to O and P, then return to L and semicolon.",
+    tip: "Right ring reaches O from L; right pinky reaches P from semicolon. Return home after every reach.",
+    targetKeys: ["o", "p"],
+    finger: "Right ring O · right pinky P",
+    drill:
+      "lo pi op po lp ip ol oi lo pool loop poll pop loot root riot roll toll pour pore rope drop trip prop oil dip lop pot top lotto lo pi op po lp ip ol oi pool loop poll pop loot root riot roll toll pour pore rope drop trip prop oil dip lop pot top lotto",
+    transfer:
+      "drop a poll to the pool the troop will rope a toll roll a poor pop test to pour oil loot the root and roll a prop to the top",
     goalAccuracy: 91,
   },
   {
@@ -228,8 +256,10 @@ const definitions: LessonDefinition[] = [
     tip: "Read one word ahead and avoid sliding your hand across the keyboard.",
     targetKeys: ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
     finger: "All fingers reach to the top row",
-    drill: "type write power tower quiet route pretty equip",
-    transfer: "write a quiet word",
+    drill:
+      "type write power tower quiet route pretty equip output pour our out type write power tower quiet route pretty equip output pour our out top row writers type quite well write a quiet word the power of a proper route the typist wrote our top queries while you were out",
+    transfer:
+      "write a quiet word the power of a proper route the typist wrote our top queries while you were out type a quiet letter and pour a cup of tea",
     goalAccuracy: 92,
   },
   {
@@ -240,8 +270,10 @@ const definitions: LessonDefinition[] = [
     tip: "Pause after a difficult reach, reset your fingers, and continue without rushing.",
     targetKeys: ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
     finger: "All fingers reach to the top row",
-    drill: "we were quite ready to write your type",
-    transfer: "the quiet writer will type a proper word",
+    drill:
+      "we were quite ready to write your type the route was pretty we were quite ready to write your type equip the writer to pour the water out the quiet tower was your type out here",
+    transfer:
+      "the quiet writer will type a proper word our route was quite pretty equip your tower to pour the water out we were quite ready to write your type",
     review: "Repeat any pair that felt awkward before moving on.",
     goalAccuracy: 92,
   },
@@ -254,8 +286,10 @@ const definitions: LessonDefinition[] = [
     tip: "Move from the knuckle with a small curl; keep your wrist relaxed.",
     targetKeys: ["z", "x"],
     finger: "Left pinky Z · left ring X",
-    drill: "az sx za xs zx xz",
-    transfer: "a fox",
+    drill:
+      "az sx za xs zx xz zs xs az xz za sx zero box fox six taxi exit axis zoo zest az sx za xs zx xz zs xs az xz za sx zero box fox six taxi exit axis zoo zest",
+    transfer:
+      "a fox left the zoo taxi at exit six the box was zesty zest as the fox took a taxi to the zoo",
     goalAccuracy: 90,
   },
   {
@@ -266,8 +300,10 @@ const definitions: LessonDefinition[] = [
     tip: "Left middle types C; left index reaches V and B.",
     targetKeys: ["c", "v", "b"],
     finger: "Left middle C · index V and B",
-    drill: "dc fv fb cv vb bc",
-    transfer: "a brave voice",
+    drill:
+      "dc fv fb cv vb bc cvc bcb vcx cxv cab cave civic vice verb cover curve brave boxer brick back bake cork vibe dc fv fb cv vb bc cvc bcb vcx cxv cab cave civic vice verb cover curve brave boxer brick back bake cork vibe",
+    transfer:
+      "a brave boxer was back at the civic cave to cover a curve we vibe to the verb and bake a brick cork the cab was brick",
     goalAccuracy: 91,
   },
   {
@@ -278,8 +314,10 @@ const definitions: LessonDefinition[] = [
     tip: "Right index covers N; right middle covers M. Return to J and K.",
     targetKeys: ["n", "m"],
     finger: "Right index N · middle M",
-    drill: "jn km mn nm jn km",
-    transfer: "many men make a new name",
+    drill:
+      "jn km mn nm jn km nmk mnj nmn mnm man men name nine mine mane many mean manner mum numb nun mimic minim rum jn km mn nm jn km nmk mnj nmn mnm man men name nine mine mane many mean manner mum numb nun mimic minim rum",
+    transfer:
+      "many men make a new name nine mimics can mean a mane a mum made nine names and a mean man ran a mum made nine names",
     goalAccuracy: 91,
   },
   {
@@ -290,8 +328,10 @@ const definitions: LessonDefinition[] = [
     tip: "Keep the unused fingers near home; move the fingertip, not the whole hand.",
     targetKeys: ["z", "x", "c", "v", "b", "n", "m"],
     finger: "All fingers by bottom-row zone",
-    drill: "az sx dc fv fb jn km",
-    transfer: "move a brave hand back to home",
+    drill:
+      "az sx dc fv fb jn km zx cv bn mx cxb nmb azx sxc dcf vfb jnb kmx zero axis taxi exit civic vice verb cover curve brave boxer brick man men name nine mine many manner mum numb mimic minim rum az sx dc fv fb jn km zx cv bn mx cxb nmb azx sxc dcf vfb jnb kmx",
+    transfer:
+      "move a brave hand back to home the man made a brave box of zesty mince mix max box van can cab ban name move a brave hand back to home",
     goalAccuracy: 92,
   },
   {
@@ -302,8 +342,10 @@ const definitions: LessonDefinition[] = [
     tip: "Separate a tricky pattern, then join it smoothly to the next one.",
     targetKeys: ["z", "x", "c", "v", "b", "n", "m"],
     finger: "All fingers by bottom-row zone",
-    drill: "mix max box van can cab ban name",
-    transfer: "a calm voice can move a brave mind",
+    drill:
+      "mix max box van can cab ban name zoom zone brace brave climb climb number number mix max box van can cab ban name zoom zone brace brave climb climb number number the brave fox can climb a new hill a calm man can move a zone of brave vans",
+    transfer:
+      "a calm voice can move a brave mind mix a max box and ban the van zone a calm man can name a brave climb the brave man can mix a max box",
     goalAccuracy: 92,
   },
   {
@@ -314,8 +356,10 @@ const definitions: LessonDefinition[] = [
     tip: "Aim for light, accurate reaches; speed will grow as paths become familiar.",
     targetKeys: ["z", "x", "c", "v", "b", "n", "m"],
     finger: "All fingers by bottom-row zone",
-    drill: "can van mix zone brave number climb",
-    transfer: "a brave beginner can combine new words",
+    drill:
+      "can van mix zone brave number climb zoom brace mince voice civil can van mix zone brave number climb zoom brace mince voice civil a brave beginner can combine new words the calm man made a max box of nine zesty mince vans in a civil zone",
+    transfer:
+      "a brave beginner can combine new words the calm man made a max box of nine zesty mince vans in a civil zone a brave beginner can combine new words",
     goalAccuracy: 92,
   },
   {
@@ -326,8 +370,10 @@ const definitions: LessonDefinition[] = [
     tip: "If a key feels uncertain, slow down and rehearse the reach from its home finger.",
     targetKeys: ["z", "x", "c", "v", "b", "n", "m"],
     finger: "All fingers by bottom-row zone",
-    drill: "the brave fox can climb a new hill",
-    transfer: "write a sentence about a calm brave learner",
+    drill:
+      "the brave fox can climb a new hill a calm man can move a zone of brave number vans mix the max brace the brave fox can climb a new hill zero exit boxes? no! write a sentence about a calm brave learner the calm man can move a zone of brave vans",
+    transfer:
+      "write a sentence about a calm brave learner the brave fox can climb a new hill a calm man can move a zone of brave number vans mix the max brace",
     review: "Repeat the letter pair that needed the most attention.",
     goalAccuracy: 93,
   },
@@ -340,8 +386,10 @@ const definitions: LessonDefinition[] = [
     tip: "If you feel lost, return to F and J by touch and continue calmly.",
     targetKeys: ["all"],
     finger: "All fingers",
-    drill: "the quick brown fox jumps over the lazy dog",
-    transfer: "pack my box with five dozen liquor jugs",
+    drill:
+      "the quick brown fox jumps over the lazy dog how vexingly quick daft zebras jump quick zephyrs blow vexing daft jim sphinx of black quartz judge my vow pack my box with five dozen liquor jugs the quick brown fox jumps over the lazy dog",
+    transfer:
+      "pack my box with five dozen liquor jugs sphinx of black quartz judge my vow the quick onyx goblin jumps over the lazy dog while bright vixens watch the quiet zebra",
     goalAccuracy: 93,
   },
   {
@@ -352,8 +400,10 @@ const definitions: LessonDefinition[] = [
     tip: "Let common words flow as a small movement pattern instead of separate hunts.",
     targetKeys: ["t", "h", "e", "r", "o", "n"],
     finger: "Mixed",
-    drill: "the other there another then these those their",
-    transfer: "people learn when they practice a little each day",
+    drill:
+      "the other there another then these those their there was a time when they had their own the heart of the matter there is another reason to hear them the other two were then there then these three had their say the other man heard the teacher",
+    transfer:
+      "people learn when they practice a little each day these three others heard their teacher there was a time when they had their own the other man then heard these three",
     goalAccuracy: 93,
   },
   {
@@ -364,8 +414,10 @@ const definitions: LessonDefinition[] = [
     tip: "Use either thumb for Space and keep your hands balanced over the home row.",
     targetKeys: ["all", " "],
     finger: "All fingers · either thumb for Space",
-    drill: "learn a little every day",
-    transfer: "a steady hand builds a useful skill",
+    drill:
+      "learn a little every day a steady hand builds a useful skill one step at a time makes a long way easy learn a little every day a steady hand builds a useful skill the way to type well is the way of a calm heart",
+    transfer:
+      "a steady hand builds a useful skill learn a little every day and the keys will feel like home the way to type well is the way of a calm heart and a steady eye",
     goalAccuracy: 93,
   },
   {
@@ -376,8 +428,10 @@ const definitions: LessonDefinition[] = [
     tip: "Look at the next pair as a unit while keeping the fingers relaxed.",
     targetKeys: ["t", "h", "e", "r", "i", "n"],
     finger: "Mixed",
-    drill: "th he in er an re on at",
-    transfer: "there is another reason to remain patient",
+    drill:
+      "th he in er an re on at th he in er an re on at the there then their when other another under enter other there their the rate of the hunt was rather high under their own time enter the other room there",
+    transfer:
+      "there is another reason to remain patient enter the other room under their own time the rate of the hunt was rather high there is another reason",
     goalAccuracy: 93,
   },
   {
@@ -388,9 +442,11 @@ const definitions: LessonDefinition[] = [
     tip: "Type each group evenly, then connect it to the next without a pause.",
     targetKeys: ["t", "h", "r", "s", "i", "n"],
     finger: "Mixed",
-    drill: "the ing and ion ent her",
-    transfer: "thinking clearly helps a learner find the right rhythm",
-    goalAccuracy: 94,
+    drill:
+      "the ing and ion ent her the ing and ion ent her thing bring string sing along the strong string of things went on and on under the outer enter her thing and the rest of the string",
+    transfer:
+      "thinking clearly helps a learner find the right rhythm her strong string of things went on and on under the outer enter the rest of the string went along",
+    goalAccuracy: 93,
   },
   {
     id: "same-alternating-patterns",
@@ -400,8 +456,10 @@ const definitions: LessonDefinition[] = [
     tip: "Keep same-hand sequences light and let alternating hands share the work.",
     targetKeys: ["all"],
     finger: "All fingers",
-    drill: "minimum people level rhythm",
-    transfer: "a careful typist lets both hands work together",
+    drill:
+      "minimum people level rhythm minimum people level rhythm mama papa peep loom noon pop lull lull pop noon loom peep papa mama a careful typist lets both hands share the work and keeps the rhythm level",
+    transfer:
+      "a careful typist lets both hands work together people remember the rhythm of a level even line and the minimum of wasted motion the rhythm of a level line",
     goalAccuracy: 94,
   },
   {
@@ -413,8 +471,11 @@ const definitions: LessonDefinition[] = [
     tip: "Repeat a stumble slowly three times before joining it to a full word.",
     targetKeys: ["all"],
     finger: "All fingers",
-    drill: "right tight sight great through thought",
-    transfer: "strength grows through thoughtful steady practice",
+    drill:
+      "right tight sight great through thought light night might fight eight caught taught brought tough rough enough though right tight sight great through thought the thought was right though the sight was tight",
+    transfer:
+      "strength grows through thoughtful steady practice the thought was right though the sight was tight a great light through the night enough thought, enough right",
+    review: "Choose one pattern to repeat slowly, then type the sentence once more.",
     goalAccuracy: 94,
   },
   {
@@ -425,9 +486,10 @@ const definitions: LessonDefinition[] = [
     tip: "Accuracy first: pause briefly to reset instead of guessing at a key.",
     targetKeys: ["all"],
     finger: "All fingers",
-    drill: "the quick learner finds a better rhythm",
-    transfer: "a good habit grows when clear words feel natural",
-    review: "Choose one pattern to repeat slowly, then type the sentence once more.",
+    drill:
+      "the quick learner finds a better rhythm watch the rate at which the wrong letters get fixed the quick learner finds a better rhythm a right rate is a great rate watch the wrong letters get fixed at a better rate",
+    transfer:
+      "a good habit grows when clear words feel natural the quick learner finds a better rhythm through steady thoughtful practice a right rate is a great rate",
     goalAccuracy: 94,
   },
 
@@ -439,8 +501,10 @@ const definitions: LessonDefinition[] = [
     tip: "Use the opposite-hand Shift: for a left-hand letter, press right Shift; for a right-hand letter, press left Shift.",
     targetKeys: ["shift", "all"],
     finger: "Opposite pinky presses Shift; other hand types the letter",
-    drill: "Aa Ss Dd Ff Jj Kk Ll",
-    transfer: "A Calm Hand Can Type Well",
+    drill:
+      "Aa Ss Dd Ff Jj Kk Ll Gg Hh Qq Ww Ee Rr Tt Yy Uu Ii Oo Pp Zz Xx Cc Vv Bb Nn Mm A S D F J K L Aa Ss Dd Ff Jj Kk Ll Gg Hh Qq Ww Ee Rr Tt Yy Uu Ii Oo Pp Zz Xx Cc Vv Bb Nn Mm",
+    transfer:
+      "A Calm Hand Can Type Well Dad Asked A Good Question She Will Write A Note Ravi And Maya Read Quietly Every Day A Calm Hand Can Type Well",
     goalAccuracy: 92,
   },
   {
@@ -452,8 +516,10 @@ const definitions: LessonDefinition[] = [
     tip: "Keep the Shift pinky down only while the other hand types the capital.",
     targetKeys: ["shift", "all"],
     finger: "Opposite pinky for Shift",
-    drill: "Qw Er Ty Ui Op As Df Gh Jk Lz Xc Vb Nm",
-    transfer: "Write A Short Note With Both Hands",
+    drill:
+      "Qw Er Ty Ui Op As Df Gh Jk Lz Xc Vb Nm Za Qs We Dr Ft Gy Hu Ji Ko Pl Bn Cv Mx Zc Qw Er Ty Ui Op As Df Gh Jk Lz Xc Vb Nm Za Qs We Dr Ft Gy Hu Ji Ko Pl Bn Cv Mx Zc",
+    transfer:
+      "Write A Short Note With Both Hands Zip Your Jacket And Wear A Warm Cap Quit The Odd Job For A Quiet Evening In Zen Mode Write A Short Note",
     goalAccuracy: 92,
   },
   {
@@ -464,8 +530,10 @@ const definitions: LessonDefinition[] = [
     tip: "Use the opposite-hand Shift rule for names on either side of the keyboard.",
     targetKeys: ["shift", "all"],
     finger: "Opposite pinky for Shift",
-    drill: "Maya Ravi London Friday",
-    transfer: "Maya and Ravi learn together",
+    drill:
+      "Maya Ravi London Friday Delhi India Monday Sunday Lagos Perth Oslo Kabul Quito Turin Udaipur Maya Ravi London Friday Delhi India Maya and Ravi learn together On Friday they typed",
+    transfer:
+      "Maya and Ravi learn together On Friday they typed A Quiet Note In London Maya wrote Ravi typed London Is Calm On Monday They Meet In Delhi",
     goalAccuracy: 93,
   },
   {
@@ -477,8 +545,10 @@ const definitions: LessonDefinition[] = [
     tip: "The right ring finger reaches for period; the right middle finger reaches for comma. Use a thumb for Space.",
     targetKeys: [".", ",", " "],
     finger: "Right ring period · right middle comma · either thumb Space",
-    drill: "one, two, three. one, two, three.",
-    transfer: "A small step, taken each day, can build a lasting skill.",
+    drill:
+      "one, two, three. one, two, three. wait, watch, type. rest, breathe, continue. slow, steady, smooth. practice, pause, repeat. one step, then two, then three. wait, watch, type. rest, breathe, continue. slow, steady, smooth.",
+    transfer:
+      "A small step, taken each day, can build a lasting skill. Sit tall, relax your hands, and read ahead. Type, check, correct, and move on. Calm hands, clear words, quiet wins.",
     goalAccuracy: 93,
   },
   {
@@ -489,8 +559,10 @@ const definitions: LessonDefinition[] = [
     tip: "On US QWERTY, ? and ! use Shift with their keys; apostrophe is typed with the right pinky.",
     targetKeys: ["?", "!", "'", "shift"],
     finger: "Right pinky for apostrophe and ? · Shift with opposite hand",
-    drill: "is it ready? yes! it is",
-    transfer: "Don't rush! Can you keep it steady?",
+    drill:
+      "is it ready? yes! it is don't stop! can we go? wait! why not? it's fine! who's there? what's next? keep it up! is it ready? yes! it is don't stop! can we go? wait! why not? it's fine! who's there? what's next? keep it up!",
+    transfer:
+      "Don't rush! Can you keep it steady? Yes! It's a calm pace, and it works. Who's typing now? I am! Wasn't that easier than it looked? Isn't practice a good feeling? Keep asking, keep typing!",
     goalAccuracy: 93,
   },
   {
@@ -502,8 +574,10 @@ const definitions: LessonDefinition[] = [
     tip: "On US QWERTY, right pinky handles quotes, colon, semicolon, and hyphen; use left Shift for shifted right-hand keys.",
     targetKeys: ['"', ":", ";", "-", "shift"],
     finger: "Right pinky for these keys · left pinky Shift for shifted keys",
-    drill: '; - ; - : "go"; "wait"',
-    transfer: 'Maya said, "Take a well-timed break; then begin."',
+    drill:
+      '; - ; - : "go"; "wait" well-timed; well-kept; "up"; "in" note: "rest"; pause: "begin"; rule: "type, then check" well-timed; well-kept; "up"; "in" note: "rest"; pause: "begin"',
+    transfer:
+      'Maya said, "Take a well-timed break; then begin." The rule is simple: type, check, and reset; "slow is smooth," she wrote. A well-kept rule: rest, then begin.',
     goalAccuracy: 93,
   },
   {
@@ -514,8 +588,10 @@ const definitions: LessonDefinition[] = [
     tip: "Use one space after sentence-ending punctuation, then reset your hands.",
     targetKeys: ["all", ".", ",", "?", "!", "'", '"', ":", ";", "-", "shift"],
     finger: "All fingers · opposite pinky for Shift",
-    drill: "Ready, set; breathe. Is it steady? Yes!",
-    transfer: '"It\'s a calm, well-paced lesson," Maya said.',
+    drill:
+      "Ready, set; breathe. Is it steady? Yes! Don't look down; read ahead. Check: is the wrist loose? Good. One more: type, pause, reset. Is it steady? Yes! Don't look down; read ahead. Check: is the wrist loose? Good.",
+    transfer:
+      '"It\'s a calm, well-paced lesson," Maya said. Ravi asked, "Can we pause, breathe, and begin again?" Yes - a short note, a long habit; type it, check it, and keep going.',
     goalAccuracy: 94,
   },
   {
@@ -526,8 +602,10 @@ const definitions: LessonDefinition[] = [
     tip: "Let the opposite hand hold Shift while your typing hand reaches for a capital or symbol.",
     targetKeys: ["all", "shift"],
     finger: "All fingers · opposite pinky for Shift",
-    drill: "Can a clear sentence stay calm? Yes, it can!",
-    transfer: 'Ravi asked, "Can we pause, breathe, and begin again?"',
+    drill:
+      'Can a clear sentence stay calm? Yes, it can! Don\'t rush; read ahead. Check the wrist: loose. Begin: "The note is ready." Wait - it\'s not; type on. Can a clear sentence stay calm? Yes, it can! Don\'t rush; read ahead.',
+    transfer:
+      'Ravi asked, "Can we pause, breathe, and begin again?" Maya wrote: "Yes - a calm, well-timed note; a clear sentence; a steady hand." Can a clear sentence stay calm? Yes, it can!',
     review: "Repeat a punctuation sequence that felt unfamiliar at an easy pace.",
     goalAccuracy: 94,
   },
@@ -540,8 +618,10 @@ const definitions: LessonDefinition[] = [
     tip: "On US QWERTY, 1–5 follow the left pinky, ring, middle, and index finger zones.",
     targetKeys: ["1", "2", "3", "4", "5"],
     finger: "Left pinky 1 · ring 2 · middle 3 · index 4 and 5",
-    drill: "1 2 3 4 5 15 24 35",
-    transfer: "Order 3 pens and 5 pads",
+    drill:
+      "1 2 3 4 5 15 24 35 42 51 12345 54321 12 23 34 45 11 22 33 44 55 1-2-3-4-5 order 3 pens and 5 pads page 4 line 2 room 5 note 12345 54321 135 246 357 order 3 pens and 5 pads page 4 line 2",
+    transfer:
+      "Order 3 pens and 5 pads. Room 5 has 4 desks and 2 lamps. Page 4, line 2: note the 35 items. Bus 42 leaves at 5; take 2. Read 12 lines, then 24 more.",
     goalAccuracy: 92,
   },
   {
@@ -552,8 +632,10 @@ const definitions: LessonDefinition[] = [
     tip: "On US QWERTY, 6–0 follow the right index, middle, ring, and pinky zones.",
     targetKeys: ["6", "7", "8", "9", "0"],
     finger: "Right index 6 and 7 · middle 8 · ring 9 · pinky 0",
-    drill: "6 7 8 9 0 67 89 90",
-    transfer: "Room 8 has 9 chairs and 0 spare desks",
+    drill:
+      "6 7 8 9 0 67 78 89 90 67890 09876 66 77 88 99 00 6-7-8-9-0 room 8 has 9 chairs and 0 spare desks flight 607 seat 89 row 9 gate 7 1234567890 room 8 has 9 chairs and 0 spare desks flight 607 seat 89",
+    transfer:
+      "Room 8 has 9 chairs and 0 spare desks. Flight 607 leaves from gate 7; seat 89. Call 90 for a 6-seat table. Bus 78, stop 9, at 6:00 - 0 fare. Room 8 has 9 chairs.",
     goalAccuracy: 92,
   },
   {
@@ -564,8 +646,10 @@ const definitions: LessonDefinition[] = [
     tip: "Read the whole number before typing; keep your hands relaxed between reaches.",
     targetKeys: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
     finger: "Number-row finger zones",
-    drill: "12345 67890 2026 314159 8080",
-    transfer: "A total of 42 learners joined 3 groups",
+    drill:
+      "12345 67890 2026 314159 8080 90210 007 24-7 360 720 1080 42 99 101 202 303 404 505 606 707 808 909 1010 12345 67890 2026 314159 8080 42 99 101 202 303 404",
+    transfer:
+      "A total of 42 learners joined 3 groups of 14. The year 2026 has 365 days. Call 911 at once - not 912. Write 2026, not 2202. Room 101, floor 9, seat 8080.",
     goalAccuracy: 93,
   },
   {
@@ -576,8 +660,10 @@ const definitions: LessonDefinition[] = [
     tip: "On US QWERTY, slash and question mark share the right pinky key; use Shift for the question mark.",
     targetKeys: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "/", ".", ":"],
     finger: "Number-row zones · right pinky slash · right pinky colon with Shift",
-    drill: "05/17 9:30 3.50 12.75",
-    transfer: "The meeting is 05/17 at 9:30; lunch costs 12.75",
+    drill:
+      "05/17 9:30 3.50 12.75 1/2 3/4 7:45 10:30 2.99 0.75 12/25 6:00 1.25 8.50 45.10 99.99 50/50 24/7 3:15 9.99 05/17 9:30 3.50 12.75 1/2 3/4 7:45 10:30 2.99 0.75 12/25 6:00",
+    transfer:
+      "The meeting is 05/17 at 9:30; lunch costs 12.75. Save 50/50 and pay 9.99 by 6:00. Bus 24/7 runs at 7:45, 10:30, and 3:15. The total is 45.10 - a 2.99 tip.",
     goalAccuracy: 93,
   },
   {
@@ -588,8 +674,10 @@ const definitions: LessonDefinition[] = [
     tip: "Hold the opposite pinky on Shift while the number-row finger types its symbol.",
     targetKeys: ["@", "#", "$", "%", "&", "*", "(", ")", "shift"],
     finger: "Opposite pinky Shift · number-row finger types symbol",
-    drill: "@ # $ % & * ( )",
-    transfer: "A 50% offer costs $8; use code #2",
+    drill:
+      "@ # $ % & * ( ) 50% $8 #2 (2) (3) @home $5 &6 *7 100% 25% (a) (b) @work $25 &up *ok 99% (ok) #1 $100 &play *new @ # $ % & * ( ) 50% $8 #2 (2) (3) @home $5 &6 *7",
+    transfer:
+      "A 50% offer costs $8; use code #2. Write to me @home, meet @work at 5. (Bring $25 & a pen.) Rate: 99% (a)*, and (b) & up. Save 25% on #1 - it is $100.",
     goalAccuracy: 91,
   },
   {
@@ -600,8 +688,10 @@ const definitions: LessonDefinition[] = [
     tip: "Type each segment deliberately; reset your hands after an @, slash, or underscore.",
     targetKeys: ["@", ".", "/", "_", "-", ":", "shift"],
     finger: "Mixed · opposite pinky Shift for shifted symbols",
-    drill: "maya@example.com example.com",
-    transfer: "https://example.com/course-part-1",
+    drill:
+      "maya@example.com example.com https://example.com/course-part-1 first_last@site.org file_2.txt 2026/04/19 8:30 http://a.io x_y-z@web.com /docs /help 12:00 maya@example.com example.com first_last@site.org file_2.txt 2026/04/19 8:30",
+    transfer:
+      "https://example.com/course-part-1 has 12 lessons. Write to first_last@site.org before 8:30. Open /docs, then /help; save notes to file_2.txt. Check 2026/04/19 at 12:00.",
     goalAccuracy: 91,
   },
 
@@ -613,8 +703,10 @@ const definitions: LessonDefinition[] = [
     tip: "Pause at sentence boundaries and keep one space after punctuation.",
     targetKeys: ["all"],
     finger: "All fingers · either thumb for Space",
-    drill: "Hi Maya, I hope your day is going well.",
-    transfer: "Hello Ravi, I can join the study group at 4. See you soon, Maya.",
+    drill:
+      "Hi Maya, I hope your day is going well. Hello Ravi, I can join the study group at 4. See you soon, Maya. Thanks for the note; it helped a lot! Hello Ravi, I can join the study group at 4. See you soon, Maya.",
+    transfer:
+      "Hello Ravi, I can join the study group at 4. See you soon, Maya. Dear team, the draft is ready; please review it. Thanks, and have a good week! Hi Maya, thanks for the note.",
     goalAccuracy: 94,
   },
   {
@@ -625,9 +717,10 @@ const definitions: LessonDefinition[] = [
     tip: "Keep your eyes a few words ahead and breathe naturally at commas and periods.",
     targetKeys: ["all"],
     finger: "All fingers",
-    drill: "A clear plan makes a busy day easier to manage.",
+    drill:
+      "A clear plan makes a busy day easier to manage. Break a large task into small steps, focus on one part, and take a short pause when you need it. A clear plan makes a busy day easier to manage, and a short pause keeps the pace steady.",
     transfer:
-      "Good work begins with a clear plan. Break a large task into small steps, focus on one part, and take a short pause when you need it.",
+      "Good work begins with a clear plan. Break a large task into small steps, focus on one part, and take a short pause when you need it. Steady effort, not a rushed start, is what carries a project across the line.",
     goalAccuracy: 94,
   },
   {
@@ -639,8 +732,10 @@ const definitions: LessonDefinition[] = [
     tip: "Check each field before moving on; use the same finger zones for numbers and symbols every time.",
     targetKeys: ["all", "@", ".", "-"],
     finger: "All fingers · number-row zones",
-    drill: "Maya Rao 18 Lake Road",
-    transfer: "Name: Maya Rao; email: maya@example.com; address: 18 Lake Road.",
+    drill:
+      "Maya Rao 18 Lake Road Name: Maya Rao; email: maya@example.com; address: 18 Lake Road. City: Perth; postcode: 6015; phone: (08) 9300 5555 Maya Rao 18 Lake Road City: Perth; postcode: 6015",
+    transfer:
+      "Name: Maya Rao; email: maya@example.com; address: 18 Lake Road. City: Perth; postcode: 6015; phone: (08) 9300 5555. Order #3, ship by 05/17; total $45.10.",
     goalAccuracy: 94,
   },
   {
@@ -652,9 +747,10 @@ const definitions: LessonDefinition[] = [
     tip: "Accuracy and comfort matter more than speed; reset your posture if tension appears.",
     targetKeys: ["all"],
     finger: "All fingers",
-    drill: "Plan, pause, and continue.",
+    drill:
+      'Plan, pause, and continue. On 12 May, Maya sent a clear note: "The first draft is ready. Please review it by 3:30." Plan, pause, and continue. Maya sent a clear note: "The first draft is ready."',
     transfer:
-      'On 12 May, Maya sent a clear note: "The first draft is ready. Please review it by 3:30."',
+      'On 12 May, Maya sent a clear note: "The first draft is ready. Please review it by 3:30." Ravi read it at 4:15, mailed 2 fixes, and filed the report at 50% done - a calm, well-timed day\'s work.',
     review: "Notice one key or transition to practise again in a later session.",
     goalAccuracy: 94,
   },
@@ -668,9 +764,10 @@ const definitions: LessonDefinition[] = [
     tip: "Increase pace only while your hands stay relaxed and your accuracy remains comfortable.",
     targetKeys: ["all"],
     finger: "All fingers",
-    drill: "Keep a calm rhythm; let the next word arrive in time.",
+    drill:
+      "Keep a calm rhythm; let the next word arrive in time. Fast typing grows from patient practice. Keep the rhythm even, look ahead, and let speed follow control. Keep a calm rhythm; let the next word arrive in time.",
     transfer:
-      "Fast typing grows from patient practice. Keep the rhythm even, look ahead, and let speed follow control.",
+      "Fast typing grows from patient practice. Keep the rhythm even, look ahead, and let speed follow control. When the hands stay light and the eyes stay ahead, the words seem to type themselves - calm, even, and quick.",
     goalAccuracy: 94,
   },
   {
@@ -681,8 +778,10 @@ const definitions: LessonDefinition[] = [
     tip: "Choose a weak key from your practice feedback; make small accurate repetitions before using it in words.",
     targetKeys: ["all"],
     finger: "Use the finger zone shown by the keyboard guide",
-    drill: "Repeat a short word slowly, then type it in a phrase.",
-    transfer: "Write a short paragraph using words that include a key you want to strengthen.",
+    drill:
+      "Repeat a short word slowly, then type it in a phrase. Notice one key, correct it, and move on. Steady, gentle, accurate. Repeat a short word slowly, then type it in a phrase; notice one key, correct it, and move on.",
+    transfer:
+      "Write a short paragraph using words that include a key you want to strengthen. Pick one word at a time, type it slowly, then type it again at a normal pace; accuracy first, and let the speed arrive on its own.",
     review:
       "If your history has no weak-key signal yet, choose any key that still feels uncertain.",
     goalAccuracy: 95,
@@ -695,7 +794,8 @@ const definitions: LessonDefinition[] = [
     tip: "Relax your shoulders every few lines; a brief reset helps preserve a smooth rhythm.",
     targetKeys: ["all"],
     finger: "All fingers",
-    drill: "Breathe evenly, sit comfortably, and keep your eyes on the next phrase.",
+    drill:
+      "Breathe evenly, sit comfortably, and keep your eyes on the next phrase. Rest when your hands feel tired; short, regular sessions beat rare marathons. Breathe evenly, sit comfortably, and keep your eyes on the next phrase.",
     transfer:
       "Consistent practice turns careful technique into a useful habit. Sit comfortably, keep your shoulders relaxed, and let your eyes move a few words ahead. When a mistake appears, stay calm, correct the pattern, and return your attention to the next phrase. A steady pace will carry you farther than a rushed start.",
     goalAccuracy: 94,
@@ -709,7 +809,8 @@ const definitions: LessonDefinition[] = [
     tip: "Set a comfortable pace, use the technique that works for you, and treat the result as information—not a test you can fail.",
     targetKeys: ["all"],
     finger: "All fingers",
-    drill: "What feels easier now than it did at the start?",
+    drill:
+      "What feels easier now than it did at the start? Name one key that used to trip you up, and type a sentence that uses it well. What feels easier now than it did at the start?",
     transfer:
       "A new skill grows with practice. I can type a clear message, review a detail, and keep a calm rhythm. Progress is personal: I will notice what feels steady, choose one useful goal, and continue learning one step at a time.",
     review:
