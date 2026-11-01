@@ -39,8 +39,9 @@ export type MistakeRecord = {
   updatedAt: number;
 };
 
-const STORAGE_KEY = "typenova.profile.v3";
-const LEGACY_KEYS = ["typenova.profile.v2"];
+const STORAGE_KEY = "typingghost.profile.v3";
+// Older saved progress from before the rename, migrated once so learners keep their history.
+const LEGACY_KEYS = ["typenova.profile.v3", "typenova.profile.v2"];
 const MAX_SESSIONS = 500;
 const MAX_XP = 10_000_000;
 const MAX_MISTAKES = 80;

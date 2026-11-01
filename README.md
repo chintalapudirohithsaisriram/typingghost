@@ -1,14 +1,14 @@
-# TypeNova
+# TypingGhost
 
 **A local-first typing coach for learning touch typing through structured lessons, focused practice, and measurable progress.**
 
-TypeNova helps learners build accurate keyboard habits at their own pace. It combines guided lessons with practice based on missed keys, untimed typing tests, short skill games, and a personal progress dashboard.
+TypingGhost helps learners build accurate keyboard habits at their own pace. It combines guided lessons with practice based on missed keys, untimed typing tests, short skill games, and a personal progress dashboard.
 
 ## Project status
 
 The application is published at [typingghost.lovable.app](https://typingghost.lovable.app) and remains in active development. The [project roadmap](roadmap.md) tracks unfinished work, including broader interaction and security hardening and full end-to-end quality assurance. A published build should not be read as evidence that every planned check is complete.
 
-## What TypeNova includes
+## What TypingGhost includes
 
 - **Guided learning:** lessons progress from foundational keys toward numbers and symbols, with visual finger guidance.
 - **Focused practice:** exercises can emphasize keys and words that have been missed in earlier sessions.
@@ -92,7 +92,7 @@ The package currently does not define a `test` script. Although test-related pac
 
 ## Privacy and score integrity
 
-TypeNova does not require an account. The current application saves personal settings and practice history in the browser's local storage. That data is specific to the browser profile and may be lost if browser data is cleared; it is also editable by the person using the browser.
+TypingGhost does not require an account. The current application saves personal settings and practice history in the browser's local storage. That data is specific to the browser profile and may be lost if browser data is cleared; it is also editable by the person using the browser.
 
 Typing statistics are calculated for personal practice in the client. The current project does not provide a server-verified leaderboard or authoritative competitive scoring. Do not use local scores as proof of identity, skill, eligibility, or a competition result.
 
@@ -105,4 +105,4 @@ Typing statistics are calculated for personal practice in the client. The curren
 
 ## Lovable project
 
-This repository is connected to the [TypeNova project in Lovable](https://lovable.dev/projects/09fd5755-3c76-423a-9eaf-0018ddca3d54). Changes pushed to the connected `main` branch may sync back to the Lovable project. See [AGENTS.md](AGENTS.md) before changing published Git history.
+This repository is connected to the [TypingGhost project in Lovable](https://lovable.dev/projects/09fd5755-3c76-423a-9eaf-0018ddca3d54). Changes pushed to the connected `main` branch may sync back to the Lovable project. See [AGENTS.md](AGENTS.md) before changing published Git history.

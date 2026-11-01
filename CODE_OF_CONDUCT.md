@@ -1,6 +1,6 @@
 # Code of Conduct
 
-TypeNova is a learning project and community space. Everyone who participates in its repository, issues, pull requests, reviews, or project-related discussions is expected to help keep those spaces respectful and welcoming.
+TypingGhost is a learning project and community space. Everyone who participates in its repository, issues, pull requests, reviews, or project-related discussions is expected to help keep those spaces respectful and welcoming.
 
 ## Our standards
 
@@ -16,7 +16,7 @@ Unacceptable behavior includes harassment, discrimination, threats, personal att
 
 ## Scope
 
-This Code applies in the TypeNova repository and in other spaces when someone is representing or participating in the TypeNova project. Project maintainers may clarify whether conduct in a particular space falls within this scope.
+This Code applies in the TypingGhost repository and in other spaces when someone is representing or participating in the TypingGhost project. Project maintainers may clarify whether conduct in a particular space falls within this scope.
 
 ## Reporting a concern
 
@@ -32,4 +32,4 @@ The project maintainer is responsible for interpreting and enforcing this Code. 
 
 ## Acknowledgment
 
-This Code of Conduct is maintained for the TypeNova project. It may be clarified as the project and its community evolve.
+This Code of Conduct is maintained for the TypingGhost project. It may be clarified as the project and its community evolve.
