@@ -170,7 +170,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "ask sad fall flask lad all dad salad falls asks lads flag glass hall half dash gash slash lass flask salad asks a sad lad asks dad a lad has a salad all dads ask lads fall flask glass salad falls hall dash flash gash lass a sad lad asks dad",
     transfer:
-      "a sad lad asks dad a lad has a salad all lads ask dad for a flask salad falls ask a lass lad falls all dads ask",
+      "a sad lad asks dad a lad has a salad all lads ask a dad salad falls ask a lass lad falls all dads ask",
     review: "Repeat the words once slowly, then once with an even rhythm.",
     goalAccuracy: 92,
   },
