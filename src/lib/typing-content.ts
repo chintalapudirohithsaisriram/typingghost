@@ -169,7 +169,8 @@ const definitions: LessonDefinition[] = [
     finger: "All home-row fingers and either thumb",
     drill:
       "ask sad fall flask lad all dad salad falls asks lads flag glass hall half dash gash slash lass flask salad asks a sad lad asks dad a lad has a salad all dads ask lads fall flask glass salad falls hall dash flash gash lass a sad lad asks dad",
-    transfer: "a sad lad asks dad a lad has a salad all lads ask dad for a flask salad falls ask a lass lad falls all dads ask",
+    transfer:
+      "a sad lad asks dad a lad has a salad all lads ask dad for a flask salad falls ask a lass lad falls all dads ask",
     review: "Repeat the words once slowly, then once with an even rhythm.",
     goalAccuracy: 92,
   },
@@ -230,7 +231,8 @@ const definitions: LessonDefinition[] = [
     finger: "Left pinky Q · left ring W",
     drill:
       "aq sw qa ws aq sw wa sa aqua square quake quash swat swap was we well will wish wall walk warm ward wale wham aq sw qa ws aqua square quake quash swat swap was we well will wish wall walk warm ward wale wham",
-    transfer: "was it a quake as we swap a warm wall we wish a well what was it a quash as she walks a wall",
+    transfer:
+      "was it a quake as we swap a warm wall we wish a well what was it a quash as she walks a wall",
     goalAccuracy: 90,
   },
   {
@@ -603,7 +605,7 @@ const definitions: LessonDefinition[] = [
     targetKeys: ["all", "shift"],
     finger: "All fingers · opposite pinky for Shift",
     drill:
-      'Can a clear sentence stay calm? Yes, it can! Don\'t rush; read ahead. Check the wrist: loose. Begin: "The note is ready." Wait - it\'s not; type on. Can a clear sentence stay calm? Yes, it can! Don\'t rush; read ahead.',
+      "Can a clear sentence stay calm? Yes, it can! Don't rush; read ahead. Check the wrist: loose. Begin: \"The note is ready.\" Wait - it's not; type on. Can a clear sentence stay calm? Yes, it can! Don't rush; read ahead.",
     transfer:
       'Ravi asked, "Can we pause, breathe, and begin again?" Maya wrote: "Yes - a calm, well-timed note; a clear sentence; a steady hand." Can a clear sentence stay calm? Yes, it can!',
     review: "Repeat a punctuation sequence that felt unfamiliar at an easy pace.",
