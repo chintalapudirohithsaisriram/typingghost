@@ -18,8 +18,8 @@ import { LESSONS } from "@/lib/typing-content";
 export const Route = createFileRoute("/")({
   head: () =>
     pageHead(
-      "TypingGhost — Learn Touch Typing, Free and Untimed",
-      `Learn touch typing with ${LESSONS.length} guided lessons, unlimited practice, untimed typing tests, games and honest progress tracking. Free, no sign-up.`,
+      "TypingGhost — Untimed Touch Typing for Everyday Writing",
+      `Learn touch typing with ${LESSONS.length} guided lessons, focused practice, untimed tests, games, and personal progress. Free, no account required.`,
     ),
   component: HomePage,
 });
@@ -63,11 +63,12 @@ function HomePage() {
             Free touch typing course · No account needed
           </p>
           <h1 className="mt-4 max-w-3xl font-display text-5xl leading-[1.02] font-extrabold tracking-tight sm:text-7xl">
-            Master Your Keyboard.
+            Build confident everyday typing.
           </h1>
           <p className="mt-6 max-w-xl text-lg text-muted-foreground">
-            Learn the right finger for every key, practise what you miss, and measure real progress
-            — at your own pace, with no time limits.
+            Learn where each key belongs, practise the keys and words you miss, and use your
+            progress to choose what to do next. Built for everyday messages, study, work, and online
+            forms — with no countdown.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg">

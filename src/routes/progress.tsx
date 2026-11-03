@@ -148,7 +148,6 @@ function ProgressPage() {
     );
   };
 
-
   if (ready && !sessions.length) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6">

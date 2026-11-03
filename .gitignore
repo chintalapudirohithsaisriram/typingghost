@@ -20,6 +20,9 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Keep generated Lovable planning notes out of the public project tree.
+/.lovable/plan/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

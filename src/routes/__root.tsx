@@ -79,17 +79,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "TypingGhost — Learn Touch Typing, Free" },
+      { title: "TypingGhost — Touch Typing for Everyday Writing" },
       { name: "google-site-verification", content: "jUAwzNBdTQAHPq79X8-72UbziLedfq78SrdIA5xVPsQ" },
       {
         name: "description",
         content:
-          "A calm, free touch typing course with unlimited practice, typing tests, games and honest progress tracking.",
+          "Learn touch typing for everyday messages, study, work, and forms with guided lessons, focused practice, untimed tests, and local progress. Free, no account required.",
       },
-      { property: "og:title", content: "TypingGhost — Learn Touch Typing, Free" },
+      { property: "og:title", content: "TypingGhost — Touch Typing for Everyday Writing" },
       {
         property: "og:description",
-        content: "Learn, practise, test and improve your typing — no time limits, no sign-up.",
+        content:
+          "Learn, practise, test, and improve everyday typing with no countdown and no account.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
