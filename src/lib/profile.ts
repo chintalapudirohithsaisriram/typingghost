@@ -212,6 +212,28 @@ export function resetProfile(): boolean {
   return LEGACY_KEYS.reduce((ok, key) => storage.remove(key) && ok, removed);
 }
 
+/**
+ * Imports a TypingGhost progress export. Returns null for files that are not
+ * a plausible export. Every field is re-normalised and bounded through the
+ * same validator that loads local storage, so a crafted or corrupt file can
+ * never inject oversized or hostile values.
+ */
+export function importProfile(raw: string): ProfileState | null {
+  if (raw.length > 2_000_000) return null;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+  const candidate = parsed as Partial<ProfileState>;
+  const looksLikeProfile =
+    typeof candidate.version === "number" || Array.isArray(candidate.sessions);
+  if (!looksLikeProfile) return null;
+  return normalise(candidate);
+}
+
 export const levelFromXp = (xp: number) => {
   const level = Math.floor(Math.sqrt(Math.max(0, xp) / 60)) + 1;
   const current = (level - 1) ** 2 * 60;
