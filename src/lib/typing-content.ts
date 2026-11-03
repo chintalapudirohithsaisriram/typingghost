@@ -169,7 +169,8 @@ const definitions: LessonDefinition[] = [
     finger: "All home-row fingers and either thumb",
     drill:
       "ask sad fall flask lad all dad salad falls asks lads flag glass hall half dash gash slash lass flask salad asks a sad lad asks dad a lad has a salad all dads ask lads fall flask glass salad falls hall dash flash gash lass a sad lad asks dad",
-    transfer: "a sad lad asks dad a lad has a salad all lads ask dad for a flask salad falls ask a lass lad falls all dads ask",
+    transfer:
+      "a sad lad asks dad a lad has a salad all lads ask a dad salad falls ask a lass lad falls all dads ask",
     review: "Repeat the words once slowly, then once with an even rhythm.",
     goalAccuracy: 92,
   },
@@ -186,7 +187,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "de ei id ie de ei id ie eel lee lie seal feel fell fill file hill heel shell skill side said sail deal die led lid se ei le kie lel sei eis de ei id ie eel lee lie seal feel fell fill file hill heel shell skill side said sail deal die led lid",
     transfer:
-      "a seal feels ill she feels a chill as she files a deal lillie fills a glass lillie feels ill as dad asks a seal feels ill she files a deal",
+      "a seal feels ill she feels ill as she files a deal lillie fills a glass lillie feels ill as dad asks a seal feels ill she files a deal",
     goalAccuracy: 91,
   },
   {
@@ -199,9 +200,9 @@ const definitions: LessonDefinition[] = [
     targetKeys: ["r", "u"],
     finger: "Left index R · right index U",
     drill:
-      "fr ju ru ur urj ufr fr ju ru ur jerk just rust rule lure sure pure rural usual rest rusk us ruse fr ju ru ur er ri uir iur jerk just rust rule lure sure pure rural usual rest rusk us ruse",
+      "fr ju ru ur urj ufr fr ju ru ur jerk rule lure sure rural usual rusk us ruse fr ju ru ur er ri uir iur jerk rule lure sure rural usual rusk us ruse",
     transfer:
-      "she feels rest as a usual rule us rural lure sure rule she felt a lure to rest rusk rural usual rest as she rules a ruse",
+      "she feels a usual rule us rural lure sure rule as she rules a ruse she feels sure a rural rusk is a usual ruse",
     goalAccuracy: 91,
   },
   {
@@ -216,7 +217,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "ft jy yt ty tyt ytj jet yet yes jury duty dusty rusty trust truth treaty jetty try dry yurt trusty study ft jy yt ty jet yet yes jury duty dusty rusty trust truth treaty jetty try dry yurt trusty study",
     transfer:
-      "a trusty jury yet to rest study the dusty yurt yet yes the dusty treaty is rusty yet trusty she tried to trust the jury",
+      "a trusty jury yet rests study the dusty yurt yet yes the dusty treaty is rusty yet trusty she tried her trusty jury",
     goalAccuracy: 91,
   },
   {
@@ -229,8 +230,8 @@ const definitions: LessonDefinition[] = [
     targetKeys: ["q", "w"],
     finger: "Left pinky Q · left ring W",
     drill:
-      "aq sw qa ws aq sw wa sa aqua square quake quash swat swap was we well will wish wall walk warm ward wale wham aq sw qa ws aqua square quake quash swat swap was we well will wish wall walk warm ward wale wham",
-    transfer: "was it a quake as we swap a warm wall we wish a well what was it a quash as she walks a wall",
+      "aq sw qa ws aq sw wa sa aqua square quake quash was we well will wish wall walk ward wale aq sw qa ws aqua square quake quash was we well will wish wall walk ward wale",
+    transfer: "was it a quake as we walk a wall we wish a well was it a quash as she walks a wall",
     goalAccuracy: 90,
   },
   {
@@ -245,7 +246,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "lo pi op po lp ip ol oi lo pool loop poll pop loot root riot roll toll pour pore rope drop trip prop oil dip lop pot top lotto lo pi op po lp ip ol oi pool loop poll pop loot root riot roll toll pour pore rope drop trip prop oil dip lop pot top lotto",
     transfer:
-      "drop a poll to the pool the troop will rope a toll roll a poor pop test to pour oil loot the root and roll a prop to the top",
+      "drop a poll to the pool the troop will rope a toll roll a poor pop test to pour oil loot the root roll a prop to the top",
     goalAccuracy: 91,
   },
   {
@@ -259,7 +260,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "type write power tower quiet route pretty equip output pour our out type write power tower quiet route pretty equip output pour our out top row writers type quite well write a quiet word the power of a proper route the typist wrote our top queries while you were out",
     transfer:
-      "write a quiet word the power of a proper route the typist wrote our top queries while you were out type a quiet letter and pour a cup of tea",
+      "write a quiet word the power of a proper route the typist wrote our top queries while you were out type a quiet letter pour a wee pot of tea",
     goalAccuracy: 92,
   },
   {
@@ -287,9 +288,9 @@ const definitions: LessonDefinition[] = [
     targetKeys: ["z", "x"],
     finger: "Left pinky Z · left ring X",
     drill:
-      "az sx za xs zx xz zs xs az xz za sx zero box fox six taxi exit axis zoo zest az sx za xs zx xz zs xs az xz za sx zero box fox six taxi exit axis zoo zest",
+      "az sx za xs zx xz zs xs az xz za sx zero fox six taxi exit axis zoo zest az sx za xs zx xz zs xs az xz za sx zero fox six taxi exit axis zoo zest",
     transfer:
-      "a fox left the zoo taxi at exit six the box was zesty zest as the fox took a taxi to the zoo",
+      "a fox left the zoo taxi at exit six the zoo was zesty zest as the fox took a taxi to the zoo",
     goalAccuracy: 90,
   },
   {
@@ -303,7 +304,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "dc fv fb cv vb bc cvc bcb vcx cxv cab cave civic vice verb cover curve brave boxer brick back bake cork vibe dc fv fb cv vb bc cvc bcb vcx cxv cab cave civic vice verb cover curve brave boxer brick back bake cork vibe",
     transfer:
-      "a brave boxer was back at the civic cave to cover a curve we vibe to the verb and bake a brick cork the cab was brick",
+      "a brave boxer was back at the civic cave to cover a curve we vibe to the verb bake a brick cork the cab was brick",
     goalAccuracy: 91,
   },
   {
@@ -371,7 +372,7 @@ const definitions: LessonDefinition[] = [
     targetKeys: ["z", "x", "c", "v", "b", "n", "m"],
     finger: "All fingers by bottom-row zone",
     drill:
-      "the brave fox can climb a new hill a calm man can move a zone of brave number vans mix the max brace the brave fox can climb a new hill zero exit boxes? no! write a sentence about a calm brave learner the calm man can move a zone of brave vans",
+      "the brave fox can climb a new hill a calm man can move a zone of brave number vans mix the max brace the brave fox can climb a new hill zero exit boxes write a sentence about a calm brave learner the calm man can move a zone of brave vans",
     transfer:
       "write a sentence about a calm brave learner the brave fox can climb a new hill a calm man can move a zone of brave number vans mix the max brace",
     review: "Repeat the letter pair that needed the most attention.",
@@ -474,7 +475,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "right tight sight great through thought light night might fight eight caught taught brought tough rough enough though right tight sight great through thought the thought was right though the sight was tight",
     transfer:
-      "strength grows through thoughtful steady practice the thought was right though the sight was tight a great light through the night enough thought, enough right",
+      "strength grows through thoughtful steady practice the thought was right though the sight was tight a great light through the night enough thought enough right",
     review: "Choose one pattern to repeat slowly, then type the sentence once more.",
     goalAccuracy: 94,
   },
@@ -603,7 +604,7 @@ const definitions: LessonDefinition[] = [
     targetKeys: ["all", "shift"],
     finger: "All fingers · opposite pinky for Shift",
     drill:
-      'Can a clear sentence stay calm? Yes, it can! Don\'t rush; read ahead. Check the wrist: loose. Begin: "The note is ready." Wait - it\'s not; type on. Can a clear sentence stay calm? Yes, it can! Don\'t rush; read ahead.',
+      "Can a clear sentence stay calm? Yes, it can! Don't rush; read ahead. Check the wrist: loose. Begin: \"The note is ready.\" Wait - it's not; type on. Can a clear sentence stay calm? Yes, it can! Don't rush; read ahead.",
     transfer:
       'Ravi asked, "Can we pause, breathe, and begin again?" Maya wrote: "Yes - a calm, well-timed note; a clear sentence; a steady hand." Can a clear sentence stay calm? Yes, it can!',
     review: "Repeat a punctuation sequence that felt unfamiliar at an easy pace.",
@@ -619,7 +620,7 @@ const definitions: LessonDefinition[] = [
     targetKeys: ["1", "2", "3", "4", "5"],
     finger: "Left pinky 1 · ring 2 · middle 3 · index 4 and 5",
     drill:
-      "1 2 3 4 5 15 24 35 42 51 12345 54321 12 23 34 45 11 22 33 44 55 1-2-3-4-5 order 3 pens and 5 pads page 4 line 2 room 5 note 12345 54321 135 246 357 order 3 pens and 5 pads page 4 line 2",
+      "1 2 3 4 5 15 24 35 42 51 12345 54321 12 23 34 45 11 22 33 44 55 1-2-3-4-5 order 3 pens and 5 pads page 4 line 2 room 5 note 12345 54321 order 3 pens and 5 pads page 4 line 2",
     transfer:
       "Order 3 pens and 5 pads. Room 5 has 4 desks and 2 lamps. Page 4, line 2: note the 35 items. Bus 42 leaves at 5; take 2. Read 12 lines, then 24 more.",
     goalAccuracy: 92,

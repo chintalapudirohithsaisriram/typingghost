@@ -16,7 +16,7 @@ const retainedIds = [
   "home-row-words",
   "g-and-h",
   "left-reach",
-  "right-reach",
+  "top-row-words",
   "reach-return",
   "top-row-words",
   "lower-row",

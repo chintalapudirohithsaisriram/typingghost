@@ -29,8 +29,7 @@ const listeners = new Set<() => void>();
 function ensureLoaded() {
   if (loaded || typeof window === "undefined") return;
   loaded = true;
-  const saved =
-    storage.read<Partial<Settings>>(KEY) ?? storage.read<Partial<Settings>>(LEGACY_KEY);
+  const saved = storage.read<Partial<Settings>>(KEY) ?? storage.read<Partial<Settings>>(LEGACY_KEY);
   current = normaliseSettings(saved);
 }
 
