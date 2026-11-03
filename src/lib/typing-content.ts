@@ -231,8 +231,7 @@ const definitions: LessonDefinition[] = [
     finger: "Left pinky Q · left ring W",
     drill:
       "aq sw qa ws aq sw wa sa aqua square quake quash was we well will wish wall walk ward wale aq sw qa ws aqua square quake quash was we well will wish wall walk ward wale",
-    transfer:
-      "was it a quake as we walk a wall we wish a well was it a quash as she walks a wall",
+    transfer: "was it a quake as we walk a wall we wish a well was it a quash as she walks a wall",
     goalAccuracy: 90,
   },
   {
