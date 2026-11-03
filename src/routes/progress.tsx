@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Award, Download, RotateCcw, TrendingDown, TrendingUp } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Award, Download, RotateCcw, TrendingDown, TrendingUp, Upload } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
 
 import StatTile from "@/components/StatTile";
 import TrajectoryChart from "@/components/TrajectoryChart";
@@ -10,6 +10,7 @@ import {
   averageOf,
   badgesFor,
   coachMessage,
+  importProfile,
   levelFromXp,
   streakDays,
   strongestKeys,
@@ -68,8 +69,10 @@ function Delta({ value }: { value: number | null }) {
 }
 
 function ProgressPage() {
-  const { profile, ready, clear } = useProfile();
+  const { profile, ready, clear, update } = useProfile();
   const [confirmReset, setConfirmReset] = useState(false);
+  const [importStatus, setImportStatus] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const sessions = profile.sessions;
   const recent = sessions.slice(-30);
   const level = levelFromXp(profile.xp);
@@ -126,6 +129,25 @@ function ProgressPage() {
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  const importProgress = async (file: File) => {
+    setImportStatus(null);
+    if (file.size > 2_000_000) {
+      setImportStatus("That file is too large to be a progress export.");
+      return;
+    }
+    const text = await file.text();
+    const imported = importProfile(text);
+    if (!imported) {
+      setImportStatus("That file could not be read as TypingGhost progress.");
+      return;
+    }
+    update(() => imported);
+    setImportStatus(
+      `Imported ${imported.sessions.length} session${imported.sessions.length === 1 ? "" : "s"}.`,
+    );
+  };
+
 
   if (ready && !sessions.length) {
     return (
