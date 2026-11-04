@@ -94,8 +94,26 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
   const completedBefore = profile.completedLessons.includes(lesson.id);
 
   const session = useTypingSession({
-    target: activity.text,
+    target: drillText ?? activity.text,
     onComplete: (run) => {
+      if (drillText) {
+        // A clean retelling of missed words retires them from the saved list.
+        const corrected = run.wordAttempts.filter((w) => w.attempt === w.target).map((w) => w.target);
+        update((current) =>
+          markMistakePractised(
+            recordSession(current, {
+              mode: "practice",
+              label: `Mistake drill · Lesson ${lesson.level}: ${lesson.title}`,
+              stats: run.stats,
+              errors: run.errors,
+              hits: run.hits,
+            }),
+            corrected,
+          ),
+        );
+        setDrillResult(run);
+        return;
+      }
       const accuracyMet = run.stats.realAccuracy >= lesson.goalAccuracy;
       setResult({ ...run, passed: true });
       update((current) =>
