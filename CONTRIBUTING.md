@@ -44,11 +44,13 @@ Use a short, descriptive branch name such as `fix/lesson-focus` or `docs/setup-g
 Run the checks that apply to your change and include the results in the pull request description:
 
 ```sh
+bun run typecheck
+bun run test
 bun run lint
 bun run build
 ```
 
-There is currently no `test` script in `package.json`; the roadmap lists broader testing and quality assurance as unfinished. Do not describe unrun checks as passing. For interface changes, include screenshots or a concise manual verification note when possible.
+The test script runs the current Vitest unit suite; it is not a full browser or end-to-end suite. Do not describe unrun checks as passing. For interface changes, include screenshots or a concise manual verification note when possible.
 
 ## Pull request checklist
 

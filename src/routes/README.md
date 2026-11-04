@@ -1,21 +1,20 @@
-# Routes
+# Route conventions
 
-TanStack Start uses **file-based routing**. Every `.tsx` file in this directory
-defines a route. Do **not** create `src/pages/`, `src/routes/_app/index.tsx`, or
-`app/layout.tsx` — those are Next.js / Remix conventions. The only root layout
-is `src/routes/__root.tsx`.
+TypingGhost uses TanStack Start file-based routing. Route filenames in this folder define URLs; the generated `routeTree.gen.ts` file is maintained by the router plugin and must not be edited by hand.
 
-## Conventions
+| File | URL | Purpose |
+| --- | --- | --- |
+| `index.tsx` | `/` | Home and personal dashboard. |
+| `learn.index.tsx` | `/learn` | Course overview and lesson selection. |
+| `learn.$lessonId.tsx` | `/learn/:lessonId` | Individual lesson and activity results. |
+| `practice.tsx` | `/practice` | Focused and adaptive practice. |
+| `test.tsx` | `/test` | Untimed typing tests. |
+| `games.tsx` | `/games` | Short skill games. |
+| `challenges.tsx` | `/challenges` | Personal practice goals. |
+| `progress.tsx` | `/progress` | Saved activity and skill trends. |
+| `settings.tsx` | `/settings` | Appearance, sound, motion, and guidance settings. |
+| `drills.tsx` | `/drills` | Compatibility redirect to `/practice`. |
+| `index/index.tsx` | `/index` | Compatibility redirect to `/`. |
+| `__root.tsx` | Application shell | Shared navigation, metadata, and error boundaries. |
 
-| File | URL |
-| --- | --- |
-| `index.tsx` | `/` |
-| `about.tsx` | `/about` |
-| `users/index.tsx` | `/users` |
-| `users/$id.tsx` | `/users/:id` (dynamic — bare `$`, no curly braces) |
-| `posts/{-$category}.tsx` | `/posts/:category?` (optional segment) |
-| `files/$.tsx` | `/files/*` (splat — read via `_splat` param, never `*`) |
-| `_layout.tsx` | layout route (renders children via `<Outlet />`) |
-| `__root.tsx` | app shell — wraps every page; preserve `<Outlet />` |
-
-`routeTree.gen.ts` is auto-generated. Don't edit it by hand.
+Add a route in the shape required by TanStack Start, then let the development or build tooling regenerate the route tree. Do not create a separate `src/pages/` directory or hand-maintain route types.
