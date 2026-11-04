@@ -8,7 +8,13 @@ import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useProfile";
 import { seededRandom, useSeed } from "@/hooks/useSeed";
 import { useTypingSession } from "@/hooks/useTypingSession";
-import { recordSession, weakestKeys, type ProfileState } from "@/lib/profile";
+import {
+  markMistakePractised,
+  recordSession,
+  weakestKeys,
+  type MistakeRecord,
+  type ProfileState,
+} from "@/lib/profile";
 import { pageHead } from "@/lib/seo";
 import { round } from "@/lib/typing";
 import {

@@ -223,6 +223,15 @@ function ProgressPage() {
         </div>
       </header>
 
+      {importStatus ? (
+        <p
+          className="mt-6 rounded-xl border border-border bg-secondary/60 px-4 py-3 text-sm"
+          role="status"
+        >
+          {importStatus}
+        </p>
+      ) : null}
+
       <p className="mt-6 rounded-xl border border-border bg-secondary/60 px-4 py-3 text-sm">
         <span className="font-medium">Coach: </span>
         {coachMessage(profile)}
