@@ -185,6 +185,21 @@ function ProgressPage() {
           <Button variant="outline" onClick={exportProgress} disabled={!sessions.length}>
             <Download aria-hidden="true" /> Export
           </Button>
+          <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+            <Upload aria-hidden="true" /> Import
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json,.json"
+            className="sr-only"
+            aria-label="Import a TypingGhost progress file"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              event.target.value = "";
+              if (file) void importProgress(file);
+            }}
+          />
           {confirmReset ? (
             <>
               <Button
