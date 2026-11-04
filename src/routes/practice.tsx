@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { RefreshCw, RotateCcw } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import ResultsPanel from "@/components/ResultsPanel";
 import TypingSurface from "@/components/TypingSurface";
@@ -8,7 +8,13 @@ import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useProfile";
 import { seededRandom, useSeed } from "@/hooks/useSeed";
 import { useTypingSession } from "@/hooks/useTypingSession";
-import { recordSession, weakestKeys, type ProfileState } from "@/lib/profile";
+import {
+  markMistakePractised,
+  recordSession,
+  weakestKeys,
+  type MistakeRecord,
+  type ProfileState,
+} from "@/lib/profile";
 import { pageHead } from "@/lib/seo";
 import { round } from "@/lib/typing";
 import {
@@ -35,7 +41,11 @@ type Mode = "adaptive" | "weak" | "mistakes" | "accuracy" | "speed";
 const MODES: { id: Mode; label: string; blurb: string }[] = [
   { id: "adaptive", label: "Adaptive", blurb: "Mixes your weakest keys with real sentences." },
   { id: "weak", label: "Weak keys", blurb: "Focused patterns on the keys you miss most." },
-  { id: "mistakes", label: "Mistake words", blurb: "Common words that contain your error keys." },
+  {
+    id: "mistakes",
+    label: "Mistake words",
+    blurb: "The exact words you have mistyped before, retyped until clean.",
+  },
   { id: "accuracy", label: "Accuracy", blurb: "Calm passages. Aim for 98% or better." },
   { id: "speed", label: "Speed", blurb: "Short, familiar words to push your pace." },
 ];
@@ -44,16 +54,34 @@ const LETTERS = KEYBOARD_ROWS.slice(1)
   .flat()
   .filter((k) => /[a-z]/.test(k));
 
-function buildText(mode: Mode, keys: string[], recent: string[], rng: () => number): string {
+function buildText(
+  mode: Mode,
+  keys: string[],
+  recent: string[],
+  mistakes: MistakeRecord[],
+  rng: () => number,
+): string {
   switch (mode) {
     case "weak":
       return buildDrill(keys, 110);
     case "mistakes": {
-      const words = COMMON_WORDS.filter((w) => keys.some((k) => w.includes(k)));
-      if (words.length < 5) return generateWords(24, rng);
+      // Real words the learner actually mistyped, most frequent first.
+      const saved = mistakes
+        .filter((m) => m.target.trim().length >= 2 && m.target.length <= 40)
+        .slice(0, 12)
+        .map((m) => m.target);
+      const inferred = COMMON_WORDS.filter((w) => keys.some((k) => w.includes(k)));
+      const pool = [...saved, ...inferred];
+      if (pool.length < 5) return generateWords(24, rng);
       const out: string[] = [];
-      for (let i = 0; i < 22; i += 1) out.push(words[Math.floor(rng() * words.length)]!);
-      return out.join(" ");
+      // Saved mistakes appear twice: once to relearn, once to confirm the fix.
+      for (const word of saved) {
+        out.push(word, word);
+      }
+      while (out.length < 24) {
+        out.push(pool[Math.floor(rng() * pool.length)]!);
+      }
+      return out.slice(0, 32).join(" ");
     }
     case "accuracy":
       return pickRotating([...TEST_PASSAGES.easy, ...TEST_PASSAGES.medium], recent, rng);
@@ -91,24 +119,40 @@ function PracticePage() {
   const keys = picked.length ? picked : detected.length ? detected : ["f", "j", "d", "k"];
 
   const baseSeed = useSeed();
-  const target = useMemo(
-    () => buildText(mode, keys, recent, seededRandom(baseSeed + round_ * 7919)),
+  // Snapshot the saved mistakes per round so finishing a run (which updates
+  // them) doesn't regenerate the current drill text mid-result.
+  const [mistakeSnapshot, setMistakeSnapshot] = useState<MistakeRecord[]>([]);
+  useEffect(() => {
+    setMistakeSnapshot(profile.mistakes.slice(0, 30));
+    // Snapshot per round by design; a run's completion updates saved mistakes
+    // and must not regenerate the drill text behind the result panel.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mode, keys.join(""), round_, baseSeed],
+  }, [ready, round_]);
+  const target = useMemo(
+    () => buildText(mode, keys, recent, mistakeSnapshot, seededRandom(baseSeed + round_ * 7919)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [mode, keys.join(""), round_, baseSeed, mistakeSnapshot],
   );
 
   const session = useTypingSession({
     target,
-    onComplete: (run) =>
-      update((current) =>
-        recordSession(current, {
+    onComplete: (run) => {
+      // Words retyped without error leave the saved mistake list.
+      const corrected =
+        mode === "mistakes"
+          ? run.wordAttempts.filter((w) => w.attempt === w.target).map((w) => w.target)
+          : [];
+      update((current) => {
+        const recorded = recordSession(current, {
           mode: "practice",
           label: `Practice · ${MODES.find((m) => m.id === mode)!.label}`,
           stats: run.stats,
           errors: run.errors,
           hits: run.hits,
-        }),
-      ),
+        });
+        return corrected.length ? markMistakePractised(recorded, corrected) : recorded;
+      });
+    },
   });
 
   const fresh = () => {

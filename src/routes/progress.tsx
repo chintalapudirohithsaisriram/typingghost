@@ -148,7 +148,6 @@ function ProgressPage() {
     );
   };
 
-
   if (ready && !sessions.length) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6">
@@ -185,6 +184,21 @@ function ProgressPage() {
           <Button variant="outline" onClick={exportProgress} disabled={!sessions.length}>
             <Download aria-hidden="true" /> Export
           </Button>
+          <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+            <Upload aria-hidden="true" /> Import
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json,.json"
+            className="sr-only"
+            aria-label="Import a TypingGhost progress file"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              event.target.value = "";
+              if (file) void importProgress(file);
+            }}
+          />
           {confirmReset ? (
             <>
               <Button
@@ -207,6 +221,15 @@ function ProgressPage() {
           )}
         </div>
       </header>
+
+      {importStatus ? (
+        <p
+          className="mt-6 rounded-xl border border-border bg-secondary/60 px-4 py-3 text-sm"
+          role="status"
+        >
+          {importStatus}
+        </p>
+      ) : null}
 
       <p className="mt-6 rounded-xl border border-border bg-secondary/60 px-4 py-3 text-sm">
         <span className="font-medium">Coach: </span>

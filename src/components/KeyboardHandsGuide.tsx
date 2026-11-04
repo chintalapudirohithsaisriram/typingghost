@@ -49,7 +49,6 @@ export default function KeyboardHandsGuide({
     <figure
       className={cn("keyboard-stage pointer-events-none select-none", className)}
       data-testid="keyboard-hands-guide"
-      aria-hidden="true"
     >
       <figcaption className="guide-caption">
         <div className="flex min-w-0 flex-wrap items-center justify-center gap-x-3 gap-y-1">
@@ -69,10 +68,13 @@ export default function KeyboardHandsGuide({
           ) : null}
         </div>
       </figcaption>
+      {/* The visual keyboard and hands stay hidden to assistive technology and
+          cannot receive input; the caption above describes the guidance. */}
       <svg
         viewBox={`0 0 1000 ${showHands ? 470 : 342}`}
         className="block h-auto w-full"
         focusable="false"
+        aria-hidden="true"
       >
         {KEY_LAYOUT.map((box) => {
           const kind = kindOf(FINGER_BY_KEY[box.key]);

@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Repeat, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import CourseSidebar from "@/components/CourseSidebar";
@@ -9,7 +9,7 @@ import TypingSurface from "@/components/TypingSurface";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useProfile";
 import { useTypingSession, type TypingResult } from "@/hooks/useTypingSession";
-import { lessonStatus, recordSession } from "@/lib/profile";
+import { lessonStatus, markMistakePractised, recordSession } from "@/lib/profile";
 import { pageHead } from "@/lib/seo";
 import { useSettings, updateSettings } from "@/lib/settings";
 import { round } from "@/lib/typing";
@@ -73,6 +73,8 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
   const [result, setResult] = useState<(TypingResult & { passed: boolean }) | null>(null);
   const [activityIndex, setActivityIndex] = useState(0);
   const [progressReady, setProgressReady] = useState(false);
+  const [drillText, setDrillText] = useState<string | null>(null);
+  const [drillResult, setDrillResult] = useState<TypingResult | null>(null);
   const initializedLesson = useRef<string | null>(null);
   const savedActivityCount = profile.lessonProgress[lesson.id]?.completedActivities ?? 0;
 
@@ -92,8 +94,28 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
   const completedBefore = profile.completedLessons.includes(lesson.id);
 
   const session = useTypingSession({
-    target: activity.text,
+    target: drillText ?? activity.text,
     onComplete: (run) => {
+      if (drillText) {
+        // A clean retelling of missed words retires them from the saved list.
+        const corrected = run.wordAttempts
+          .filter((w) => w.attempt === w.target)
+          .map((w) => w.target);
+        update((current) =>
+          markMistakePractised(
+            recordSession(current, {
+              mode: "practice",
+              label: `Mistake drill · Lesson ${lesson.level}: ${lesson.title}`,
+              stats: run.stats,
+              errors: run.errors,
+              hits: run.hits,
+            }),
+            corrected,
+          ),
+        );
+        setDrillResult(run);
+        return;
+      }
       const accuracyMet = run.stats.realAccuracy >= lesson.goalAccuracy;
       setResult({ ...run, passed: true });
       update((current) =>
@@ -123,6 +145,26 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
     setResult(null);
     session.reset();
     setActivityIndex((current) => Math.min(current + 1, lesson.activities.length - 1));
+  };
+  const missedWords = result
+    ? result.wordAttempts
+        .filter((attempt) => attempt.attempt !== attempt.target)
+        .map((attempt) => attempt.target)
+        .slice(0, 6)
+    : [];
+  const startDrill = () => {
+    if (!missedWords.length) return;
+    setDrillResult(null);
+    setDrillText(missedWords.flatMap((word) => [word, word]).join(" "));
+  };
+  const exitDrill = () => {
+    setDrillText(null);
+    setDrillResult(null);
+    session.reset();
+  };
+  const restartDrill = () => {
+    setDrillResult(null);
+    session.reset();
   };
 
   const verdict = result
@@ -243,7 +285,45 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
             </div>
           </header>
 
-          {!session.done ? (
+          {drillText ? (
+            <section className="panel space-y-4 p-5" aria-labelledby="drill-title">
+              <header className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h3 id="drill-title" className="font-display text-lg font-semibold">
+                    Mistake drill
+                  </h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Type the words you missed twice. A clean run retires them from your saved
+                    mistakes.
+                  </p>
+                </div>
+                <Button variant="ghost" size="sm" onClick={exitDrill}>
+                  Back to results
+                </Button>
+              </header>
+              {drillResult ? (
+                <div className="space-y-3">
+                  <p className="rounded-xl border border-border bg-secondary/60 px-4 py-3 text-sm">
+                    Drill finished: {round(drillResult.stats.realAccuracy, 1)}% accuracy ·{" "}
+                    {round(drillResult.stats.netWpm)} WPM.{" "}
+                    {drillResult.stats.realAccuracy >= 98
+                      ? "Clean run — those words are retired."
+                      : "Drill again when you are ready."}
+                  </p>
+                  <Button onClick={restartDrill} variant="outline">
+                    <RotateCcw aria-hidden="true" /> Drill again
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <TypingSurface target={drillText} session={session} size="lg" />
+                  <Button onClick={restartDrill} variant="outline" size="sm">
+                    <RotateCcw aria-hidden="true" /> Restart drill
+                  </Button>
+                </>
+              )}
+            </section>
+          ) : !session.done ? (
             <>
               <div className="flex flex-wrap items-center gap-3 text-sm">
                 <div
@@ -313,6 +393,12 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
                   <Button onClick={restart} variant="outline">
                     <RotateCcw aria-hidden="true" /> Try again
                   </Button>
+                  {missedWords.length ? (
+                    <Button variant="outline" onClick={startDrill}>
+                      <Repeat aria-hidden="true" /> Drill {missedWords.length} missed word
+                      {missedWords.length === 1 ? "" : "s"}
+                    </Button>
+                  ) : null}
                   {!isFinalActivity ? (
                     <Button onClick={continueActivity}>
                       Continue activity <ArrowRight aria-hidden="true" />
