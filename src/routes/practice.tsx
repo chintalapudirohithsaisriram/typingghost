@@ -50,16 +50,34 @@ const LETTERS = KEYBOARD_ROWS.slice(1)
   .flat()
   .filter((k) => /[a-z]/.test(k));
 
-function buildText(mode: Mode, keys: string[], recent: string[], rng: () => number): string {
+function buildText(
+  mode: Mode,
+  keys: string[],
+  recent: string[],
+  mistakes: MistakeRecord[],
+  rng: () => number,
+): string {
   switch (mode) {
     case "weak":
       return buildDrill(keys, 110);
     case "mistakes": {
-      const words = COMMON_WORDS.filter((w) => keys.some((k) => w.includes(k)));
-      if (words.length < 5) return generateWords(24, rng);
+      // Real words the learner actually mistyped, most frequent first.
+      const saved = mistakes
+        .filter((m) => m.target.trim().length >= 2 && m.target.length <= 40)
+        .slice(0, 12)
+        .map((m) => m.target);
+      const inferred = COMMON_WORDS.filter((w) => keys.some((k) => w.includes(k)));
+      const pool = [...saved, ...inferred];
+      if (pool.length < 5) return generateWords(24, rng);
       const out: string[] = [];
-      for (let i = 0; i < 22; i += 1) out.push(words[Math.floor(rng() * words.length)]!);
-      return out.join(" ");
+      // Saved mistakes appear twice: once to relearn, once to confirm the fix.
+      for (const word of saved) {
+        out.push(word, word);
+      }
+      while (out.length < 24) {
+        out.push(pool[Math.floor(rng() * pool.length)]!);
+      }
+      return out.slice(0, 32).join(" ");
     }
     case "accuracy":
       return pickRotating([...TEST_PASSAGES.easy, ...TEST_PASSAGES.medium], recent, rng);
