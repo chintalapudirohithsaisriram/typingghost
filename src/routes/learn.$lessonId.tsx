@@ -98,7 +98,9 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
     onComplete: (run) => {
       if (drillText) {
         // A clean retelling of missed words retires them from the saved list.
-        const corrected = run.wordAttempts.filter((w) => w.attempt === w.target).map((w) => w.target);
+        const corrected = run.wordAttempts
+          .filter((w) => w.attempt === w.target)
+          .map((w) => w.target);
         update((current) =>
           markMistakePractised(
             recordSession(current, {

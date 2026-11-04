@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  defaultProfile,
-  importProfile,
-  markMistakePractised,
-  type MistakeRecord,
-} from "./profile";
+import { defaultProfile, importProfile, markMistakePractised, type MistakeRecord } from "./profile";
 
 const mistake = (over: Partial<MistakeRecord> = {}): MistakeRecord => ({
   id: "teh::te",
