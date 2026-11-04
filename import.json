@@ -1,0 +1,1 @@
+{"version": 5, "xp": 120, "sessions": [{"id": "i1", "at": 1700000000000, "mode": "test", "label": "Imported one", "netWpm": 30, "accuracy": 95, "durationMs": 30000, "characters": 200, "errors": 1}, {"id": "i2", "at": 1700000600000, "mode": "practice", "label": "Imported two", "netWpm": 35, "accuracy": 96, "durationMs": 30000, "characters": 220, "errors": 2}]}
