@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Repeat, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import CourseSidebar from "@/components/CourseSidebar";
@@ -391,6 +391,12 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
                   <Button onClick={restart} variant="outline">
                     <RotateCcw aria-hidden="true" /> Try again
                   </Button>
+                  {missedWords.length ? (
+                    <Button variant="outline" onClick={startDrill}>
+                      <Repeat aria-hidden="true" /> Drill {missedWords.length} missed word
+                      {missedWords.length === 1 ? "" : "s"}
+                    </Button>
+                  ) : null}
                   {!isFinalActivity ? (
                     <Button onClick={continueActivity}>
                       Continue activity <ArrowRight aria-hidden="true" />
