@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { RefreshCw, RotateCcw } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import ResultsPanel from "@/components/ResultsPanel";
 import TypingSurface from "@/components/TypingSurface";
@@ -115,24 +115,34 @@ function PracticePage() {
   const keys = picked.length ? picked : detected.length ? detected : ["f", "j", "d", "k"];
 
   const baseSeed = useSeed();
+  // Snapshot the saved mistakes per round so finishing a run (which updates
+  // them) doesn't regenerate the current drill text mid-result.
+  const [mistakeSnapshot, setMistakeSnapshot] = useState<MistakeRecord[]>([]);
+  useEffect(() => {
+    setMistakeSnapshot(profile.mistakes.slice(0, 30));
+  }, [ready, round_]);
   const target = useMemo(
-    () => buildText(mode, keys, recent, seededRandom(baseSeed + round_ * 7919)),
+    () => buildText(mode, keys, recent, mistakeSnapshot, seededRandom(baseSeed + round_ * 7919)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mode, keys.join(""), round_, baseSeed],
+    [mode, keys.join(""), round_, baseSeed, mistakeSnapshot],
   );
 
   const session = useTypingSession({
     target,
-    onComplete: (run) =>
-      update((current) =>
-        recordSession(current, {
+    onComplete: (run) => {
+      // Words retyped without error leave the saved mistake list.
+      const corrected = mode === "mistakes" ? run.wordAttempts.filter((w) => w.attempt === w.target).map((w) => w.target) : [];
+      update((current) => {
+        const recorded = recordSession(current, {
           mode: "practice",
           label: `Practice · ${MODES.find((m) => m.id === mode)!.label}`,
           stats: run.stats,
           errors: run.errors,
           hits: run.hits,
-        }),
-      ),
+        });
+        return corrected.length ? markMistakePractised(recorded, corrected) : recorded;
+      });
+    },
   });
 
   const fresh = () => {
