@@ -228,6 +228,7 @@ export function importProfile(raw: string): ProfileState | null {
   }
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
   const candidate = parsed as Partial<ProfileState>;
+  if (typeof candidate.version === "number" && candidate.version > 5) return null;
   const looksLikeProfile =
     typeof candidate.version === "number" || Array.isArray(candidate.sessions);
   if (!looksLikeProfile) return null;
