@@ -124,6 +124,9 @@ function PracticePage() {
   const [mistakeSnapshot, setMistakeSnapshot] = useState<MistakeRecord[]>([]);
   useEffect(() => {
     setMistakeSnapshot(profile.mistakes.slice(0, 30));
+    // Snapshot per round by design; a run's completion updates saved mistakes
+    // and must not regenerate the drill text behind the result panel.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, round_]);
   const target = useMemo(
     () => buildText(mode, keys, recent, mistakeSnapshot, seededRandom(baseSeed + round_ * 7919)),
