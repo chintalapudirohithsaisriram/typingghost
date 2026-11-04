@@ -41,7 +41,7 @@ type Mode = "adaptive" | "weak" | "mistakes" | "accuracy" | "speed";
 const MODES: { id: Mode; label: string; blurb: string }[] = [
   { id: "adaptive", label: "Adaptive", blurb: "Mixes your weakest keys with real sentences." },
   { id: "weak", label: "Weak keys", blurb: "Focused patterns on the keys you miss most." },
-  { id: "mistakes", label: "Mistake words", blurb: "Common words that contain your error keys." },
+  { id: "mistakes", label: "Mistake words", blurb: "The exact words you have mistyped before, retyped until clean." },
   { id: "accuracy", label: "Accuracy", blurb: "Calm passages. Aim for 98% or better." },
   { id: "speed", label: "Speed", blurb: "Short, familiar words to push your pace." },
 ];
