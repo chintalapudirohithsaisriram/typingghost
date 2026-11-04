@@ -9,7 +9,7 @@ import TypingSurface from "@/components/TypingSurface";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useProfile";
 import { useTypingSession, type TypingResult } from "@/hooks/useTypingSession";
-import { lessonStatus, recordSession } from "@/lib/profile";
+import { lessonStatus, markMistakePractised, recordSession } from "@/lib/profile";
 import { pageHead } from "@/lib/seo";
 import { useSettings, updateSettings } from "@/lib/settings";
 import { round } from "@/lib/typing";
@@ -73,6 +73,8 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
   const [result, setResult] = useState<(TypingResult & { passed: boolean }) | null>(null);
   const [activityIndex, setActivityIndex] = useState(0);
   const [progressReady, setProgressReady] = useState(false);
+  const [drillText, setDrillText] = useState<string | null>(null);
+  const [drillResult, setDrillResult] = useState<TypingResult | null>(null);
   const initializedLesson = useRef<string | null>(null);
   const savedActivityCount = profile.lessonProgress[lesson.id]?.completedActivities ?? 0;
 
