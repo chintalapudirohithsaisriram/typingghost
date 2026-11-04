@@ -144,6 +144,26 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
     session.reset();
     setActivityIndex((current) => Math.min(current + 1, lesson.activities.length - 1));
   };
+  const missedWords = result
+    ? result.wordAttempts
+        .filter((attempt) => attempt.attempt !== attempt.target)
+        .map((attempt) => attempt.target)
+        .slice(0, 6)
+    : [];
+  const startDrill = () => {
+    if (!missedWords.length) return;
+    setDrillResult(null);
+    setDrillText(missedWords.flatMap((word) => [word, word]).join(" "));
+  };
+  const exitDrill = () => {
+    setDrillText(null);
+    setDrillResult(null);
+    session.reset();
+  };
+  const restartDrill = () => {
+    setDrillResult(null);
+    session.reset();
+  };
 
   const verdict = result
     ? {
@@ -263,7 +283,45 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
             </div>
           </header>
 
-          {!session.done ? (
+          {drillText ? (
+            <section className="panel space-y-4 p-5" aria-labelledby="drill-title">
+              <header className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h3 id="drill-title" className="font-display text-lg font-semibold">
+                    Mistake drill
+                  </h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Type the words you missed twice. A clean run retires them from your saved
+                    mistakes.
+                  </p>
+                </div>
+                <Button variant="ghost" size="sm" onClick={exitDrill}>
+                  Back to results
+                </Button>
+              </header>
+              {drillResult ? (
+                <div className="space-y-3">
+                  <p className="rounded-xl border border-border bg-secondary/60 px-4 py-3 text-sm">
+                    Drill finished: {round(drillResult.stats.realAccuracy, 1)}% accuracy ·{" "}
+                    {round(drillResult.stats.netWpm)} WPM.{" "}
+                    {drillResult.stats.realAccuracy >= 98
+                      ? "Clean run — those words are retired."
+                      : "Drill again when you are ready."}
+                  </p>
+                  <Button onClick={restartDrill} variant="outline">
+                    <RotateCcw aria-hidden="true" /> Drill again
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <TypingSurface target={drillText} session={session} size="lg" />
+                  <Button onClick={restartDrill} variant="outline" size="sm">
+                    <RotateCcw aria-hidden="true" /> Restart drill
+                  </Button>
+                </>
+              )}
+            </section>
+          ) : !session.done ? (
             <>
               <div className="flex flex-wrap items-center gap-3 text-sm">
                 <div
