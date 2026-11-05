@@ -158,13 +158,37 @@ function ProgressPage() {
         <p className="mt-3 text-muted-foreground">
           Finish a lesson, practice run or test and your real results will appear here.
         </p>
-        <div className="mt-6 flex justify-center gap-3">
-          <Button asChild>
-            <Link to="/learn">Start learning</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link to="/test">Take a test</Link>
-          </Button>
+        <div className="mt-6 flex flex-col items-center gap-3">
+          <div className="flex justify-center gap-3">
+            <Button asChild>
+              <Link to="/learn">Start learning</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/test">Take a test</Link>
+            </Button>
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+              <Upload aria-hidden="true" /> Import a progress file
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json,.json"
+              className="sr-only"
+              aria-label="Import a TypingGhost progress file"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                event.target.value = "";
+                if (file) void importProgress(file);
+              }}
+            />
+            {importStatus ? (
+              <p role="status" className="text-sm text-muted-foreground">
+                {importStatus}
+              </p>
+            ) : null}
+          </div>
         </div>
       </div>
     );
