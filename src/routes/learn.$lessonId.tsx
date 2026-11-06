@@ -97,10 +97,12 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
     target: drillText ?? activity.text,
     onComplete: (run) => {
       if (drillText) {
-        // A clean retelling of missed words retires them from the saved list.
-        const corrected = run.wordAttempts
-          .filter((w) => w.attempt === w.target)
-          .map((w) => w.target);
+        // Every drill word without a failed attempt was typed cleanly; clean
+        // retellings retire the word from the saved mistake list.
+        const failed = new Set(run.wordAttempts.map((w) => w.target.toLowerCase()));
+        const corrected = Array.from(new Set(drillText.split(/\s+/))).filter(
+          (word) => !failed.has(word.toLowerCase()),
+        );
         update((current) =>
           markMistakePractised(
             recordSession(current, {

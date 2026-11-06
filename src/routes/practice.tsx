@@ -137,10 +137,14 @@ function PracticePage() {
   const session = useTypingSession({
     target,
     onComplete: (run) => {
-      // Words retyped without error leave the saved mistake list.
+      // Every word in the drill without a failed attempt was typed correctly;
+      // a clean retelling retires it from the saved mistake list.
+      const failed = new Set(run.wordAttempts.map((w) => w.target.toLowerCase()));
       const corrected =
         mode === "mistakes"
-          ? run.wordAttempts.filter((w) => w.attempt === w.target).map((w) => w.target)
+          ? Array.from(new Set(target.split(/\s+/))).filter(
+              (word) => word.length > 1 && !failed.has(word.toLowerCase()),
+            )
           : [];
       update((current) => {
         const recorded = recordSession(current, {
