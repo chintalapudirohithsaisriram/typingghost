@@ -12,6 +12,12 @@
   <a href="CONTRIBUTING.md">Contributing</a>
 </p>
 
+<p align="center">
+  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
+  <a href="https://bun.sh/"><img alt="Built with Bun" src="https://img.shields.io/badge/runtime-Bun-f9f1e1?logo=bun&logoColor=000"></a>
+  <a href="https://typingghost.lovable.app"><img alt="Live demo" src="https://img.shields.io/badge/demo-live-brightgreen"></a>
+</p>
+
 TypingGhost is a local-first typing coach for learning touch typing through guided lessons, focused practice, untimed tests, and short games. Its learning loop is simple: **learn a skill, practice what needs work, test your progress, and choose the next step.**
 
 ## What you can do
@@ -44,8 +50,10 @@ Open the local URL printed by the development server.
 | `bun run lint` | Run ESLint. |
 | `bun run build` | Create a production build. |
 | `bun run preview` | Preview a build locally. |
+| `bunx vitest run` | Run the Vitest test files. |
+| `bunx tsc --noEmit` | Run the TypeScript compiler without emitting files. |
 
-A `test` script is not defined yet. Check the [roadmap](roadmap.md) for current quality and verification work.
+The package currently does not define `test` or `typecheck` scripts, so the last two commands invoke the installed tools directly. Add stable package scripts and CI checks before advertising a build or test status badge. See the [roadmap](roadmap.md) for current quality and release work.
 
 ## Built with
 
@@ -74,7 +82,7 @@ TypingGhost does not require an account. Settings and practice history are store
 
 ## Project status
 
-TypingGhost is actively developed. Some interaction hardening and full quality assurance are still in progress; see the [roadmap](roadmap.md) for the current list.
+TypingGhost is actively developed. See the [roadmap](roadmap.md) for current priorities and release readiness.
 
 ## Contributing
 
