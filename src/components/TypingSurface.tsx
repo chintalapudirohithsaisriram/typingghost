@@ -9,6 +9,8 @@ type Props = {
   size?: "md" | "lg" | "xl";
   hint?: string | undefined;
   autoFocus?: boolean;
+  /** Limit rendered target characters while keeping the active cursor in view. */
+  windowSize?: number;
   className?: string;
 };
 
@@ -22,6 +24,7 @@ export default function TypingSurface({
   size = "md",
   hint,
   autoFocus = true,
+  windowSize,
   className,
 }: Props) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -52,6 +55,13 @@ export default function TypingSurface({
   }, [typed.length, session.lastWrong]);
 
   const { handleBeforeInput, appendText, handleKeyDown, done } = session;
+  const visibleStart =
+    windowSize && chars.length > windowSize
+      ? Math.max(0, Math.min(chars.length - windowSize, typed.length - Math.floor(windowSize / 4)))
+      : 0;
+  const visibleChars = windowSize
+    ? chars.slice(visibleStart, visibleStart + windowSize)
+    : chars;
 
   // If focus drifted to the page or a button (e.g. after clicking the visual guide), a
   // keystroke re-focuses the typing area and still counts.
@@ -169,7 +179,8 @@ export default function TypingSurface({
               : "text-lg sm:text-xl",
         )}
       >
-        {chars.map((char, index) => {
+        {visibleChars.map((char, visibleIndex) => {
+          const index = visibleStart + visibleIndex;
           const input = typed[index];
           const isActive = index === typed.length;
           const state = input === undefined ? "pending" : input === char ? "correct" : "wrong";

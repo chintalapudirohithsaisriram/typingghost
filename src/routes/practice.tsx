@@ -282,7 +282,7 @@ function PracticePage() {
                   <RefreshCw aria-hidden="true" /> New text
                 </Button>
                 {session.value ? (
-                  <Button variant="ghost" size="sm" onClick={session.finishNow}>
+                  <Button variant="ghost" size="sm" onClick={() => session.finishNow()}>
                     Finish here
                   </Button>
                 ) : null}

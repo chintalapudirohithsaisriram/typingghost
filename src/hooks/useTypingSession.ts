@@ -22,8 +22,10 @@ export type TypingResult = {
 
 export type TypingSessionOptions = {
   target: string;
-  /** Finish automatically once the target text is fully typed. Never time-limited. */
+  /** Finish automatically once the target text is fully typed. */
   completeOnTarget?: boolean;
+  /** Include pauses in elapsed time for fixed-duration benchmarks. */
+  wallClock?: boolean;
   onComplete?: (result: TypingResult) => void;
   onKeystroke?: (correct: boolean) => void;
   /** Some games disable corrections; lessons, practice and tests always allow them. */
@@ -31,12 +33,13 @@ export type TypingSessionOptions = {
 };
 
 /**
- * Unlimited typing session. There is no countdown anywhere: time is only
- * measured (active time, idle gaps capped) and reported as a result.
+ * Typing session with active-time measurement by default. Timed benchmarks
+ * can opt into wall-clock measurement; their caller controls the countdown.
  */
 export function useTypingSession({
   target,
   completeOnTarget = true,
+  wallClock = false,
   onComplete,
   onKeystroke,
   allowBackspace = true,
@@ -52,6 +55,9 @@ export function useTypingSession({
 
   const activeRef = useRef(0);
   const lastKeyAtRef = useRef<number | null>(null);
+  const startedAtRef = useRef<number | null>(null);
+  const wallClockRef = useRef(wallClock);
+  wallClockRef.current = wallClock;
   const valueRef = useRef("");
   const mistakesRef = useRef(0);
   const completedRef = useRef(false);
@@ -67,22 +73,33 @@ export function useTypingSession({
   onKeystrokeRef.current = onKeystroke;
 
   const liveElapsed = () => {
+    if (wallClockRef.current && startedAtRef.current !== null) {
+      return Date.now() - startedAtRef.current;
+    }
     if (lastKeyAtRef.current === null) return activeRef.current;
     return activeRef.current + Math.min(IDLE_CAP_MS, Date.now() - lastKeyAtRef.current);
   };
 
   const markKey = () => {
     const now = Date.now();
+    if (startedAtRef.current === null) startedAtRef.current = now;
     if (lastKeyAtRef.current !== null) {
       activeRef.current += Math.min(IDLE_CAP_MS, now - lastKeyAtRef.current);
     }
     lastKeyAtRef.current = now;
   };
 
-  const finish = useCallback(() => {
+  const finish = useCallback((elapsedOverrideMs?: number) => {
     if (completedRef.current) return;
     completedRef.current = true;
-    const finalElapsed = Math.max(1, activeRef.current);
+    const elapsedAtFinish =
+      elapsedOverrideMs ??
+      (wallClockRef.current && startedAtRef.current !== null
+        ? Date.now() - startedAtRef.current
+        : lastKeyAtRef.current === null
+          ? activeRef.current
+          : activeRef.current + Math.min(IDLE_CAP_MS, Date.now() - lastKeyAtRef.current));
+    const finalElapsed = Math.max(1, elapsedAtFinish);
     const typed = valueRef.current;
     const comparison = compareTypedText(targetRef.current, typed);
     const finalSample = calculateWpm(Array.from(typed).length, finalElapsed);
@@ -229,6 +246,7 @@ export function useTypingSession({
   const reset = useCallback(() => {
     activeRef.current = 0;
     lastKeyAtRef.current = null;
+    startedAtRef.current = null;
     valueRef.current = "";
     mistakesRef.current = 0;
     completedRef.current = false;
