@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, RotateCcw } from "lucide-react";
 import Sparkline from "@/components/Sparkline";
 import StatTile from "@/components/StatTile";
+import TypingSurface from "@/components/TypingSurface";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useProfile";
+import { useTypingSession } from "@/hooks/useTypingSession";
 import {
   averageOf,
   coachMessage,
@@ -13,16 +15,20 @@ import {
   weakestKeys,
 } from "@/lib/profile";
 import { pageHead } from "@/lib/seo";
+import { round } from "@/lib/typing";
 import { LESSONS } from "@/lib/typing-content";
 
 export const Route = createFileRoute("/")({
   head: () =>
     pageHead(
       "TypingGhost — Learn Touch Typing, Free and Untimed",
-      `Learn touch typing with ${LESSONS.length} guided lessons, unlimited practice, untimed typing tests, games and honest progress tracking. Free, no sign-up.`,
+      `Learn touch typing with ${LESSONS.length} guided lessons, unlimited practice, timed or untimed tests, games and honest progress tracking. Free, no sign-up.`,
     ),
   component: HomePage,
 });
+
+const QUICK_SAMPLE_TEXT =
+  "Type a short sample at your pace. Keep your hands light and let each key guide the next word today.";
 
 const PATH = [
   {
@@ -37,7 +43,7 @@ const PATH = [
   },
   {
     step: "Test",
-    body: "Untimed tests with net WPM, accuracy and a letter-by-letter review.",
+    body: "Timed or untimed tests with net WPM, accuracy and a letter-by-letter review.",
     to: "/test",
   },
   {
@@ -46,6 +52,58 @@ const PATH = [
     to: "/progress",
   },
 ] as const;
+
+function QuickTypingPreview() {
+  const session = useTypingSession({ target: QUICK_SAMPLE_TEXT });
+
+  return (
+    <section
+      aria-label="Quick typing sample"
+      className="mt-7 max-w-2xl rounded-2xl border border-border bg-background/80 p-4 shadow-sm backdrop-blur"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="font-display text-base font-semibold">Try a quick typing sample</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Click to start · 20 words · no countdown · a short sample, not a benchmark
+          </p>
+        </div>
+      </div>
+
+      {!session.done ? (
+        <TypingSurface
+          target={QUICK_SAMPLE_TEXT}
+          session={session}
+          size="md"
+          autoFocus={false}
+          hint="Click the sample or press Tab to focus · Type at your own pace"
+          className="mt-4"
+        />
+      ) : null}
+
+      {session.done ? (
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <p className="text-sm text-muted-foreground" role="status" aria-live="polite">
+            Sample complete:{" "}
+            <strong className="text-foreground">
+              {round(session.stats.netWpm)} sample WPM
+            </strong>
+            {" · "}
+            {round(session.stats.realAccuracy, 1)}% accuracy
+          </p>
+          <Button type="button" variant="outline" size="sm" onClick={session.reset}>
+            <RotateCcw aria-hidden="true" /> Try again
+          </Button>
+          <Button asChild size="sm">
+            <Link to="/test">
+              Take a full test <ArrowRight aria-hidden="true" />
+            </Link>
+          </Button>
+        </div>
+      ) : null}
+    </section>
+  );
+}
 
 function HomePage() {
   const { profile, ready } = useProfile();
@@ -66,8 +124,8 @@ function HomePage() {
             Master Your Keyboard.
           </h1>
           <p className="mt-6 max-w-xl text-lg text-muted-foreground">
-            Learn the right finger for every key, practise what you miss, and measure real progress
-            — at your own pace, with no time limits.
+            Learn the right finger for every key, practise what you miss, and measure progress —
+            at your own pace in lessons, with timed or untimed tests.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg">
@@ -86,6 +144,7 @@ function HomePage() {
               <Link to="/test">Take a typing test</Link>
             </Button>
           </div>
+          <QuickTypingPreview />
         </div>
       </section>
 

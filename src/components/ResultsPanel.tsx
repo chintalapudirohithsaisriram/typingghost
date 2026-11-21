@@ -1,9 +1,11 @@
-import { useMemo, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import type { TypingStats } from "@/lib/typing";
 import { formatSeconds, reviewCharacters, round } from "@/lib/typing";
 import StatTile from "@/components/StatTile";
 import Sparkline from "@/components/Sparkline";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Copy, Download } from "lucide-react";
 
 type Props = {
   title: string;
@@ -13,6 +15,7 @@ type Props = {
   target?: string;
   typed?: string;
   verdict?: { passed: boolean; message: string; label?: string } | undefined;
+  timeLabel?: string;
   actions?: ReactNode;
 };
 
@@ -24,6 +27,7 @@ export default function ResultsPanel({
   target,
   typed,
   verdict,
+  timeLabel = "Active time",
   actions,
 }: Props) {
   const worst = Object.entries(errors)
@@ -34,6 +38,67 @@ export default function ResultsPanel({
     [target, typed],
   );
   const missed = review ? review.filter((c) => c.state === "missed").length : 0;
+  const [shareStatus, setShareStatus] = useState("");
+  const shareText = [
+    title,
+    `${round(stats.netWpm)} net WPM`,
+    `${round(stats.realAccuracy, 1)}% accuracy`,
+    `${timeLabel}: ${formatSeconds(stats.elapsedMs)}`,
+  ].join(" · ");
+
+  const copyResult = async () => {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+      await navigator.clipboard.writeText(shareText);
+      setShareStatus("Result copied.");
+    } catch {
+      setShareStatus("Copying is unavailable in this browser.");
+    }
+  };
+
+  const downloadResultCard = () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1200;
+    canvas.height = 630;
+    const context = canvas.getContext("2d");
+    if (!context) {
+      setShareStatus("This browser could not create the result card.");
+      return;
+    }
+
+    const background = context.createLinearGradient(0, 0, 1200, 630);
+    background.addColorStop(0, "#111827");
+    background.addColorStop(1, "#312e81");
+    context.fillStyle = background;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#c4b5fd";
+    context.font = "600 28px system-ui, sans-serif";
+    context.fillText(title, 88, 112);
+    context.fillStyle = "#ffffff";
+    context.font = "700 112px system-ui, sans-serif";
+    context.fillText(`${round(stats.netWpm)} WPM`, 84, 300);
+    context.font = "500 38px system-ui, sans-serif";
+    context.fillStyle = "#e5e7eb";
+    context.fillText(`${round(stats.realAccuracy, 1)}% accuracy`, 90, 385);
+    context.font = "400 26px system-ui, sans-serif";
+    context.fillStyle = "#cbd5e1";
+    context.fillText(`${timeLabel}: ${formatSeconds(stats.elapsedMs)}`, 90, 455);
+    context.fillText("A personal practice result · typingghost.lovable.app", 90, 540);
+
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        setShareStatus("This browser could not create the result card.");
+        return;
+      }
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "typingghost-result.png";
+      link.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setShareStatus("Result card downloaded.");
+    }, "image/png");
+  };
 
   return (
     <section className="space-y-5" aria-labelledby="results-title">
@@ -43,6 +108,18 @@ export default function ResultsPanel({
         </h2>
         {actions}
       </header>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <Button type="button" variant="outline" size="sm" onClick={copyResult}>
+          <Copy aria-hidden="true" /> Copy result
+        </Button>
+        <Button type="button" variant="outline" size="sm" onClick={downloadResultCard}>
+          <Download aria-hidden="true" /> Download card
+        </Button>
+        <span className="text-xs text-muted-foreground" role="status" aria-live="polite">
+          {shareStatus}
+        </span>
+      </div>
 
       {verdict ? (
         <p
@@ -83,9 +160,9 @@ export default function ResultsPanel({
           hint="Counts corrected mistakes"
         />
         <StatTile
-          label="Active time"
+          label={timeLabel}
           value={formatSeconds(stats.elapsedMs)}
-          hint="Measured, never limited"
+          hint={timeLabel === "Active time" ? "Measured, never limited" : "Timed test length"}
         />
       </div>
       <details className="panel group p-4" open>
