@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
 import { ArrowRight, RotateCcw } from "lucide-react";
 import Sparkline from "@/components/Sparkline";
 import StatTile from "@/components/StatTile";
@@ -55,7 +54,6 @@ const PATH = [
 ] as const;
 
 function QuickTypingPreview() {
-  const [started, setStarted] = useState(false);
   const session = useTypingSession({ target: QUICK_SAMPLE_TEXT });
 
   return (
@@ -67,22 +65,18 @@ function QuickTypingPreview() {
         <div>
           <h2 className="font-display text-base font-semibold">Try a quick typing sample</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            20 words · no countdown · a short sample, not a benchmark
+            Click to start · 20 words · no countdown · a short sample, not a benchmark
           </p>
         </div>
-        {!started ? (
-          <Button type="button" variant="secondary" onClick={() => setStarted(true)}>
-            Start sample
-          </Button>
-        ) : null}
       </div>
 
-      {started && !session.done ? (
+      {!session.done ? (
         <TypingSurface
           target={QUICK_SAMPLE_TEXT}
           session={session}
           size="md"
-          hint="Type at your own pace · Backspace corrects the last character"
+          autoFocus={false}
+          hint="Click the sample or press Tab to focus · Type at your own pace"
           className="mt-4"
         />
       ) : null}
