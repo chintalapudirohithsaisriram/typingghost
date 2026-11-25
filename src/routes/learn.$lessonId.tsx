@@ -350,7 +350,7 @@ function LessonExperience({ lesson }: { lesson: Lesson }) {
                 </Button>
               </div>
 
-              <TypingSurface target={activity.text} session={session} size="lg" />
+              <TypingSurface target={activity.text} session={session} size="lg" groupSize={activity.groupSize} />
 
               {settings.showKeyboard ? (
                 <KeyboardHandsGuide

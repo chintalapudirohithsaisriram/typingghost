@@ -14,6 +14,8 @@ export type LessonActivity = {
   instruction: string;
   text: string;
   focusKeys?: string[];
+  /** Display key-only pattern chunks with visual gaps that are not typed characters. */
+  groupSize?: number;
 };
 
 export type Lesson = {
@@ -95,9 +97,9 @@ const definitions: LessonDefinition[] = [
     targetKeys: ["f", "j"],
     finger: "Both hands relaxed; index fingers find F and J",
     drill:
-      "fjfjjfjfjfjjffjjffjfjjfjfjfjjfjfjfjjffjjffjjfjfjfjfjjfjfjfjjffjjfjfjjfjfjfjjffjjffjjfjfjfjfjjfjfj",
+      "fjjfffjjfjjffjjfffjjfjjfffjjfj",
     transfer:
-      "jjffjjffjfjjffjjfjfjfjfjjffjjfjfjjffjjfjfjfjjfjfjjfjfjfjfjjffjjfjfjjfjfjfjjffjjfjfjfjfjjffjjfjfj",
+      "jffjjjffjffjjffjjjffjffjjjffjf",
     goalAccuracy: 85,
   },
   {
@@ -110,9 +112,9 @@ const definitions: LessonDefinition[] = [
     targetKeys: ["f", "j"],
     finger: "Left index F · right index J",
     drill:
-      "fjfjfjfjfjffjjjjffjfjfjfjjffjjfjfjfjfjfjfjfjjffjjfjfjfjfjfjfjfjjffjjfjfjfjfjjfjfjfjfjfjfjfjjffjjfjfj",
+      "fjjffjjfffjjjffjfjjfffjjfjjffj",
     transfer:
-      "fjfjfjfjfjffjjjjffjfjfjfjjffjjfjfjfjfjfjfjfjjffjjfjfjfjfjfjfjfjjffjjfjfjfjfjjfjfjfjfjfjfjfjjffjjfjfjfj",
+      "jffjjjfffjjffjjfjjffjffjffjjjf",
     goalAccuracy: 88,
   },
   {
@@ -124,9 +126,9 @@ const definitions: LessonDefinition[] = [
     targetKeys: ["a", "s", "d", "f"],
     finger: "Left pinky A · ring S · middle D · index F",
     drill:
-      "asdfasdffsadfdasfasdsadfaffsdasddffaasddssfaafsdfasdfasdffsadfdasfasdsadfaffsdasddffaasddssfaafsdfsadf",
+      "assaaddaaffasddssffsdffdajjasj",
     transfer:
-      "sfasdfadsfasdsadfaffsdaasdfasdffsadfdasfasdsadfaffsdaasdfasdsadfaffsdaasdfasdfasdsadfaffsdasdfsadf",
+      "jssjassafaafdssddaadsffsjaajfd",
     goalAccuracy: 90,
   },
   {
@@ -139,9 +141,9 @@ const definitions: LessonDefinition[] = [
     targetKeys: ["j", "k", "l", ";"],
     finger: "Right index J · middle K · ring L · pinky semicolon",
     drill:
-      "jkl;jkll;;lkjjljkll;kj;jlklj;lkjkl;jkl;ll;;jjlkkljkl;jkll;;lkjjljkll;kj;jlklj;lkjkl;jkl;ll;;jjlkkljkl;",
+      "jkkjjlljj;;jkllkl;;lk;;kjkl;;j",
     transfer:
-      "jkll;;lkkjlljj;lkjkl;jkl;ljk;lkjll;;kjkll;jkl;lkjkl;jkll;;lkkjlljj;lkjkl;jkl;ll;;jjlkkl;jkl;ljk;lkjll;;",
+      ";klkkjjl;jl;kljk;lk;lj;kjk;lkl",
     goalAccuracy: 90,
   },
   {
@@ -202,7 +204,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "fr ju ru ur urj ufr fr ju ru ur jerk rule lure sure rural usual rusk us ruse fr ju ru ur er ri uir iur jerk rule lure sure rural usual rusk us ruse",
     transfer:
-      "she feels a usual rule us rural lure sure rule as she rules a ruse she feels sure a rural rusk is a usual ruse",
+      "she feels a usual rule us rural lure sure rule as she rules a ruse she feels sure a rural rusk is a usual ruse a user is sure a rural rule is a sure rule a user uses",
     goalAccuracy: 91,
   },
   {
@@ -217,7 +219,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "ft jy yt ty tyt ytj jet yet yes jury duty dusty rusty trust truth treaty jetty try dry yurt trusty study ft jy yt ty jet yet yes jury duty dusty rusty trust truth treaty jetty try dry yurt trusty study",
     transfer:
-      "a trusty jury yet rests study the dusty yurt yet yes the dusty treaty is rusty yet trusty she tried her trusty jury",
+      "a trusty jury yet rests study the dusty yurt yet yes the dusty treaty is rusty yet trusty she tried her trusty jury try the test yet trust the dusty jury the result is sure",
     goalAccuracy: 91,
   },
   {
@@ -231,7 +233,7 @@ const definitions: LessonDefinition[] = [
     finger: "Left pinky Q · left ring W",
     drill:
       "aq sw qa ws aq sw wa sa aqua square quake quash was we well will wish wall walk ward wale aq sw qa ws aqua square quake quash was we well will wish wall walk ward wale",
-    transfer: "was it a quake as we walk a wall we wish a well was it a quash as she walks a wall",
+    transfer: "was it a quake as we walk a wall we wish a well was it a quash as she walks a wall we walk a quiet way we write a quiet rule we walk well with wise water",
     goalAccuracy: 90,
   },
   {
@@ -274,7 +276,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "we were quite ready to write your type the route was pretty we were quite ready to write your type equip the writer to pour the water out the quiet tower was your type out here",
     transfer:
-      "the quiet writer will type a proper word our route was quite pretty equip your tower to pour the water out we were quite ready to write your type",
+      "the quiet writer will type a proper word our route was quite pretty equip your tower to pour the water out we were quite ready to write your type read your word quite slowly as you type your reply",
     review: "Repeat any pair that felt awkward before moving on.",
     goalAccuracy: 92,
   },
@@ -290,7 +292,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "az sx za xs zx xz zs xs az xz za sx zero fox six taxi exit axis zoo zest az sx za xs zx xz zs xs az xz za sx zero fox six taxi exit axis zoo zest",
     transfer:
-      "a fox left the zoo taxi at exit six the zoo was zesty zest as the fox took a taxi to the zoo",
+      "a fox left the zoo taxi at exit six the zoo was zesty zest as the fox took a taxi to the zoo the taxi is fast the fox will walk to the zoo at six",
     goalAccuracy: 90,
   },
   {
@@ -304,7 +306,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "dc fv fb cv vb bc cvc bcb vcx cxv cab cave civic vice verb cover curve brave boxer brick back bake cork vibe dc fv fb cv vb bc cvc bcb vcx cxv cab cave civic vice verb cover curve brave boxer brick back bake cork vibe",
     transfer:
-      "a brave boxer was back at the civic cave to cover a curve we vibe to the verb bake a brick cork the cab was brick",
+      "a brave boxer was back at the civic cave to cover a curve we vibe to the verb bake a brick cork the cab was brick civic",
     goalAccuracy: 91,
   },
   {
@@ -432,7 +434,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "th he in er an re on at th he in er an re on at the there then their when other another under enter other there their the rate of the hunt was rather high under their own time enter the other room there",
     transfer:
-      "there is another reason to remain patient enter the other room under their own time the rate of the hunt was rather high there is another reason",
+      "there is another reason to remain patient enter the other room under their own time the rate of the hunt was rather high there is another reason the inner era",
     goalAccuracy: 93,
   },
   {
@@ -446,7 +448,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "the ing and ion ent her the ing and ion ent her thing bring string sing along the strong string of things went on and on under the outer enter her thing and the rest of the string",
     transfer:
-      "thinking clearly helps a learner find the right rhythm her strong string of things went on and on under the outer enter the rest of the string went along",
+      "thinking clearly helps a learner find the right rhythm her strong string of things went on and on under the outer enter the rest of the string went along bring a thing then let the strong line ring",
     goalAccuracy: 93,
   },
   {
@@ -460,7 +462,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "minimum people level rhythm minimum people level rhythm mama papa peep loom noon pop lull lull pop noon loom peep papa mama a careful typist lets both hands share the work and keeps the rhythm level",
     transfer:
-      "a careful typist lets both hands work together people remember the rhythm of a level even line and the minimum of wasted motion the rhythm of a level line",
+      "a careful typist lets both hands work together people remember the rhythm of a level even line and the minimum of wasted motion the rhythm of a level line notice same hand patterns then switch to a steady rhythm",
     goalAccuracy: 94,
   },
   {
@@ -475,7 +477,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "right tight sight great through thought light night might fight eight caught taught brought tough rough enough though right tight sight great through thought the thought was right though the sight was tight",
     transfer:
-      "strength grows through thoughtful steady practice the thought was right though the sight was tight a great light through the night enough thought enough right",
+      "strength grows through thoughtful steady practice the thought was right though the sight was tight a great light through the night enough thought enough right break each difficult word into smaller patterns then repeat it slowly until the movement feels calm and steady",
     review: "Choose one pattern to repeat slowly, then type the sentence once more.",
     goalAccuracy: 94,
   },
@@ -490,7 +492,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "the quick learner finds a better rhythm watch the rate at which the wrong letters get fixed the quick learner finds a better rhythm a right rate is a great rate watch the wrong letters get fixed at a better rate",
     transfer:
-      "a good habit grows when clear words feel natural the quick learner finds a better rhythm through steady thoughtful practice a right rate is a great rate",
+      "a good habit grows when clear words feel natural the quick learner finds a better rhythm through steady thoughtful practice a right rate is a great rate pause reset fingers then read ahead calmly",
     goalAccuracy: 94,
   },
 
@@ -534,7 +536,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "Maya Ravi London Friday Delhi India Monday Sunday Lagos Perth Oslo Kabul Quito Turin Udaipur Maya Ravi London Friday Delhi India Maya and Ravi learn together On Friday they typed",
     transfer:
-      "Maya and Ravi learn together On Friday they typed A Quiet Note In London Maya wrote Ravi typed London Is Calm On Monday They Meet In Delhi",
+      "Maya and Ravi learn together On Friday they typed A Quiet Note In London Maya wrote Ravi typed London Is Calm On Monday They Meet In Delhi On Tuesday Maya met Ravi in Delhi They wrote a clear note and read it aloud together again",
     goalAccuracy: 93,
   },
   {
@@ -549,7 +551,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "one, two, three. one, two, three. wait, watch, type. rest, breathe, continue. slow, steady, smooth. practice, pause, repeat. one step, then two, then three. wait, watch, type. rest, breathe, continue. slow, steady, smooth.",
     transfer:
-      "A small step, taken each day, can build a lasting skill. Sit tall, relax your hands, and read ahead. Type, check, correct, and move on. Calm hands, clear words, quiet wins.",
+      "A small step, taken each day, can build a lasting skill. Sit tall, relax your hands, and read ahead. Type, check, correct, and move on. Calm hands, clear words, quiet wins. Plan each step, then pause. A calm pace builds good habits.",
     goalAccuracy: 93,
   },
   {
@@ -578,7 +580,7 @@ const definitions: LessonDefinition[] = [
     drill:
       '; - ; - : "go"; "wait" well-timed; well-kept; "up"; "in" note: "rest"; pause: "begin"; rule: "type, then check" well-timed; well-kept; "up"; "in" note: "rest"; pause: "begin"',
     transfer:
-      'Maya said, "Take a well-timed break; then begin." The rule is simple: type, check, and reset; "slow is smooth," she wrote. A well-kept rule: rest, then begin.',
+      "Maya said, \"Take a well-timed break; then begin.\" The rule is simple: type, check, and reset; \"slow is smooth,\" she wrote. A well-kept rule: rest, then begin. Use one rule: \"pause; check, then begin.\" A well-timed reset makes a steady line. Type the line, read it, and try again.",
     goalAccuracy: 93,
   },
   {
@@ -592,7 +594,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "Ready, set; breathe. Is it steady? Yes! Don't look down; read ahead. Check: is the wrist loose? Good. One more: type, pause, reset. Is it steady? Yes! Don't look down; read ahead. Check: is the wrist loose? Good.",
     transfer:
-      '"It\'s a calm, well-paced lesson," Maya said. Ravi asked, "Can we pause, breathe, and begin again?" Yes - a short note, a long habit; type it, check it, and keep going.',
+      "\"It's a calm, well-paced lesson,\" Maya said. Ravi asked, \"Can we pause, breathe, and begin again?\" Yes - a short note, a long habit; type it, check it, and keep going. and reset then read ahead calmly",
     goalAccuracy: 94,
   },
   {
@@ -606,7 +608,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "Can a clear sentence stay calm? Yes, it can! Don't rush; read ahead. Check the wrist: loose. Begin: \"The note is ready.\" Wait - it's not; type on. Can a clear sentence stay calm? Yes, it can! Don't rush; read ahead.",
     transfer:
-      'Ravi asked, "Can we pause, breathe, and begin again?" Maya wrote: "Yes - a calm, well-timed note; a clear sentence; a steady hand." Can a clear sentence stay calm? Yes, it can!',
+      "Ravi asked, \"Can we pause, breathe, and begin again?\" Maya wrote: \"Yes - a calm, well-timed note; a clear sentence; a steady hand.\" Can a clear sentence stay calm? Yes, it can! and reset",
     review: "Repeat a punctuation sequence that felt unfamiliar at an easy pace.",
     goalAccuracy: 94,
   },
@@ -650,7 +652,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "12345 67890 2026 314159 8080 90210 007 24-7 360 720 1080 42 99 101 202 303 404 505 606 707 808 909 1010 12345 67890 2026 314159 8080 42 99 101 202 303 404",
     transfer:
-      "A total of 42 learners joined 3 groups of 14. The year 2026 has 365 days. Call 911 at once - not 912. Write 2026, not 2202. Room 101, floor 9, seat 8080.",
+      "A total of 42 learners joined 3 groups of 14. The year 2026 has 365 days. Call 911 at once - not 912. Write 2026, not 2202. Room 101, floor 9, seat 8080. Room 4 order 12 at 5 for 3",
     goalAccuracy: 93,
   },
   {
@@ -664,7 +666,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "05/17 9:30 3.50 12.75 1/2 3/4 7:45 10:30 2.99 0.75 12/25 6:00 1.25 8.50 45.10 99.99 50/50 24/7 3:15 9.99 05/17 9:30 3.50 12.75 1/2 3/4 7:45 10:30 2.99 0.75 12/25 6:00",
     transfer:
-      "The meeting is 05/17 at 9:30; lunch costs 12.75. Save 50/50 and pay 9.99 by 6:00. Bus 24/7 runs at 7:45, 10:30, and 3:15. The total is 45.10 - a 2.99 tip.",
+      "The meeting is 05/17 at 9:30; lunch costs 12.75. Save 50/50 and pay 9.99 by 6:00. Bus 24/7 runs at 7:45, 10:30, and 3:15. The total is 45.10 - a 2.99 tip. Record 06/22 at 8:15; the fee is 18.75. Save it today",
     goalAccuracy: 93,
   },
   {
@@ -692,7 +694,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "maya@example.com example.com https://example.com/course-part-1 first_last@site.org file_2.txt 2026/04/19 8:30 http://a.io x_y-z@web.com /docs /help 12:00 maya@example.com example.com first_last@site.org file_2.txt 2026/04/19 8:30",
     transfer:
-      "https://example.com/course-part-1 has 12 lessons. Write to first_last@site.org before 8:30. Open /docs, then /help; save notes to file_2.txt. Check 2026/04/19 at 12:00.",
+      "https://example.com/course-part-1 has 12 lessons. Write to first_last@site.org before 8:30. Open /docs, then /help; save notes to file_2.txt. Check 2026/04/19 at 12:00. maya@example.com hello@example.com first_last@site.org Open https://example.com/course-part-1 and read /docs/file_2.txt A simple code line is console.log(\"score\") Use first_last as a name and file_2.txt as a saved note At 8:30, save notes on /help and /docs Check https://example.com at 12:00 for a clear route",
     goalAccuracy: 91,
   },
 
@@ -736,7 +738,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "Maya Rao 18 Lake Road Name: Maya Rao; email: maya@example.com; address: 18 Lake Road. City: Perth; postcode: 6015; phone: (08) 9300 5555 Maya Rao 18 Lake Road City: Perth; postcode: 6015",
     transfer:
-      "Name: Maya Rao; email: maya@example.com; address: 18 Lake Road. City: Perth; postcode: 6015; phone: (08) 9300 5555. Order #3, ship by 05/17; total $45.10.",
+      "Name: Maya Rao; email: maya@example.com; address: 18 Lake Road. City: Perth; postcode: 6015; phone: (08) 9300 5555. Order #3, ship by 05/17; total $45.10. Check each field, then save the form. Verify the email, postcode, phone, and total before you send the request online",
     goalAccuracy: 94,
   },
   {
@@ -829,29 +831,44 @@ function makeWarmup(keys: string[], drill: string): string {
 
 function makeActivities(definition: LessonDefinition): LessonActivity[] {
   const keys = definition.targetKeys.filter((key) => key !== "all" && key !== "shift");
+  const patternOnly = [
+    "first-keystrokes",
+    "home-row",
+    "left-home-row",
+    "right-home-row",
+  ].includes(definition.id);
+  const groupSize = patternOnly ? 2 : undefined;
+  const patternDisplay = groupSize ? { groupSize } : {};
   const activities: LessonActivity[] = [
     {
       id: definition.id + "-warmup",
       kind: "warmup",
-      instruction:
-        "Get comfortable with the focus keys. Keep each movement light and return to home position.",
+      instruction: patternOnly
+        ? "Touch each key lightly. Visual gaps separate patterns; they are not Space keystrokes."
+        : "Get comfortable with the focus keys. Keep each movement light and return to home position.",
       text: makeWarmup(keys, definition.drill),
       focusKeys: keys,
+      ...patternDisplay,
     },
     {
       id: definition.id + "-drill",
       kind: "drill",
-      instruction:
-        "Practise the focused pattern at a steady pace. Accuracy and comfort come first.",
+      instruction: patternOnly
+        ? "Type each two-key pattern steadily. Visual gaps are only guides; do not press Space."
+        : "Practise the focused pattern at a steady pace. Accuracy and comfort come first.",
       text: definition.drill,
       focusKeys: keys,
+      ...patternDisplay,
     },
     {
       id: definition.id + "-transfer",
       kind: "transfer",
-      instruction: "Apply the skill in useful words, a sentence, or a passage.",
+      instruction: patternOnly
+        ? "Apply the key movements across the pattern set. Visual gaps do not require Space."
+        : "Apply the skill in useful words, a sentence, or a passage.",
       text: definition.transfer,
       focusKeys: keys,
+      ...patternDisplay,
     },
   ];
   if (definition.review) {
