@@ -97,9 +97,9 @@ const definitions: LessonDefinition[] = [
     targetKeys: ["f", "j"],
     finger: "Both hands relaxed; index fingers find F and J",
     drill:
-      "fjjfffjjfjjffjjfffjjfjjfffjjfj",
+      "fjfjjfjfjfjjffjjffjfjjfjfjfjjfjfjfjjffjjffjjfjfjfjfjjfjfjfjjffjjfjfjjfjfjfjjffjjffjjfjfjfjfjjfjfjjfjjfffjjfjjffjjfffjjfjjfffjjfj",
     transfer:
-      "jffjjjffjffjjffjjjffjffjjjffjf",
+      "jjffjjffjfjjffjjfjfjfjfjjffjjfjfjjffjjfjfjfjjfjfjjfjfjfjfjjffjjfjfjjfjfjfjjffjjfjfjfjfjjffjjfjfjjffjjjffjffjjffjjjffjffjjjffjf",
     goalAccuracy: 85,
   },
   {
@@ -112,9 +112,9 @@ const definitions: LessonDefinition[] = [
     targetKeys: ["f", "j"],
     finger: "Left index F · right index J",
     drill:
-      "fjjffjjfffjjjffjfjjfffjjfjjffj",
+      "fjfjfjfjfjffjjjjffjfjfjfjjffjjfjfjfjfjfjfjfjjffjjfjfjfjfjfjfjfjjffjjfjfjfjfjjfjfjfjfjfjfjfjjffjjfjfjfjjffjjfffjjjffjfjjfffjjfjjffj",
     transfer:
-      "jffjjjfffjjffjjfjjffjffjffjjjf",
+      "fjfjfjfjfjffjjjjffjfjfjfjjffjjfjfjfjfjfjfjfjjffjjfjfjfjfjfjfjfjjffjjfjfjfjfjjfjfjfjfjfjfjfjjffjjfjfjfjjffjjjfffjjffjjfjjffjffjffjjjf",
     goalAccuracy: 88,
   },
   {
@@ -126,9 +126,9 @@ const definitions: LessonDefinition[] = [
     targetKeys: ["a", "s", "d", "f"],
     finger: "Left pinky A · ring S · middle D · index F",
     drill:
-      "assaaddaaffasddssffsdffdajjasj",
+      "asdfasdffsadfdasfasdsadfaffsdasddffaasddssfaafsdfasdfasdffsadfdasfasdsadfaffsdasddffaasddssfaafsdfsadfassaaddaaffasddssffsdffdajjasj",
     transfer:
-      "jssjassafaafdssddaadsffsjaajfd",
+      "sfasdfadsfasdsadfaffsdaasdfasdffsadfdasfasdsadfaffsdaasdfasdsadfaffsdaasdfasdfasdsadfaffsdasdfsadfjssjassafaafdssddaadsffsjaajfd",
     goalAccuracy: 90,
   },
   {
@@ -141,9 +141,9 @@ const definitions: LessonDefinition[] = [
     targetKeys: ["j", "k", "l", ";"],
     finger: "Right index J · middle K · ring L · pinky semicolon",
     drill:
-      "jkkjjlljj;;jkllkl;;lk;;kjkl;;j",
+      "jkl;jkll;;lkjjljkll;kj;jlklj;lkjkl;jkl;ll;;jjlkkljkl;jkll;;lkjjljkll;kj;jlklj;lkjkl;jkl;ll;;jjlkkljkl;jkkjjlljj;;jkllkl;;lk;;kjkl;;j",
     transfer:
-      ";klkkjjl;jl;kljk;lk;lj;kjk;lkl",
+      "jkll;;lkkjlljj;lkjkl;jkl;ljk;lkjll;;kjkll;jkl;lkjkl;jkll;;lkkjlljj;lkjkl;jkl;ll;;jjlkkl;jkl;ljk;lkjll;;;;klkkjjl;jl;kljk;lk;lj;kjk;lkl",
     goalAccuracy: 90,
   },
   {
