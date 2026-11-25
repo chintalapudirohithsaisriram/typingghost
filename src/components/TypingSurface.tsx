@@ -11,6 +11,8 @@ type Props = {
   autoFocus?: boolean;
   /** Limit rendered target characters while keeping the active cursor in view. */
   windowSize?: number;
+  /** Add visual gaps between fixed-size key patterns without inserting typed spaces. */
+  groupSize?: number;
   className?: string;
 };
 
@@ -25,6 +27,7 @@ export default function TypingSurface({
   hint,
   autoFocus = true,
   windowSize,
+  groupSize,
   className,
 }: Props) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -188,6 +191,11 @@ export default function TypingSurface({
             <span
               key={index}
               ref={isActive ? activeRef : undefined}
+              style={
+                groupSize && (index + 1) % groupSize === 0 && index < chars.length - 1
+                  ? { marginRight: "0.65em" }
+                  : undefined
+              }
               className={cn(
                 state === "pending" && "text-muted-foreground/80",
                 state === "correct" && "text-foreground",
