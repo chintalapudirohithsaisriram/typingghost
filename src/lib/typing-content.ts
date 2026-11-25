@@ -219,7 +219,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "ft jy yt ty tyt ytj jet yet yes jury duty dusty rusty trust truth treaty jetty try dry yurt trusty study ft jy yt ty jet yet yes jury duty dusty rusty trust truth treaty jetty try dry yurt trusty study",
     transfer:
-      "a trusty jury yet rests study the dusty yurt yet yes the dusty treaty is rusty yet trusty she tried her trusty jury try the test yet trust the dusty jury the result is sure",
+      "a trusty jury yet rests study the dusty yurt yet yes the dusty treaty is rusty yet trusty she tried her trusty jury try the test yet use the result as a sure guide",
     goalAccuracy: 91,
   },
   {
@@ -233,7 +233,7 @@ const definitions: LessonDefinition[] = [
     finger: "Left pinky Q · left ring W",
     drill:
       "aq sw qa ws aq sw wa sa aqua square quake quash was we well will wish wall walk ward wale aq sw qa ws aqua square quake quash was we well will wish wall walk ward wale",
-    transfer: "was it a quake as we walk a wall we wish a well was it a quash as she walks a wall we walk a quiet way we write a quiet rule we walk well with wise water",
+    transfer: "was it a quake as we walk a wall we wish a well was it a quash as she walks a wall we walk a quiet way we write a quiet rule we walk well as we wish",
     goalAccuracy: 90,
   },
   {
@@ -434,7 +434,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "th he in er an re on at th he in er an re on at the there then their when other another under enter other there their the rate of the hunt was rather high under their own time enter the other room there",
     transfer:
-      "there is another reason to remain patient enter the other room under their own time the rate of the hunt was rather high there is another reason the inner era",
+      "there is another reason to remain patient enter the other room under their own time the rate of the hunt was rather high there is another reason their other reason",
     goalAccuracy: 93,
   },
   {
@@ -652,7 +652,7 @@ const definitions: LessonDefinition[] = [
     drill:
       "12345 67890 2026 314159 8080 90210 007 24-7 360 720 1080 42 99 101 202 303 404 505 606 707 808 909 1010 12345 67890 2026 314159 8080 42 99 101 202 303 404",
     transfer:
-      "A total of 42 learners joined 3 groups of 14. The year 2026 has 365 days. Call 911 at once - not 912. Write 2026, not 2202. Room 101, floor 9, seat 8080. Room 4 order 12 at 5 for 3",
+      "A total of 42 learners joined 3 groups of 14. The year 2026 has 365 days. Call 911 at once - not 912. Write 2026, not 2202. Room 101, floor 9, seat 8080. Room 4 has 12 desks at 5 today",
     goalAccuracy: 93,
   },
   {
